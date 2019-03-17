@@ -1,26 +1,23 @@
 import React, { Component, Alert } from 'react';
 import { Font } from 'expo';
 import { ScrollView, SafeAreaView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import { persistStore, persistReducer } from 'redux-persist';
+import { connect } from 'react-redux';
+
+
+function mapStateToProps(state) {
+	return { action: state.action,
+		   	 trackerCards: state.trackerCards
+   	}	
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+      type: "TEST"
+  }
+}
 
 class ListScreen extends Component {
-
-	card1 = {
-		title: 'Kratom',
-		count: '1',
-		color: '#EF5350'
-	}
-
-
-	async setCard() {
-		const set =	await AsyncStorage.setItem('@storage_Key', 'stored value')
-		return set;
-	}
-
-	async getCard(card_id) {
-		const card = await AsyncStorage.getItem('@storage_Key')
-		return card;
-	}
 
 	state = {
     	fontLoaded: false,
@@ -32,13 +29,7 @@ class ListScreen extends Component {
 		  'anodina-regular': require('../../assets/fonts/Anodina-Regular.otf'),
 		});
 
-	 	await this.setState({ fontLoaded: true });
-
-	 	console.log(this.card1);
-
-	 	await this.setCard();
-	 	// console.log(AsyncStorage.getAllKeys());
-		// console.log('Hello'+JSON.stringify(this.getCard('cardTest')));
+		await this.setState({ fontLoaded: true });
 	}
 
 	static navigationOptions = {
@@ -55,15 +46,20 @@ class ListScreen extends Component {
 							) : null
 						}
 						<View style={styles.cardContainer}>
-							{cards.map((card, index) => (
-								<TouchableOpacity 
+							{cards.map((card, index) => {
+
+							const card_id = 'card_'+index;
+							const currentTracker = this.props.trackerCards[card_id];
+
+							console.log(currentTracker);
+
+								return (<TouchableOpacity 
 									key={index} 
 									onPress={() => { 
-		                              // this.props.navigation.push("Tracker", {
-		                              //   kounter: card
-		                              // });
-									console.log(JSON.stringify(this.getCard('cardTest')));
-
+		                              this.props.navigation.push("Tracker", {
+		                                kounter: card,
+		                                id: index
+		                              });
 		                            }}
 									>
 									<View style={[styles.card, {backgroundColor: card.color}]}>
@@ -76,13 +72,14 @@ class ListScreen extends Component {
 
 										{this.state.fontLoaded ? (
 											<Text style={[styles.cardDrinkCount, {fontFamily: 'anodina-regular'}]}>
-												{card.count}
+												
 											</Text>
 											) : null
 										}
 									</View>
 								</TouchableOpacity>
-							))}
+								)
+							})}
 						</View>
 					</ScrollView>
 				</SafeAreaView>
@@ -91,7 +88,8 @@ class ListScreen extends Component {
 	}
 }
 
-export default ListScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(ListScreen);
+
 
 
 const styles = StyleSheet.create({
@@ -140,83 +138,57 @@ const styles = StyleSheet.create({
 
 const cards = [
 	{
+		id: 0,
 		title: 'Kratom',
 		'count': '1',
 		'color': '#EF5350'
 	},
 	{
+		id: 1,
 		title: 'Kava',
 		'count': '2',
 		'color': '#42A5F5'
 	},
 	{
+		id: 2,
 		title: 'Kratom',
 		'count': '3',
 		'color': '#78909C'
 	},
 	{
+		id: 3,
 		title: 'Kava',
 		'count': '4',
 		'color': '#43A047'
 	},
 	{
+		id: 4,
 		title: 'Kava',
 		'count': '5',
 		'color': '#7E57C2'
 	},
 	{
+		id: 5,
 		title: 'Water',
 		'count': '6',
 		'color': '#E65100'
 	},
 	{
+		id: 6,
 		title: 'Kratom',
 		'count': '7',
 		'color': '#0097A7'
 	},
 	{
+		id: 7,
 		title: 'Kratom',
 		'count': '8',
 		'color': '#5C6BC0'
 	},
 	{
+		id: 8,
 		title: 'Kratom',
 		'count': '9',
-		'color': '#5C6BC0'
-	},
-	{
-		title: 'Kratom',
-		'count': '10',
-		'color': '#5C6BC0'
-	},
-	{
-		title: 'Kratom',
-		'count': '11',
-		'color': '#5C6BC0'
-	},
-	{
-		title: 'Kratom',
-		'count': '12',
-		'color': '#5C6BC0'
-	},
-	{
-		title: 'Kratom',
-		'count': '13',
-		'color': '#5C6BC0'
-	},
-	{
-		title: 'Kratom',
-		'count': '14',
-		'color': '#5C6BC0'
-	},
-	{
-		title: 'Kratom',
-		'count': '15',
-		'color': '#5C6BC0'
-	},
-	{
-		title: 'Kratom',
-		'count': '16',
 		'color': '#5C6BC0'
 	},
 ];

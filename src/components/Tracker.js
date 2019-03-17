@@ -5,15 +5,23 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { connect } from 'react-redux';
 import Navigation from './Navigation';
 
+
 function mapStateToProps(state) {
-  return { action: state.action }
+  return { action: state.action,
+  		   trackerCards: state.trackerCards,
+  		 }
 }
 
 function mapDispatchToProps(dispatch) {
+  console.log(this.props+'hello');
   return {
-    openMenu: () => dispatch({
-      type: "OPEN_MENU"
-    })
+
+    addDrink(card_id) {
+    	dispatch({
+      		type: "ADD_DRINK",
+      		card_id: card_id
+    	})
+    }
   }
 }
 
@@ -33,41 +41,30 @@ class Tracker extends React.Component {
 		  'anodina-regular': require('../../assets/fonts/Anodina-Regular.otf'),
 		});
 
+
+		// console.log(this.props.trackerCards);
+
 	 	this.setState({ fontLoaded: true });
 	}
+
+	componentDidUpdate() {
+    	// console.log(this.props.action);
+		console.log(this.props.trackerCards);
+  	}
 
 	static navigationOptions = {
 	    header: null
   	};
 
-	constructor(props) {
-    	super(props);
-    	this.state={'currentCount': 0};
-
-		this.addDrink = this.addDrink.bind(this);
-		this.removeDrink = this.removeDrink.bind(this);
-		this.resetCount = this.resetCount.bind(this);
-  	}
-
-	addDrink() {
-		this.setState({currentCount: this.state.currentCount + 1});
-	}
-
-	removeDrink(){
-		if (this.state.currentCount != 0) { 
-			this.setState({currentCount: this.state.currentCount - 1});
-		}
-	}
-
-	resetCount() {
-		this.setState({currentCount: 0});
-	}
-
-
-
 	render() {
 		const { navigation } = this.props;
+		const card_id = 'card_'+navigation.getParam("id");
 		const kounter = navigation.getParam("kounter");
+
+		// console.log(card_id);
+		const currentTracker = this.props.trackerCards[card_id];
+
+		console.log(currentTracker.currentCount + 'test');
 
 		return (
 			<View style={[styles.container, {backgroundColor: kounter.color}]}>
@@ -93,13 +90,13 @@ class Tracker extends React.Component {
 
 					{this.state.fontLoaded ? (
 						<Text style={[styles.currentCount, {fontFamily: 'anodina-bold'}]}>
-							{kounter.count}
+							{currentTracker.currentCount}
 						</Text>
 						):null
 					}
 					
 					<View style={styles.buttonContainer}>
-			            <TouchableOpacity style={styles.RoundButton}>
+			            <TouchableOpacity style={styles.RoundButton} onPress={() => this.props.addDrink(card_id)}>
 							<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.RoundButton}>
