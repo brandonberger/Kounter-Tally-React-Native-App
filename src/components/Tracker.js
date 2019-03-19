@@ -15,10 +15,15 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   console.log(this.props+'hello');
   return {
-
     addDrink(card_id) {
     	dispatch({
       		type: "ADD_DRINK",
+      		card_id: card_id
+    	})
+    },
+    subtractDrink(card_id) {
+    	dispatch({
+      		type: "SUBTRACT_DRINK",
       		card_id: card_id
     	})
     }
@@ -99,7 +104,7 @@ class Tracker extends React.Component {
 			            <TouchableOpacity style={styles.RoundButton} onPress={() => this.props.addDrink(card_id)}>
 							<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
 						</TouchableOpacity>
-						<TouchableOpacity style={styles.RoundButton}>
+						<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.subtractDrink(card_id)}>
 							<Image style={[styles.buttonImage, {height: 48}]} source={require(minus_button_image)} />
 						</TouchableOpacity>
 			      	</View>

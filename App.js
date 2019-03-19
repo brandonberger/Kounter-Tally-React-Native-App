@@ -50,18 +50,33 @@ const initialState = {
 }
 
 const reducer = (state = initialState, action) => {
-  // console.log(initialState);
-  // console.log(action.type);
+  const card = state.trackerCards[action.card_id];
   switch (action.type) {
     case "ADD_DRINK":
-
-      const card = state.trackerCards[action.card_id];
-
-      // TODO: Fix: This is setting TrackerCards to only have one object and earsing all others
-      return { action: "addDrink", trackerCards: {[action.card_id]: { currentCount: card.currentCount + 1} } };
+      return { action: "addDrink", 
+        ...state, 
+        trackerCards: {
+          ...state.trackerCards, 
+          [action.card_id]: {
+            ...state.trackerCards[action.card_id], 
+            currentCount:  card.currentCount + 1 
+          } 
+        }
+      } 
+    case "SUBTRACT_DRINK":
+      return { action: "subtractDrink", 
+        ...state, 
+        trackerCards: {
+          ...state.trackerCards, 
+          [action.card_id]: {
+            ...state.trackerCards[action.card_id], 
+            currentCount:  card.currentCount - 1 
+          } 
+        } 
+      }
     default:
       return state;
-  }
+    }
 };
 
 const persistConfig = {

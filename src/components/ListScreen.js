@@ -1,6 +1,6 @@
 import React, { Component, Alert } from 'react';
 import { Font } from 'expo';
-import { ScrollView, SafeAreaView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet } from 'react-native';
+import { ScrollView, SafeAreaView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
 import { persistStore, persistReducer } from 'redux-persist';
 import { connect } from 'react-redux';
 
@@ -16,6 +16,8 @@ function mapDispatchToProps(dispatch) {
       type: "TEST"
   }
 }
+
+var plus_button_image = '../../assets/plus_button.png';
 
 class ListScreen extends Component {
 
@@ -72,7 +74,7 @@ class ListScreen extends Component {
 
 										{this.state.fontLoaded ? (
 											<Text style={[styles.cardDrinkCount, {fontFamily: 'anodina-regular'}]}>
-												
+												{currentTracker.currentCount}
 											</Text>
 											) : null
 										}
@@ -82,6 +84,11 @@ class ListScreen extends Component {
 							})}
 						</View>
 					</ScrollView>
+					<View style={styles.newCardButton}>
+						<TouchableOpacity style={styles.RoundButton}>
+							<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
+						</TouchableOpacity>
+					</View>
 				</SafeAreaView>
 			</View>
 		);
@@ -93,6 +100,21 @@ export default connect(mapStateToProps, mapDispatchToProps)(ListScreen);
 
 
 const styles = StyleSheet.create({
+	newCardButton: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		bottom: 0,
+		backgroundColor: 'rgba(0,0,0,0.3)',
+	},
+	RoundButton: {
+		height: 48,
+		width: 48,
+	},
+	buttonImage: {
+		position: 'absolute',
+		width: 48,
+		resizeMode: 'center'
+	},
 	container: {
 		flex: 1,
 		backgroundColor: '#0d0f19',
