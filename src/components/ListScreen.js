@@ -1,21 +1,50 @@
 import React, { Component, Alert } from 'react';
-import { Font } from 'expo';
-import { ScrollView, SafeAreaView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
+import { Font, LinearGradient } from 'expo';
+import { AlertIOS, ScrollView, SafeAreaView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
 import { persistStore, persistReducer } from 'redux-persist';
 import { connect } from 'react-redux';
 
-
 function mapStateToProps(state) {
-	return { action: state.action,
-		   	 trackerCards: state.trackerCards
-   	}	
+	console.log(state.trackerCards);
+	return { 
+		   	 trackerCards: state.trackerCards,
+		   	 numberOfCards: state.trackerCards.length
+ 	  	   }	
 }
 
 function mapDispatchToProps(dispatch) {
-  return {
-      type: "TEST"
-  }
+  	return {
+	    addNewTracker(newCardNumber, name, color) {
+	    	dispatch({
+	      		type: "ADD_NEW_TRACKER",
+	      		new_tracker: 
+	      			{
+	      			card_id: newCardNumber + 1,
+	      			title: name,
+	      			color: color,
+      				currentCount: 0
+      				}
+	    	})
+	    }
+	}
 }
+
+function getRandomColor() {
+	colors = [
+		'#EF5350',
+		'#42A5F5',
+		'#78909C',
+		'#43A047',
+		'#7E57C2',
+		'#E65100',
+		'#0097A7',
+		'#5C6BC0',
+		'#5C6BC0',
+	];
+
+	return colors[Math.floor(Math.random()*colors.length)];
+}
+
 
 var plus_button_image = '../../assets/plus_button.png';
 
@@ -23,7 +52,12 @@ class ListScreen extends Component {
 
 	state = {
     	fontLoaded: false,
+    	// modalVisible: false
   	};
+
+  	// setModalVisible(visible) {
+  	// 	this.setState({modalVisible: visible});
+  	// }
 
 	async componentDidMount() {
 		await Font.loadAsync({
@@ -38,7 +72,11 @@ class ListScreen extends Component {
 	    header: null
   	};
 
+
+ 
+
 	render() {
+		const newCardName = 'card_'+this.props.currentTrackerCount;
 		return (
 			<View style={styles.container}>
 				<SafeAreaView>
@@ -48,19 +86,12 @@ class ListScreen extends Component {
 							) : null
 						}
 						<View style={styles.cardContainer}>
-							{cards.map((card, index) => {
-
-							const card_id = 'card_'+index;
-							const currentTracker = this.props.trackerCards[card_id];
-
-							console.log(currentTracker);
-
+							{this.props.trackerCards.map((card, card_id) => {
 								return (<TouchableOpacity 
-									key={index} 
+									key={card_id} 
 									onPress={() => { 
 		                              this.props.navigation.push("Tracker", {
-		                                kounter: card,
-		                                id: index
+		                                kounter: card
 		                              });
 		                            }}
 									>
@@ -74,7 +105,7 @@ class ListScreen extends Component {
 
 										{this.state.fontLoaded ? (
 											<Text style={[styles.cardDrinkCount, {fontFamily: 'anodina-regular'}]}>
-												{currentTracker.currentCount}
+												{card.currentCount}
 											</Text>
 											) : null
 										}
@@ -84,11 +115,26 @@ class ListScreen extends Component {
 							})}
 						</View>
 					</ScrollView>
-					<View style={styles.newCardButton}>
-						<TouchableOpacity style={styles.RoundButton}>
+					<LinearGradient colors={['rgba(0,0,0,0.9)', 'transparent']} start={[0, 1.0]} end={[0.0, 0.3]} style={styles.newCardButton}>
+						<TouchableOpacity 
+							style={styles.RoundButton} 
+							onPress={() => AlertIOS.prompt('Add New Kounter', 
+														   'Please name your Kounter.', 
+														   [
+															   {
+															   	text: 'Cancel',
+															   	style: 'cancel',
+															   },
+															   {
+															   	text: 'OK',
+															   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor())
+															   },
+														   ],
+														   'plain-text',
+														)}> 
 							<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
 						</TouchableOpacity>
-					</View>
+					</LinearGradient>
 				</SafeAreaView>
 			</View>
 		);
@@ -103,17 +149,18 @@ const styles = StyleSheet.create({
 	newCardButton: {
 		justifyContent: 'center',
 		alignItems: 'center',
-		bottom: 0,
-		backgroundColor: 'rgba(0,0,0,0.3)',
+		bottom: '13%',
 	},
 	RoundButton: {
 		height: 48,
 		width: 48,
+		marginTop: '10%',
+		marginBottom: '10%'
 	},
 	buttonImage: {
 		position: 'absolute',
 		width: 48,
-		resizeMode: 'center'
+		resizeMode: 'center',
 	},
 	container: {
 		flex: 1,
@@ -157,60 +204,3 @@ const styles = StyleSheet.create({
 	}
 });
 
-
-const cards = [
-	{
-		id: 0,
-		title: 'Kratom',
-		'count': '1',
-		'color': '#EF5350'
-	},
-	{
-		id: 1,
-		title: 'Kava',
-		'count': '2',
-		'color': '#42A5F5'
-	},
-	{
-		id: 2,
-		title: 'Kratom',
-		'count': '3',
-		'color': '#78909C'
-	},
-	{
-		id: 3,
-		title: 'Kava',
-		'count': '4',
-		'color': '#43A047'
-	},
-	{
-		id: 4,
-		title: 'Kava',
-		'count': '5',
-		'color': '#7E57C2'
-	},
-	{
-		id: 5,
-		title: 'Water',
-		'count': '6',
-		'color': '#E65100'
-	},
-	{
-		id: 6,
-		title: 'Kratom',
-		'count': '7',
-		'color': '#0097A7'
-	},
-	{
-		id: 7,
-		title: 'Kratom',
-		'count': '8',
-		'color': '#5C6BC0'
-	},
-	{
-		id: 8,
-		title: 'Kratom',
-		'count': '9',
-		'color': '#5C6BC0'
-	},
-];

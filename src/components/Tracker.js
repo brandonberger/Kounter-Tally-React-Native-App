@@ -13,7 +13,6 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  console.log(this.props+'hello');
   return {
     addDrink(card_id) {
     	dispatch({
@@ -25,6 +24,13 @@ function mapDispatchToProps(dispatch) {
     	dispatch({
       		type: "SUBTRACT_DRINK",
       		card_id: card_id
+    	})
+    },
+    removeTracker(card_id, navigation) {
+    	navigation.push('List');
+    	dispatch({
+    		type: "REMOVE_TRACKER",
+    		card_id: card_id
     	})
     }
   }
@@ -46,30 +52,30 @@ class Tracker extends React.Component {
 		  'anodina-regular': require('../../assets/fonts/Anodina-Regular.otf'),
 		});
 
-
-		// console.log(this.props.trackerCards);
-
 	 	this.setState({ fontLoaded: true });
 	}
-
-	componentDidUpdate() {
-    	// console.log(this.props.action);
-		console.log(this.props.trackerCards);
-  	}
 
 	static navigationOptions = {
 	    header: null
   	};
 
+
 	render() {
+
+		const trackerCards = this.props.trackerCards;
+
 		const { navigation } = this.props;
-		const card_id = 'card_'+navigation.getParam("id");
-		const kounter = navigation.getParam("kounter");
+		const card_id = navigation.getParam("kounter").card_id;
 
-		// console.log(card_id);
-		const currentTracker = this.props.trackerCards[card_id];
+		var kounter;
 
-		console.log(currentTracker.currentCount + 'test');
+		trackerCards.map((item, index) => {
+			if (item.card_id == card_id) {
+				kounter = item;
+			}
+		})
+
+		if (kounter == undefined) { return null; this.props.navigation.push('List'); }
 
 		return (
 			<View style={[styles.container, {backgroundColor: kounter.color}]}>
@@ -79,8 +85,11 @@ class Tracker extends React.Component {
 					>
 						<Image source={require('../../assets/back_arrow.png')} style={styles.navigationItems} />
 					</TouchableOpacity>
-					<TouchableOpacity>
-						<Image source={require('../../assets/trash_button.png')} style={styles.navigationItems} />
+					<TouchableOpacity onPress={() => { this.props.removeTracker(card_id, this.props.navigation);}}>
+						<Image 
+							source={require('../../assets/trash_button.png')} 
+							style={styles.navigationItems}  
+						/>
 					</TouchableOpacity>
 				</View>
 
@@ -95,16 +104,16 @@ class Tracker extends React.Component {
 
 					{this.state.fontLoaded ? (
 						<Text style={[styles.currentCount, {fontFamily: 'anodina-bold'}]}>
-							{currentTracker.currentCount}
+							{kounter.currentCount}
 						</Text>
 						):null
 					}
 					
 					<View style={styles.buttonContainer}>
-			            <TouchableOpacity style={styles.RoundButton} onPress={() => this.props.addDrink(card_id)}>
+			            <TouchableOpacity style={styles.RoundButton} onPress={() => this.props.addDrink(kounter.card_id)}>
 							<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
 						</TouchableOpacity>
-						<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.subtractDrink(card_id)}>
+						<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.subtractDrink(kounter.card_id)}>
 							<Image style={[styles.buttonImage, {height: 48}]} source={require(minus_button_image)} />
 						</TouchableOpacity>
 			      	</View>
