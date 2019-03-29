@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Alert, StyleSheet, Text, View, TouchableOpacity, Platform, Image} from 'react-native';
+import {AlertIOS, Alert, StyleSheet, Text, View, TouchableOpacity, Platform, Image} from 'react-native';
 import { Font } from 'expo';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
@@ -30,6 +30,12 @@ function mapDispatchToProps(dispatch) {
     	navigation.push('List');
     	dispatch({
     		type: "REMOVE_TRACKER",
+    		card_id: card_id
+    	})
+    },
+    resetCount(card_id) {
+    	dispatch({
+    		type: "RESET_TRACKER",
     		card_id: card_id
     	})
     }
@@ -85,7 +91,22 @@ class Tracker extends React.Component {
 					>
 						<Image source={require('../../assets/back_arrow.png')} style={styles.navigationItems} />
 					</TouchableOpacity>
-					<TouchableOpacity onPress={() => { this.props.removeTracker(card_id, this.props.navigation);}}>
+					<TouchableOpacity 
+						onPress={() => 
+							AlertIOS.alert('Delete Kounter', 
+										   'Are you sure you want to delete this Kounter?', 
+								    		[
+								   		   		{
+										   			text: 'Cancel',
+												   	style: 'cancel',
+											   	},
+											   	{
+												   	text: 'Delete',
+												   	onPress: (name) => this.props.removeTracker(card_id, this.props.navigation),
+												   	style: 'destructive'
+											   	},
+										   	],
+										)}>
 						<Image 
 							source={require('../../assets/trash_button.png')} 
 							style={styles.navigationItems}  
@@ -108,20 +129,21 @@ class Tracker extends React.Component {
 						</Text>
 						):null
 					}
-					
+				</View>
+				<View>
 					<View style={styles.buttonContainer}>
-			            <TouchableOpacity style={styles.RoundButton} onPress={() => this.props.addDrink(kounter.card_id)}>
-							<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
-						</TouchableOpacity>
 						<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.subtractDrink(kounter.card_id)}>
 							<Image style={[styles.buttonImage, {height: 48}]} source={require(minus_button_image)} />
+						</TouchableOpacity>
+						<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.addDrink(kounter.card_id)}>
+							<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
 						</TouchableOpacity>
 			      	</View>
 		      	</View>
 
 
 		      	<View style={styles.resetButton}>
-		      		<TouchableOpacity onPress={this.resetCount}>
+		      		<TouchableOpacity onPress={() => this.props.resetCount(kounter.card_id)}>
 		      			<Text style={styles.resetButtonText}>
 		      				Reset
 		      			</Text>

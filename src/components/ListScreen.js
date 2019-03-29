@@ -50,14 +50,14 @@ var plus_button_image = '../../assets/plus_button.png';
 
 class ListScreen extends Component {
 
+	constructor(props) {
+	  super(props);
+	  this.state = { isLoading: true }
+	}
+
 	state = {
     	fontLoaded: false,
-    	// modalVisible: false
   	};
-
-  	// setModalVisible(visible) {
-  	// 	this.setState({modalVisible: visible});
-  	// }
 
 	async componentDidMount() {
 		await Font.loadAsync({
@@ -71,8 +71,6 @@ class ListScreen extends Component {
 	static navigationOptions = {
 	    header: null
   	};
-
-
  
 
 	render() {
@@ -127,7 +125,7 @@ class ListScreen extends Component {
 															   },
 															   {
 															   	text: 'OK',
-															   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor())
+															   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor()),
 															   },
 														   ],
 														   'plain-text',
@@ -149,12 +147,12 @@ const styles = StyleSheet.create({
 	newCardButton: {
 		justifyContent: 'center',
 		alignItems: 'center',
-		bottom: '13%',
+		bottom: '10%',
 	},
 	RoundButton: {
 		height: 48,
 		width: 48,
-		marginTop: '10%',
+		marginTop: '5%',
 		marginBottom: '10%'
 	},
 	buttonImage: {

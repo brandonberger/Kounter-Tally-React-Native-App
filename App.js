@@ -3,8 +3,8 @@ import { createStore } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { Provider } from 'react-redux';
-import Navigation from './src/components/Navigation';
-import AppNavigator from './src/AppNavigator';
+// import AppNavigator from './src/AppNavigator';
+import InitialNavigator from './src/InitialNavigator';
 import {AsyncStorage} from 'react-native';
 import { PersistGate } from 'redux-persist/integration/react'
 
@@ -29,7 +29,6 @@ const reducer = (state = initialState, action) => {
 
         })
       };
-
     case "SUBTRACT_DRINK":
       return {
         ...state,
@@ -38,7 +37,23 @@ const reducer = (state = initialState, action) => {
             return item
           }
 
+          if (item.currentCount === 0) {
+            return item;
+          }
+
           return { ...item, currentCount: item.currentCount - 1 }
+
+        })
+      };
+    case "RESET_TRACKER":
+      return {
+        ...state,
+        trackerCards: state.trackerCards.map((item, index) => {
+          if (item.card_id !== action.card_id) { 
+            return item
+          }
+
+          return { ...item, currentCount: 0 }
 
         })
       };
@@ -80,7 +95,7 @@ const persistor = persistStore(store);
 const App = () => (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-          <AppNavigator />
+          <InitialNavigator />
       </PersistGate>
     </Provider>
 );
