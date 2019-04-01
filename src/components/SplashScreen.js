@@ -2,7 +2,6 @@ import React from 'react';
 import {Text, View} from 'react-native';
 import { Font } from 'expo';
 
-
 class SplashScreen extends React.Component {
 
 	state = {
@@ -42,7 +41,7 @@ class SplashScreen extends React.Component {
 		const viewStyles = {
 			backgroundColor: '#0d0f19',
 			flex: 1,
-			justifyContent: 'top',
+			// justifyContent: 'flex-start',
 		};
 		const kStyles = {
 			color: 'white',

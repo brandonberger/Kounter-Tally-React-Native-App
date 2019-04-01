@@ -3,8 +3,8 @@ import {AlertIOS, Alert, StyleSheet, Text, View, TouchableOpacity, Platform, Ima
 import { Font } from 'expo';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
-import Navigation from './Navigation';
-
+import DialogInput from 'react-native-dialog-input';
+import { MaterialDialog } from 'react-native-material-dialog';
 
 function mapStateToProps(state) {
   return { action: state.action,
@@ -50,6 +50,7 @@ class Tracker extends React.Component {
 	
 	state = {
     	fontLoaded: false,
+    	dialogOpen: false,
   	};
 
 	async componentDidMount() {
@@ -64,6 +65,10 @@ class Tracker extends React.Component {
 	static navigationOptions = {
 	    header: null
   	};
+
+  	openDialog(status) {
+		this.setState({ dialogOpen: status})
+	}
 
 
 	render() {
@@ -91,10 +96,11 @@ class Tracker extends React.Component {
 					>
 						<Image source={require('../../assets/back_arrow.png')} style={styles.navigationItems} />
 					</TouchableOpacity>
-					<TouchableOpacity 
-						onPress={() => 
-							AlertIOS.alert('Delete Kounter', 
-										   'Are you sure you want to delete this Kounter?', 
+					<TouchableOpacity onPress={() => {
+										if(Platform.OS == 'ios') { 
+											AlertIOS.alert(
+										    'Delete Kounter', 
+										    'Are you sure you want to delete this Kounter?', 
 								    		[
 								   		   		{
 										   			text: 'Cancel',
@@ -106,12 +112,26 @@ class Tracker extends React.Component {
 												   	style: 'destructive'
 											   	},
 										   	],
-										)}>
+											) 
+										} else { this.openDialog(true) } } }>
 						<Image 
 							source={require('../../assets/trash_button.png')} 
 							style={styles.navigationItems}  
 						/>
 					</TouchableOpacity>
+					
+					<MaterialDialog
+					  title="Delete Kounter"
+					  visible={this.state.dialogOpen}
+					  onOk={() => {this.props.removeTracker(card_id, this.props.navigation), this.openDialog(false)} }
+					  onCancel={() => this.openDialog(false)}
+					  okLabel="Delete"
+					>
+					  <Text style={styles.dialogText}>
+					    Are you sure you want to delete this Kounter?
+					  </Text>
+					</MaterialDialog>
+
 				</View>
 
 

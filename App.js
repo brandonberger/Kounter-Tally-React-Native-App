@@ -3,7 +3,6 @@ import { createStore } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { Provider } from 'react-redux';
-// import AppNavigator from './src/AppNavigator';
 import InitialNavigator from './src/InitialNavigator';
 import {AsyncStorage} from 'react-native';
 import { PersistGate } from 'redux-persist/integration/react'

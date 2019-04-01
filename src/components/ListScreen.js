@@ -1,8 +1,10 @@
-import React, { Component, Alert } from 'react';
+import React, { Component } from 'react';
 import { Font, LinearGradient } from 'expo';
-import { AlertIOS, ScrollView, SafeAreaView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
+import { Alert, Platform, AlertIOS, ScrollView, SafeAreaView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
 import { persistStore, persistReducer } from 'redux-persist';
 import { connect } from 'react-redux';
+import DialogInput from 'react-native-dialog-input';
+
 
 function mapStateToProps(state) {
 	console.log(state.trackerCards);
@@ -52,11 +54,12 @@ class ListScreen extends Component {
 
 	constructor(props) {
 	  super(props);
-	  this.state = { isLoading: true }
+	  this.state = { isLoading: true, dialogOpen: false }
 	}
 
 	state = {
     	fontLoaded: false,
+    	dialogOpen: false,
   	};
 
 	async componentDidMount() {
@@ -68,10 +71,13 @@ class ListScreen extends Component {
 		await this.setState({ fontLoaded: true });
 	}
 
+	openDialog(status) {
+		this.setState({ dialogOpen: status})
+	}
+
 	static navigationOptions = {
 	    header: null
   	};
- 
 
 	render() {
 		const newCardName = 'card_'+this.props.currentTrackerCount;
@@ -116,24 +122,37 @@ class ListScreen extends Component {
 					<LinearGradient colors={['rgba(0,0,0,0.9)', 'transparent']} start={[0, 1.0]} end={[0.0, 0.3]} style={styles.newCardButton}>
 						<TouchableOpacity 
 							style={styles.RoundButton} 
-							onPress={() => AlertIOS.prompt('Add New Kounter', 
-														   'Please name your Kounter.', 
-														   [
-															   {
-															   	text: 'Cancel',
-															   	style: 'cancel',
-															   },
-															   {
-															   	text: 'OK',
-															   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor()),
-															   },
-														   ],
-														   'plain-text',
-														)}> 
+							onPress={() => {if (Platform.OS == 'ios') {
+												AlertIOS.prompt('Add New Kounter', 
+												   'Please name your Kounter.', 
+												   [
+													   {
+													   	text: 'Cancel',
+													   	style: 'cancel',
+													   },
+													   {
+													   	text: 'OK',
+													   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor()),
+													   },
+												   ],
+												   'plain-text',
+												)
+											} else { this.openDialog(true) }
+										}
+									}>
 							<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
 						</TouchableOpacity>
 					</LinearGradient>
+
+					
 				</SafeAreaView>
+				<DialogInput style={styles.dialog} isDialogVisible={this.state.dialogOpen}
+					             title={"Add New Kounter"}
+					             message={"Please name your Kounter"}
+					             hintInput ={"Enter Name"}
+					             submitInput={ (inputText) => {this.props.addNewTracker(this.props.numberOfCards, inputText, getRandomColor()), this.openDialog(false)} }
+					             closeDialog={ () => {this.openDialog(false)}}>
+					</DialogInput>
 			</View>
 		);
 	}
@@ -144,6 +163,9 @@ export default connect(mapStateToProps, mapDispatchToProps)(ListScreen);
 
 
 const styles = StyleSheet.create({
+	dialog: {
+		color: "#04bf72"
+	},
 	newCardButton: {
 		justifyContent: 'center',
 		alignItems: 'center',
