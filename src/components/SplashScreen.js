@@ -17,7 +17,7 @@ class SplashScreen extends React.Component {
 	    return new Promise((resolve) =>
 	      setTimeout(
 	        () => { resolve('result') },
-	        2000
+	        200
 	      )
 	    )
 	  }

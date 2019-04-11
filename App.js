@@ -9,6 +9,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 import { StyleSheet, Text, View } from 'react-native';
 const initialState = {
+  // TODO: Add a property for total cards ever
   trackerCards: [],
   action: "",
 }
@@ -53,6 +54,22 @@ const reducer = (state = initialState, action) => {
           }
 
           return { ...item, currentCount: 0 }
+
+        })
+      };
+    case "FAVORITE":
+      return {
+        ...state,
+        trackerCards: state.trackerCards.map((item, index) => {
+          if (item.card_id !== action.card_id) { 
+            return item
+          }
+
+          if (item.favorite_status == false || item.favorite_status == null) {
+            return { ...item, favorite_status: true }
+          } else {
+            return { ...item, favorite_status: false }
+          }
 
         })
       };

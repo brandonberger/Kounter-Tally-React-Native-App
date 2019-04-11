@@ -7,6 +7,7 @@ import DialogInput from 'react-native-dialog-input';
 import { MaterialDialog } from 'react-native-material-dialog';
 
 function mapStateToProps(state) {
+	console.log(state.trackerCards);
   return { action: state.action,
   		   trackerCards: state.trackerCards,
   		 }
@@ -36,6 +37,12 @@ function mapDispatchToProps(dispatch) {
     resetCount(card_id) {
     	dispatch({
     		type: "RESET_TRACKER",
+    		card_id: card_id
+    	})
+    },
+    favorite(card_id) {
+    	dispatch({
+    		type: "FAVORITE",
     		card_id: card_id
     	})
     }
@@ -142,6 +149,12 @@ class Tracker extends React.Component {
 						</Text>
 						) : null
 					}
+					{this.state.fontLoaded ? (
+						<Text style={[styles.itemDescription, {fontFamily: 'anodina-bold'} ]}>
+							Description
+						</Text>
+						) : null
+					}
 
 					{this.state.fontLoaded ? (
 						<Text style={[styles.currentCount, {fontFamily: 'anodina-bold'}]}>
@@ -162,10 +175,22 @@ class Tracker extends React.Component {
 		      	</View>
 
 
-		      	<View style={styles.resetButton}>
-		      		<TouchableOpacity onPress={() => this.props.resetCount(kounter.card_id)}>
+		      	<View style={styles.trackerFooter}>
+		      		<TouchableOpacity style={styles.resetButton} onPress={() => this.props.resetCount(kounter.card_id)}>
+		      			<Image style={styles.resetIcon} source={require('../../assets/reset_button.png')} />
 		      			<Text style={styles.resetButtonText}>
 		      				Reset
+		      			</Text>
+		      		</TouchableOpacity>
+		      		<TouchableOpacity style={styles.favoriteButton} onPress={() => this.props.favorite(kounter.card_id)}>
+		      			{kounter.favorite_status ? (
+		      				<Image style={styles.favoriteIcon} source={require('../../assets/favorites.png')} />
+		      				) : (
+		      				<Image style={styles.favoriteIcon} source={require('../../assets/favorite_false.png')} />
+		      				)
+		      			}
+		      			<Text style={styles.favoriteButtonText}>
+		      				Favorite
 		      			</Text>
 		      		</TouchableOpacity>
 		      	</View>
@@ -189,7 +214,7 @@ const styles = StyleSheet.create({
 		resizeMode: 'center'
 	},
 	navigationContainer: {
-		marginTop: '15%',
+		marginTop: '7.5%',
 		width: '100%',
 		color: '#fff',
 		position: 'absolute',
@@ -216,13 +241,20 @@ const styles = StyleSheet.create({
 	},
 	itemName: {
 		color: '#fff',
-		fontSize: 24,
+		fontSize: 36,
 		fontWeight: 'bold',
 		marginTop: 10,
 		textAlign: 'center',
 	},
+	itemDescription: {
+		color: '#fff',
+		fontSize: 16,
+		marginTop: 10,
+		textTransform: 'uppercase',
+		textAlign: 'center',
+	},
 	currentCount: {
-		fontSize: 250,
+		fontSize: 140,
 		textAlign: 'center',
 		color: 'white',
 		marginTop: '10%'
@@ -234,16 +266,39 @@ const styles = StyleSheet.create({
 	    height: 48,
 	    width: 200
   	},
-  	resetButton: {
+  	trackerFooter: {
   		marginTop: 'auto',
-  		marginBottom: 50,
-  		textAlign: 'center'
+  		marginBottom: 100,
+  		flexDirection: 'row',
+  		width: '60%',
+  		justifyContent: 'space-between'
+  	},
+  	resetButton: {
+  		flexDirection: 'row'
+  	},
+  	resetIcon: {
+  		width: 23.5,
+  		height: 20
   	},
   	resetButtonText: {
   		color: '#fff',
   		textAlign: 'center',
-  		fontSize: 18
-  	}
+  		fontSize: 18,
+  		paddingLeft: 10
+  	},
+  	favoriteButton: {
+  		flexDirection: 'row'
+  	},
+  	favoriteButtonText: {
+  		color: '#fff',
+  		textAlign: 'center',
+  		fontSize: 18,
+  		paddingLeft: 10
+  	},
+  	favoriteIcon: {
+  		width: 20.9,
+  		height: 20
+  	},
 });
 
 

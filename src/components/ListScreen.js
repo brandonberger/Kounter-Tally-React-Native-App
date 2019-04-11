@@ -7,7 +7,6 @@ import DialogInput from 'react-native-dialog-input';
 
 
 function mapStateToProps(state) {
-	console.log(state.trackerCards);
 	return { 
 		   	 trackerCards: state.trackerCards,
 		   	 numberOfCards: state.trackerCards.length
@@ -27,7 +26,19 @@ function mapDispatchToProps(dispatch) {
       				currentCount: 0
       				}
 	    	})
-	    }
+	    },
+	    addDrink(card_id) {
+	    	dispatch({
+	      		type: "ADD_DRINK",
+	      		card_id: card_id
+	    	})
+	    },
+	    subtractDrink(card_id) {
+	    	dispatch({
+	      		type: "SUBTRACT_DRINK",
+	      		card_id: card_id
+	    	})
+	    },
 	}
 }
 
@@ -85,6 +96,8 @@ class ListScreen extends Component {
 
 	render() {
 		const newCardName = 'card_'+this.props.currentTrackerCount;
+
+
 		return (
 			<View style={styles.container}>
 				<SafeAreaView>
@@ -98,6 +111,8 @@ class ListScreen extends Component {
 								<Image source={require('../../assets/settings.png')} />
 							</TouchableOpacity>
 						</View>
+
+
 						<View style={styles.cardContainer}>
 							{this.state.fontLoaded ? (
 								<Text style={[styles.favoritesText, {fontFamily: 'avenir-heavy'}]}>
@@ -105,16 +120,18 @@ class ListScreen extends Component {
 								</Text>
 								) : null
 							}
-							{this.props.trackerCards.map((card, card_id) => {
-								return (<TouchableOpacity 
-									key={card_id} 
-									onPress={() => { 
-		                              this.props.navigation.push("Tracker", {
-		                                kounter: card
-		                              });
-		                            }}
-									>
-									<View style={[styles.card, {backgroundColor: card.color}]}>
+
+							{this.props.trackerCards.filter(card=>card.favorite_status).map((card, card_id) => {
+								return (
+								<View key={card_id} style={[styles.card, {backgroundColor: card.color}]}>
+									<View style={styles.cardTalk}>
+										<TouchableOpacity 
+											onPress={() => { 
+				                              this.props.navigation.push("Tracker", {
+				                                kounter: card
+				                              });
+				                            }}
+											>
 										{this.state.fontLoaded ? (
 											<Text style={[styles.cardTitle, {fontFamily: 'avenir-medium'}]}>
 												{card.title}
@@ -128,15 +145,74 @@ class ListScreen extends Component {
 											</Text>
 											) : null
 										}
-
+										</TouchableOpacity>
+									</View>
+									<View style={styles.cardControls}>
+										<TouchableOpacity onPress={() => this.props.subtractDrink(card.card_id)}>
+											<Image style={styles.cardMinusButton} source={require('../../assets/minus_button.png')} />
+										</TouchableOpacity>
 										{this.state.fontLoaded ? (
-											<Text style={[styles.cardDrinkCount, {fontFamily: 'anodina-regular'}]}>
+											<Text style={[styles.cardDrinkCount, {fontFamily: 'avenir-medium'}]}>
 												{card.currentCount}
 											</Text>
 											) : null
 										}
+										<TouchableOpacity onPress={() => this.props.addDrink(card.card_id)}>
+											<Image style={styles.cardPlusButton} source={require('../../assets/plus_button.png')} />
+										</TouchableOpacity>
 									</View>
-								</TouchableOpacity>
+								</View>
+								)
+							})}
+
+							{this.state.fontLoaded ? (
+								<Text style={[styles.allKountersText, {fontFamily: 'avenir-heavy'}]}>
+									ALL KOUNTERS
+								</Text>
+								) : null
+							}
+
+							{this.props.trackerCards.filter(card=>!card.favorite_status).map((card, card_id) => {
+								return (
+								<View key={card_id} style={[styles.card, {backgroundColor: card.color}]}>
+									<View style={styles.cardTalk}>
+										<TouchableOpacity 
+											onPress={() => { 
+				                              this.props.navigation.push("Tracker", {
+				                                kounter: card
+				                              });
+				                            }}
+											>
+										{this.state.fontLoaded ? (
+											<Text style={[styles.cardTitle, {fontFamily: 'avenir-medium'}]}>
+												{card.title}
+											</Text>
+											) : null
+										}
+
+										{this.state.fontLoaded ? (
+											<Text style={[styles.cardDescription, {fontFamily: 'avenir-medium'}]}>
+												Description
+											</Text>
+											) : null
+										}
+										</TouchableOpacity>
+									</View>
+									<View style={styles.cardControls}>
+										<TouchableOpacity onPress={() => this.props.subtractDrink(card.card_id)}>
+											<Image style={styles.cardMinusButton} source={require('../../assets/minus_button.png')} />
+										</TouchableOpacity>
+										{this.state.fontLoaded ? (
+											<Text style={[styles.cardDrinkCount, {fontFamily: 'avenir-medium'}]}>
+												{card.currentCount}
+											</Text>
+											) : null
+										}
+										<TouchableOpacity onPress={() => this.props.addDrink(card.card_id)}>
+											<Image style={styles.cardPlusButton} source={require('../../assets/plus_button.png')} />
+										</TouchableOpacity>
+									</View>
+								</View>
 								)
 							})}
 						</View>
@@ -228,13 +304,26 @@ const styles = StyleSheet.create({
 		left: 10,
 		textTransform: 'uppercase'
 	},
+	allKountersText: {
+		color: 'white',
+		fontSize: 18,
+		left: 10,
+		textTransform: 'uppercase',
+		paddingTop: 20,
+	},
 	card: {
 		height: 72,
 		width: '94.66%',
 		backgroundColor: '#EF5350',
 		borderRadius: 8,
 		margin: 7.5,
-		position: 'relative'
+		position: 'relative',
+		flex: 1,
+		flexDirection: 'row'
+	},
+	cardTalk: {
+		justifyContent: 'flex-start',
+		width: '55%'
 	},
 	cardTitle: {
 		paddingTop: 13,
@@ -251,8 +340,25 @@ const styles = StyleSheet.create({
 		paddingTop: 1,
 		textTransform: 'uppercase'
 	},
+	cardControls: {
+		flex: 1,
+		justifyContent: 'center',
+		width: '45%',
+		alignItems: 'center',
+		flexDirection: 'row'
+	},
+	cardMinusButton: {
+		height: 4,
+		width: 14.4,
+		marginRight: 28
+	},
+	cardPlusButton: {
+		height: 14.4,
+		width: 14.4,
+		marginLeft: 28
+	},
 	cardDrinkCount: {
-		fontSize: 64,
+		fontSize: 36,
 		color: 'white',
 		textAlign: 'center'
 	},
