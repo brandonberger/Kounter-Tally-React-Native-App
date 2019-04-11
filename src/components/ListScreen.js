@@ -33,15 +33,14 @@ function mapDispatchToProps(dispatch) {
 
 function getRandomColor() {
 	colors = [
-		'#EF5350',
-		'#42A5F5',
-		'#78909C',
-		'#43A047',
-		'#7E57C2',
-		'#E65100',
-		'#0097A7',
-		'#5C6BC0',
-		'#5C6BC0',
+		'#173DD2',
+		'#DC2727',
+		'#009F36',
+		'#4D0BB9',
+		'#1783D2',
+		'#D21771',
+		'#009F82',
+		'#6F1DF3',
 	];
 
 	return colors[Math.floor(Math.random()*colors.length)];
@@ -65,7 +64,12 @@ class ListScreen extends Component {
 	async componentDidMount() {
 		await Font.loadAsync({
 		  'anodina-bold': require('../../assets/fonts/Anodina-Bold.otf'),
+		  'anodina-xbold': require('../../assets/fonts/Anodina-ExtraBold.otf'),
 		  'anodina-regular': require('../../assets/fonts/Anodina-Regular.otf'),
+		  'avenir-book': require('../../assets/fonts/Avenir-Book.ttf'),
+		  'avenir-light': require('../../assets/fonts/Avenir-Light.ttf'),
+		  'avenir-medium': require('../../assets/fonts/Avenir-Medium.ttf'),
+		  'avenir-heavy': require('../../assets/fonts/Avenir-Heavy.ttf'),
 		});
 
 		await this.setState({ fontLoaded: true });
@@ -85,11 +89,22 @@ class ListScreen extends Component {
 			<View style={styles.container}>
 				<SafeAreaView>
 	            	<ScrollView style={{ height: "100%" }}>
-						{this.state.fontLoaded ? (
-							<Text style={[styles.title, {fontFamily: 'anodina-regular'}]}>KOUNTER</Text>
-							) : null
-						}
+						<View style={styles.header}>
+							{this.state.fontLoaded ? (
+								<Text style={[styles.title, {fontFamily: 'anodina-xbold'}]}>KOUNTER</Text>
+								) : null
+							}
+							<TouchableOpacity style={styles.settingsButton}>
+								<Image source={require('../../assets/settings.png')} />
+							</TouchableOpacity>
+						</View>
 						<View style={styles.cardContainer}>
+							{this.state.fontLoaded ? (
+								<Text style={[styles.favoritesText, {fontFamily: 'avenir-heavy'}]}>
+									Favorites <Image source={require('../../assets/favorites.png')} />
+								</Text>
+								) : null
+							}
 							{this.props.trackerCards.map((card, card_id) => {
 								return (<TouchableOpacity 
 									key={card_id} 
@@ -101,8 +116,15 @@ class ListScreen extends Component {
 									>
 									<View style={[styles.card, {backgroundColor: card.color}]}>
 										{this.state.fontLoaded ? (
-											<Text style={[styles.cardTitle, {fontFamily: 'anodina-bold'}]}>
+											<Text style={[styles.cardTitle, {fontFamily: 'avenir-medium'}]}>
 												{card.title}
+											</Text>
+											) : null
+										}
+
+										{this.state.fontLoaded ? (
+											<Text style={[styles.cardDescription, {fontFamily: 'avenir-medium'}]}>
+												Description
 											</Text>
 											) : null
 										}
@@ -119,9 +141,9 @@ class ListScreen extends Component {
 							})}
 						</View>
 					</ScrollView>
-					<LinearGradient colors={['rgba(0,0,0,0.9)', 'transparent']} start={[0, 1.0]} end={[0.0, 0.3]} style={styles.newCardButton}>
+					<LinearGradient colors={['rgba(0,0,0,0.9)', 'transparent']} start={[0, 1.0]} end={[0.0, 0.3]} style={styles.newCardButtonContainer}>
 						<TouchableOpacity 
-							style={styles.RoundButton} 
+							style={styles.newCardButton} 
 							onPress={() => {if (Platform.OS == 'ios') {
 												AlertIOS.prompt('Add New Kounter', 
 												   'Please name your Kounter.', 
@@ -140,11 +162,11 @@ class ListScreen extends Component {
 											} else { this.openDialog(true) }
 										}
 									}>
-							<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
+							<Image style={[styles.newCardButtonImage, {height: 48}]} source={require(plus_button_image)} />
 						</TouchableOpacity>
 					</LinearGradient>
 
-					
+					 
 				</SafeAreaView>
 				<DialogInput style={styles.dialog} isDialogVisible={this.state.dialogOpen}
 					             title={"Add New Kounter"}
@@ -166,61 +188,89 @@ const styles = StyleSheet.create({
 	dialog: {
 		color: "#04bf72"
 	},
-	newCardButton: {
-		justifyContent: 'center',
-		alignItems: 'center',
-		bottom: '10%',
-	},
-	RoundButton: {
-		height: 48,
-		width: 48,
-		marginTop: '5%',
-		marginBottom: '10%'
-	},
-	buttonImage: {
-		position: 'absolute',
-		width: 48,
-		resizeMode: 'center',
-	},
 	container: {
 		flex: 1,
 		backgroundColor: '#0d0f19',
 		width:'100%',
 		height:'100%'
 	},
+	header: {
+		borderStyle: 'solid',
+		borderBottomWidth: 1,
+		borderColor: '#292929',
+	},
 	title: {
 		color: 'white',
 		textAlign: 'center',
-		fontSize: 20,
-		marginTop: 30,
-		marginBottom: 30,
-		letterSpacing: 3
+		fontSize: 18,
+		marginTop: 7,
+		marginBottom: 19,
+		letterSpacing: 5,
+	},
+	settingsButton: {
+		position: 'absolute',
+		right: 20,
+		top: 10
 	},
 	cardContainer: {
 		padding: (0, 5),
 		flexWrap: 'wrap',
-		flexDirection: 'row',
-		justifyContent: 'center'
+		flexDirection: 'column',
+		justifyContent: 'center',
+		marginLeft: '1%',
+		marginRight: '1%',
+		marginTop: 18,
+		marginBottom: 10
+	},
+	favoritesText: {
+		color: 'white',
+		fontSize: 18,
+		left: 10,
+		textTransform: 'uppercase'
 	},
 	card: {
-		height: 160,
-		width: 165,
+		height: 72,
+		width: '94.66%',
 		backgroundColor: '#EF5350',
-		borderRadius: 20,
-		margin: 7.5
+		borderRadius: 8,
+		margin: 7.5,
+		position: 'relative'
 	},
 	cardTitle: {
-		paddingTop: 30,
+		paddingTop: 13,
+		paddingLeft: 20,
 		color: 'white',
 		fontSize: 18,
 		fontWeight: '800',
-		textAlign: 'center',
-		letterSpacing: -0.5
+		textAlign: 'left',
+	},
+	cardDescription: {
+		fontSize: 12,
+		color: 'white',
+		paddingLeft: 20,
+		paddingTop: 1,
+		textTransform: 'uppercase'
 	},
 	cardDrinkCount: {
 		fontSize: 64,
 		color: 'white',
 		textAlign: 'center'
-	}
+	},
+	newCardButtonContainer: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		bottom: '10%',
+	},
+	newCardButton: {
+		height: 48,
+		width: 48,
+		marginTop: '5%',
+		marginBottom: '10%'
+	},
+	newCardButtonImage: {
+		position: 'absolute',
+		width: 48,
+		resizeMode: 'center',
+	},
 });
 
