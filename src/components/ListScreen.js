@@ -9,7 +9,8 @@ import DialogInput from 'react-native-dialog-input';
 function mapStateToProps(state) {
 	return { 
 		   	 trackerCards: state.trackerCards,
-		   	 numberOfCards: state.trackerCards.length
+		   	 numberOfCards: state.trackerCards.length,
+		   	 totalCardsEver: state.totalCardHistory
  	  	   }	
 }
 

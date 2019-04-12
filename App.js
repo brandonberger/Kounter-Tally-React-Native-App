@@ -9,10 +9,12 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 import { StyleSheet, Text, View } from 'react-native';
 const initialState = {
-  // TODO: Add a property for total cards ever
   trackerCards: [],
   action: "",
+  totalCardHistory: 0
 }
+
+
 
 const reducer = (state = initialState, action) => {
 
@@ -26,7 +28,6 @@ const reducer = (state = initialState, action) => {
           }
 
           return { ...item, currentCount: item.currentCount + 1 }
-
         })
       };
     case "SUBTRACT_DRINK":
@@ -74,7 +75,8 @@ const reducer = (state = initialState, action) => {
         })
       };
     case "ADD_NEW_TRACKER":
-      return { trackerCards: [...state.trackerCards, action.new_tracker]}
+      return {...state, trackerCards: [...state.trackerCards, action.new_tracker], 
+             totalCardHistory: state.totalCardHistory + 1 }
     case "REMOVE_TRACKER":
       state.trackerCards.map((item, index) => {
         if (item.card_id == action.card_id) {
@@ -83,6 +85,7 @@ const reducer = (state = initialState, action) => {
       });
       
       return { 
+        ...state,
         ...state.trackerCards, 
         trackerCards: [
           ...state.trackerCards.slice(0, cardIndex), 
