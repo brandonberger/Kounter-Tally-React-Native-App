@@ -64,6 +64,8 @@ class Tracker extends React.Component {
 		await Font.loadAsync({
 		  'anodina-bold': require('../../assets/fonts/Anodina-Bold.otf'),
 		  'anodina-regular': require('../../assets/fonts/Anodina-Regular.otf'),
+		  'avenir-medium': require('../../assets/fonts/Avenir-Medium.ttf'),
+		  'avenir-heavy': require('../../assets/fonts/Avenir-Heavy.ttf'),
 		});
 
 	 	this.setState({ fontLoaded: true });
@@ -144,20 +146,20 @@ class Tracker extends React.Component {
 
 				<View style={styles.trackerContainer}>
 					{this.state.fontLoaded ? (
-						<Text style={[styles.itemName, {fontFamily: 'anodina-bold'} ]}>
+						<Text style={[styles.itemName, {fontFamily: 'avenir-medium'} ]}>
 							{kounter.title}
 						</Text>
 						) : null
 					}
 					{this.state.fontLoaded ? (
-						<Text style={[styles.itemDescription, {fontFamily: 'anodina-bold'} ]}>
+						<Text style={[styles.itemDescription, {fontFamily: 'avenir-medium'} ]}>
 							Description
 						</Text>
 						) : null
 					}
 
 					{this.state.fontLoaded ? (
-						<Text style={[styles.currentCount, {fontFamily: 'anodina-bold'}]}>
+						<Text style={[styles.currentCount, {fontFamily: 'avenir-medium'}]}>
 							{kounter.currentCount}
 						</Text>
 						):null
@@ -178,9 +180,10 @@ class Tracker extends React.Component {
 		      	<View style={styles.trackerFooter}>
 		      		<TouchableOpacity style={styles.resetButton} onPress={() => this.props.resetCount(kounter.card_id)}>
 		      			<Image style={styles.resetIcon} source={require('../../assets/reset_button.png')} />
-		      			<Text style={styles.resetButtonText}>
-		      				Reset
-		      			</Text>
+							{this.state.fontLoaded ? (
+		      					<Text style={[styles.resetButtonText, {fontFamily: 'avenir-medium'}]}> Reset </Text>
+								) : null
+							}
 		      		</TouchableOpacity>
 		      		<TouchableOpacity style={styles.favoriteButton} onPress={() => this.props.favorite(kounter.card_id)}>
 		      			{kounter.favorite_status ? (
@@ -189,9 +192,10 @@ class Tracker extends React.Component {
 		      				<Image style={styles.favoriteIcon} source={require('../../assets/favorite_false.png')} />
 		      				)
 		      			}
-		      			<Text style={styles.favoriteButtonText}>
-		      				Favorite
-		      			</Text>
+		      			{this.state.fontLoaded ? (
+	      					<Text style={[styles.favoriteButtonText, {fontFamily: 'avenir-medium'}]}> Favorite </Text>
+							) : null
+						}
 		      		</TouchableOpacity>
 		      	</View>
 			</View>
@@ -237,7 +241,7 @@ const styles = StyleSheet.create({
     	backgroundColor: '#c74463',
 	},
 	trackerContainer: {
-    	marginTop: hp('20%'),
+    	marginTop: hp('18%'),
 	},
 	itemName: {
 		color: '#fff',
@@ -245,11 +249,13 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 		marginTop: 10,
 		textAlign: 'center',
+		height: 36
+
 	},
 	itemDescription: {
 		color: '#fff',
 		fontSize: 16,
-		marginTop: 10,
+		marginTop: 8,
 		textTransform: 'uppercase',
 		textAlign: 'center',
 	},

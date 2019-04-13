@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Font, LinearGradient } from 'expo';
-import { Alert, Platform, AlertIOS, ScrollView, SafeAreaView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
+import { StatusBar, Alert, Platform, AlertIOS, ScrollView, SafeAreaView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
 import { persistStore, persistReducer } from 'redux-persist';
 import { connect } from 'react-redux';
 import DialogInput from 'react-native-dialog-input';
@@ -43,17 +43,26 @@ function mapDispatchToProps(dispatch) {
 	}
 }
 
-function getRandomColor() {
+function getRandomColor(lastColor = null) {
+	console.log(lastColor);
 	colors = [
 		'#173DD2',
-		'#DC2727',
-		'#009F36',
-		'#4D0BB9',
 		'#1783D2',
+		'#0C568C',
+		'#DC2727',
 		'#D21771',
-		'#009F82',
+		'#F16618',
+		'#009F36',
+		'#009F83',
+		'#145951',
+		'#4D0BB9',
 		'#6F1DF3',
+		'#A92DBD',
 	];
+
+	if (lastColor) {
+		colors.splice(colors.indexOf(lastColor), 1);
+	}
 
 	return colors[Math.floor(Math.random()*colors.length)];
 }
@@ -98,12 +107,17 @@ class ListScreen extends Component {
 	render() {
 		const newCardName = 'card_'+this.props.currentTrackerCount;
 
+		if (Platform.OS == 'android') { 
+			headerMargin = StatusBar.currentHeight + 11 
+		} else { 
+			headerMargin = 11
+		}
 
 		return (
 			<View style={styles.container}>
 				<SafeAreaView>
 	            	<ScrollView style={{ height: "100%" }}>
-						<View style={styles.header}>
+						<View style={[styles.header, {marginTop: headerMargin}]}>
 							{this.state.fontLoaded ? (
 								<Text style={[styles.title, {fontFamily: 'anodina-xbold'}]}>KOUNTER</Text>
 								) : null
@@ -113,14 +127,15 @@ class ListScreen extends Component {
 							</TouchableOpacity>
 						</View>
 
-
 						<View style={styles.cardContainer}>
-							{this.state.fontLoaded ? (
-								<Text style={[styles.favoritesText, {fontFamily: 'avenir-heavy'}]}>
-									Favorites <Image source={require('../../assets/favorites.png')} />
-								</Text>
-								) : null
-							}
+							<View style={styles.favoritesTextContainer}>
+								{this.state.fontLoaded ? (
+									<Text style={[styles.favoritesText, {fontFamily: 'avenir-heavy'}]}>FAVORITES</Text>
+									) : null
+								}
+								<Image style={styles.favoritesIcon} source={require('../../assets/favorites.png')} />
+							</View>
+
 
 							{this.props.trackerCards.filter(card=>card.favorite_status).map((card, card_id) => {
 								return (
@@ -168,7 +183,7 @@ class ListScreen extends Component {
 
 							{this.state.fontLoaded ? (
 								<Text style={[styles.allKountersText, {fontFamily: 'avenir-heavy'}]}>
-									ALL KOUNTERS
+									KOUNTERS
 								</Text>
 								) : null
 							}
@@ -231,7 +246,7 @@ class ListScreen extends Component {
 													   },
 													   {
 													   	text: 'OK',
-													   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor()),
+													   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)),
 													   },
 												   ],
 												   'plain-text',
@@ -275,19 +290,19 @@ const styles = StyleSheet.create({
 		borderStyle: 'solid',
 		borderBottomWidth: 1,
 		borderColor: '#292929',
+		// backgroundColor: 'red'
 	},
 	title: {
 		color: 'white',
 		textAlign: 'center',
 		fontSize: 18,
-		marginTop: 7,
 		marginBottom: 19,
 		letterSpacing: 5,
+		height: 20
 	},
 	settingsButton: {
 		position: 'absolute',
 		right: 20,
-		top: 10
 	},
 	cardContainer: {
 		padding: (0, 5),
@@ -299,17 +314,26 @@ const styles = StyleSheet.create({
 		marginTop: 18,
 		marginBottom: 10
 	},
+	favoritesTextContainer: {
+		flexDirection: 'row',
+		padding: 0,
+		margin: 0,
+		left:0,
+		alignItems: 'center'
+	},
 	favoritesText: {
 		color: 'white',
 		fontSize: 18,
 		left: 10,
-		textTransform: 'uppercase'
+		paddingRight: 15,
+	},
+	favoritesIcon: {
+		marginTop: -1
 	},
 	allKountersText: {
 		color: 'white',
 		fontSize: 18,
 		left: 10,
-		textTransform: 'uppercase',
 		paddingTop: 20,
 	},
 	card: {
