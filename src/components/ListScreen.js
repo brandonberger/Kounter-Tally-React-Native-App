@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { Font, LinearGradient } from 'expo';
-import { StatusBar, Alert, Platform, AlertIOS, ScrollView, SafeAreaView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
+import { StatusBar, Alert, Platform, AlertIOS, ScrollView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
 import { persistStore, persistReducer } from 'redux-persist';
 import { connect } from 'react-redux';
 import DialogInput from 'react-native-dialog-input';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {SafeAreaView} from 'react-navigation';
 
 
 function mapStateToProps(state) {
@@ -113,10 +115,34 @@ class ListScreen extends Component {
 			headerMargin = 11
 		}
 
+		favoritesExist = false;
+		kountersExist = false;
+		this.props.trackerCards.filter(card=>card.favorite_status).map((card, card_id) => {
+			favoritesExist = true;
+		});
+
+		if (favoritesExist) {
+			showFavorites = 'flex';
+		} else {
+			showFavorites = 'none';
+		}
+
+		this.props.trackerCards.filter(card=>!card.favorite_status).map((card, card_id) => {
+			kountersExist = true;
+		});
+
+		if (kountersExist) {
+			showKounters = 'flex';
+			showAddButton = 'flex';
+		} else {
+			showKounters = 'none';
+			showAddButton = 'none';
+		}
+
 		return (
 			<View style={styles.container}>
-				<SafeAreaView>
-	            	<ScrollView style={{ height: "100%" }}>
+				<SafeAreaView forceInset={{ bottom: 'never'}}> 
+
 						<View style={[styles.header, {marginTop: headerMargin}]}>
 							{this.state.fontLoaded ? (
 								<Text style={[styles.title, {fontFamily: 'anodina-xbold'}]}>KOUNTER</Text>
@@ -126,9 +152,10 @@ class ListScreen extends Component {
 								<Image source={require('../../assets/settings.png')} />
 							</TouchableOpacity>
 						</View>
+	            	<ScrollView style={{ height: "100%"}}>
 
 						<View style={styles.cardContainer}>
-							<View style={styles.favoritesTextContainer}>
+							<View style={[styles.favoritesTextContainer, {display: showFavorites}]}>
 								{this.state.fontLoaded ? (
 									<Text style={[styles.favoritesText, {fontFamily: 'avenir-heavy'}]}>FAVORITES</Text>
 									) : null
@@ -164,7 +191,7 @@ class ListScreen extends Component {
 										</TouchableOpacity>
 									</View>
 									<View style={styles.cardControls}>
-										<TouchableOpacity onPress={() => this.props.subtractDrink(card.card_id)}>
+										<TouchableOpacity style={styles.cardButtonContainer} onPress={() => this.props.subtractDrink(card.card_id)}>
 											<Image style={styles.cardMinusButton} source={require('../../assets/minus_button.png')} />
 										</TouchableOpacity>
 										{this.state.fontLoaded ? (
@@ -173,7 +200,7 @@ class ListScreen extends Component {
 											</Text>
 											) : null
 										}
-										<TouchableOpacity onPress={() => this.props.addDrink(card.card_id)}>
+										<TouchableOpacity style={styles.cardButtonContainer} onPress={() => this.props.addDrink(card.card_id)}>
 											<Image style={styles.cardPlusButton} source={require('../../assets/plus_button.png')} />
 										</TouchableOpacity>
 									</View>
@@ -182,7 +209,7 @@ class ListScreen extends Component {
 							})}
 
 							{this.state.fontLoaded ? (
-								<Text style={[styles.allKountersText, {fontFamily: 'avenir-heavy'}]}>
+								<Text style={[styles.allKountersText, {fontFamily: 'avenir-heavy'}, {display: showFavorites}]}>
 									KOUNTERS
 								</Text>
 								) : null
@@ -215,7 +242,7 @@ class ListScreen extends Component {
 										</TouchableOpacity>
 									</View>
 									<View style={styles.cardControls}>
-										<TouchableOpacity onPress={() => this.props.subtractDrink(card.card_id)}>
+										<TouchableOpacity style={styles.cardButtonContainer} onPress={() => this.props.subtractDrink(card.card_id)}>
 											<Image style={styles.cardMinusButton} source={require('../../assets/minus_button.png')} />
 										</TouchableOpacity>
 										{this.state.fontLoaded ? (
@@ -224,7 +251,7 @@ class ListScreen extends Component {
 											</Text>
 											) : null
 										}
-										<TouchableOpacity onPress={() => this.props.addDrink(card.card_id)}>
+										<TouchableOpacity style={styles.cardButtonContainer} onPress={() => this.props.addDrink(card.card_id)}>
 											<Image style={styles.cardPlusButton} source={require('../../assets/plus_button.png')} />
 										</TouchableOpacity>
 									</View>
@@ -232,8 +259,45 @@ class ListScreen extends Component {
 								)
 							})}
 						</View>
+
+						{!kountersExist && !favoritesExist ? (
+	            			<View style={styles.emptyKountersContainer}>
+	            				<TouchableOpacity 
+									style={styles.emptyKountersAddButton} 
+									onPress={() => {if (Platform.OS == 'ios') {
+														AlertIOS.prompt('Add New Kounter', 
+														   'Please name your Kounter.', 
+														   [
+															   {
+															   	text: 'Cancel',
+															   	style: 'cancel',
+															   },
+															   {
+															   	text: 'OK',
+															   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)),
+															   },
+														   ],
+														   'plain-text',
+														)
+													} else { this.openDialog(true) }
+												}
+											}>
+									<Image style={[styles.emptyKountersAddButtonImage, {height: 48}]} source={require(plus_button_image)} />
+								</TouchableOpacity>
+
+	            				{this.state.fontLoaded ? (
+	            					<Text style={[styles.addKounterText, {fontFamily: 'avenir-heavy'}]}> ADD KOUNTER </Text>
+	            					) : null
+	            				}
+	            				<View style={styles.rocketShipContainer}>
+	            					<Image style={styles.rocketShip} source={require('../../assets/rocket_ship.png')} />
+	            				</View>
+	            			</View>
+	            			) : null
+	            		}
+
 					</ScrollView>
-					<LinearGradient colors={['rgba(0,0,0,0.9)', 'transparent']} start={[0, 1.0]} end={[0.0, 0.3]} style={styles.newCardButtonContainer}>
+					<LinearGradient colors={['rgba(0,0,0,0.9)', 'transparent']} start={[0, 1.0]} end={[0.0, 0.3]} style={[styles.newCardButtonContainer, {display: showAddButton}]}>
 						<TouchableOpacity 
 							style={styles.newCardButton} 
 							onPress={() => {if (Platform.OS == 'ios') {
@@ -246,7 +310,7 @@ class ListScreen extends Component {
 													   },
 													   {
 													   	text: 'OK',
-													   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)),
+													   	onPress: (name) => name ? this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)) : null,
 													   },
 												   ],
 												   'plain-text',
@@ -257,8 +321,6 @@ class ListScreen extends Component {
 							<Image style={[styles.newCardButtonImage, {height: 48}]} source={require(plus_button_image)} />
 						</TouchableOpacity>
 					</LinearGradient>
-
-					 
 				</SafeAreaView>
 				<DialogInput style={styles.dialog} isDialogVisible={this.state.dialogOpen}
 					             title={"Add New Kounter"}
@@ -319,7 +381,7 @@ const styles = StyleSheet.create({
 		padding: 0,
 		margin: 0,
 		left:0,
-		alignItems: 'center'
+		alignItems: 'center',
 	},
 	favoritesText: {
 		color: 'white',
@@ -336,6 +398,43 @@ const styles = StyleSheet.create({
 		left: 10,
 		paddingTop: 20,
 	},
+	emptyKountersContainer: {
+		height: hp(90),
+		flex: 1,
+		alignItems: 'center',
+		width: '100%',
+	},
+	addKounterText: {
+		color: 'white',
+		fontSize: 24,
+		textAlign: 'center',
+		marginTop: 22
+	},
+	emptyKountersAddButton: {
+		height: 48,
+		marginTop: '50%',
+		width: 48
+	},
+	emptyKountersAddButtonImage: {
+		height: 48,
+		width: 48
+	},
+	rocketShipContainer: {
+		marginBottom: 0,
+		marginTop: 'auto',
+		justifyContent: 'center',
+		alignItems: 'center',
+		textAlign: 'center',
+		position: 'absolute',
+		bottom: 0,
+		zIndex: 100
+	},
+	rocketShip: {
+		height: 280,
+		width: 306,
+		marginTop: 'auto',
+  		marginBottom: 10,
+	},
 	card: {
 		height: 72,
 		width: '94.66%',
@@ -348,7 +447,7 @@ const styles = StyleSheet.create({
 	},
 	cardTalk: {
 		justifyContent: 'flex-start',
-		width: '55%'
+		width: '50%'
 	},
 	cardTitle: {
 		paddingTop: 13,
@@ -368,29 +467,38 @@ const styles = StyleSheet.create({
 	cardControls: {
 		flex: 1,
 		justifyContent: 'center',
-		width: '45%',
+		width: '50%',
 		alignItems: 'center',
 		flexDirection: 'row'
+	},
+	cardButtonContainer: {
+		height: 36,
+		width: 36,
+		justifyContent: 'center',
+		alignItems: 'center'
 	},
 	cardMinusButton: {
 		height: 4,
 		width: 14.4,
-		marginRight: 28
+		// marginRight: 28
 	},
 	cardPlusButton: {
 		height: 14.4,
 		width: 14.4,
-		marginLeft: 28
+		// marginLeft: 28
 	},
 	cardDrinkCount: {
 		fontSize: 36,
+		width: 70,
 		color: 'white',
-		textAlign: 'center'
+		textAlign: 'center',
+		// backgroundColor: 'red'
 	},
 	newCardButtonContainer: {
 		justifyContent: 'center',
 		alignItems: 'center',
-		bottom: '10%',
+		bottom: '16%',
+		height: '15%'
 	},
 	newCardButton: {
 		height: 48,
