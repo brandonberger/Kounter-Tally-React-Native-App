@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { Font, LinearGradient } from 'expo';
-import { StatusBar, Alert, Platform, AlertIOS, ScrollView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
+import { Animated, Easing, StatusBar, Alert, Platform, AlertIOS, ScrollView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
 import { persistStore, persistReducer } from 'redux-persist';
 import { connect } from 'react-redux';
 import DialogInput from 'react-native-dialog-input';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {SafeAreaView} from 'react-navigation';
-
+import styled from "styled-components";
 
 function mapStateToProps(state) {
 	return { 
+			 action: state.action,
 		   	 trackerCards: state.trackerCards,
 		   	 numberOfCards: state.trackerCards.length,
 		   	 totalCardsEver: state.totalCardHistory
@@ -19,6 +20,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   	return {
 	    addNewTracker(newCardNumber, name, color) {
+	    	name ? 
 	    	dispatch({
 	      		type: "ADD_NEW_TRACKER",
 	      		new_tracker: 
@@ -29,6 +31,7 @@ function mapDispatchToProps(dispatch) {
       				currentCount: 0
       				}
 	    	})
+	    	: null
 	    },
 	    addDrink(card_id) {
 	    	dispatch({
@@ -42,11 +45,20 @@ function mapDispatchToProps(dispatch) {
 	      		card_id: card_id
 	    	})
 	    },
+	    openSettings() {
+	    	dispatch({
+	    		type: "OPEN_SETTINGS"
+	    	})
+	    },
+	    closeSettings() {
+	    	dispatch({
+	    		type: "CLOSE_SETTINGS"
+	    	})
+	    } 
 	}
 }
 
 function getRandomColor(lastColor = null) {
-	console.log(lastColor);
 	colors = [
 		'#173DD2',
 		'#1783D2',
@@ -76,7 +88,11 @@ class ListScreen extends Component {
 
 	constructor(props) {
 	  super(props);
-	  this.state = { isLoading: true, dialogOpen: false }
+		  this.state = { 
+		  	isLoading: true, 
+		  	dialogOpen: false,
+		  	menuTop: new Animated.Value(0),
+    	}
 	}
 
 	state = {
@@ -85,12 +101,11 @@ class ListScreen extends Component {
   	};
 
 	async componentDidMount() {
+
+		StatusBar.setBarStyle("light-content", true);
+
 		await Font.loadAsync({
-		  'anodina-bold': require('../../assets/fonts/Anodina-Bold.otf'),
 		  'anodina-xbold': require('../../assets/fonts/Anodina-ExtraBold.otf'),
-		  'anodina-regular': require('../../assets/fonts/Anodina-Regular.otf'),
-		  'avenir-book': require('../../assets/fonts/Avenir-Book.ttf'),
-		  'avenir-light': require('../../assets/fonts/Avenir-Light.ttf'),
 		  'avenir-medium': require('../../assets/fonts/Avenir-Medium.ttf'),
 		  'avenir-heavy': require('../../assets/fonts/Avenir-Heavy.ttf'),
 		});
@@ -105,6 +120,24 @@ class ListScreen extends Component {
 	static navigationOptions = {
 	    header: null
   	};
+
+  	componentDidUpdate() {
+  		this.toggleSettings();
+  	}
+
+  	toggleSettings = () => {
+  		if (this.props.action == "openSettings") {
+			Animated.spring(this.state.menuTop, {
+				toValue: 0
+			}).start();
+  		}
+
+  		if (this.props.action == "closeSettings") {
+			Animated.spring(this.state.menuTop, {
+				toValue: 300
+			}).start();
+  		}
+  	};	
 
 	render() {
 		const newCardName = 'card_'+this.props.currentTrackerCount;
@@ -133,41 +166,46 @@ class ListScreen extends Component {
 
 		if (kountersExist) {
 			showKounters = 'flex';
-			showAddButton = 'flex';
 		} else {
 			showKounters = 'none';
+		}
+
+		if(kountersExist || favoritesExist) {
+			showAddButton = 'flex';
+		} else {
 			showAddButton = 'none';
 		}
 
 		return (
-			<View style={styles.container}>
+			<Container>
 				<SafeAreaView forceInset={{ bottom: 'never'}}> 
-
-						<View style={[styles.header, {marginTop: headerMargin}]}>
+						<Header style={{marginTop: headerMargin}}>
 							{this.state.fontLoaded ? (
-								<Text style={[styles.title, {fontFamily: 'anodina-xbold'}]}>KOUNTER</Text>
+								<HeaderTitle style={{fontFamily: 'anodina-xbold'}}>KOUNTER</HeaderTitle>
 								) : null
 							}
-							<TouchableOpacity style={styles.settingsButton}>
+							<SettingsButton 
+								onPress={this.props.openSettings}>
 								<Image source={require('../../assets/settings.png')} />
-							</TouchableOpacity>
-						</View>
+							</SettingsButton>
+
+						</Header>
 	            	<ScrollView style={{ height: "100%"}}>
 
-						<View style={styles.cardContainer}>
-							<View style={[styles.favoritesTextContainer, {display: showFavorites}]}>
+						<CardContainer>
+							<FavoritesContainer style={{display: showFavorites}}>
 								{this.state.fontLoaded ? (
-									<Text style={[styles.favoritesText, {fontFamily: 'avenir-heavy'}]}>FAVORITES</Text>
+									<FavoritesText style={{fontFamily: 'avenir-heavy'}}>FAVORITES</FavoritesText>
 									) : null
 								}
-								<Image style={styles.favoritesIcon} source={require('../../assets/favorites.png')} />
-							</View>
+								<FavoritesIcon source={require('../../assets/favorites.png')} />
+							</FavoritesContainer>
 
 
 							{this.props.trackerCards.filter(card=>card.favorite_status).map((card, card_id) => {
 								return (
-								<View key={card_id} style={[styles.card, {backgroundColor: card.color}]}>
-									<View style={styles.cardTalk}>
+								<Card key={card_id} style={{backgroundColor: card.color}}>
+									<CardHeader>
 										<TouchableOpacity 
 											onPress={() => { 
 				                              this.props.navigation.push("Tracker", {
@@ -176,49 +214,49 @@ class ListScreen extends Component {
 				                            }}
 											>
 										{this.state.fontLoaded ? (
-											<Text style={[styles.cardTitle, {fontFamily: 'avenir-medium'}]}>
+											<CardTitle style={{fontFamily: 'avenir-medium'}}>
 												{card.title}
-											</Text>
+											</CardTitle>
 											) : null
 										}
 
 										{this.state.fontLoaded ? (
-											<Text style={[styles.cardDescription, {fontFamily: 'avenir-medium'}]}>
+											<CardDescription style={{fontFamily: 'avenir-medium'}}>
 												Description
-											</Text>
+											</CardDescription>
 											) : null
 										}
 										</TouchableOpacity>
-									</View>
-									<View style={styles.cardControls}>
-										<TouchableOpacity style={styles.cardButtonContainer} onPress={() => this.props.subtractDrink(card.card_id)}>
-											<Image style={styles.cardMinusButton} source={require('../../assets/minus_button.png')} />
-										</TouchableOpacity>
+									</CardHeader>
+									<CardControlsContainer>
+										<CardButtonContainer style={styles.cardButtonContainer} onPress={() => this.props.subtractDrink(card.card_id)}>
+											<CardMinusButton source={require('../../assets/minus_button.png')} />
+										</CardButtonContainer>
 										{this.state.fontLoaded ? (
-											<Text style={[styles.cardDrinkCount, {fontFamily: 'avenir-medium'}]}>
+											<CardDrinkCount style={{fontFamily: 'avenir-medium'}}>
 												{card.currentCount}
-											</Text>
+											</CardDrinkCount>
 											) : null
 										}
-										<TouchableOpacity style={styles.cardButtonContainer} onPress={() => this.props.addDrink(card.card_id)}>
-											<Image style={styles.cardPlusButton} source={require('../../assets/plus_button.png')} />
-										</TouchableOpacity>
-									</View>
-								</View>
+										<CardButtonContainer onPress={() => this.props.addDrink(card.card_id)}>
+											<CardPlusButton source={require('../../assets/plus_button.png')} />
+										</CardButtonContainer>
+									</CardControlsContainer>
+								</Card>
 								)
 							})}
 
 							{this.state.fontLoaded ? (
-								<Text style={[styles.allKountersText, {fontFamily: 'avenir-heavy'}, {display: showFavorites}]}>
+								<KountersText style={{fontFamily: 'avenir-heavy'}, {display: showFavorites}}>
 									KOUNTERS
-								</Text>
+								</KountersText>
 								) : null
 							}
 
 							{this.props.trackerCards.filter(card=>!card.favorite_status).map((card, card_id) => {
 								return (
-								<View key={card_id} style={[styles.card, {backgroundColor: card.color}]}>
-									<View style={styles.cardTalk}>
+								<Card key={card_id} style={{backgroundColor: card.color}}>
+									<CardHeader>
 										<TouchableOpacity 
 											onPress={() => { 
 				                              this.props.navigation.push("Tracker", {
@@ -227,43 +265,42 @@ class ListScreen extends Component {
 				                            }}
 											>
 										{this.state.fontLoaded ? (
-											<Text style={[styles.cardTitle, {fontFamily: 'avenir-medium'}]}>
+											<CardTitle style={{fontFamily: 'avenir-medium'}}>
 												{card.title}
-											</Text>
+											</CardTitle>
 											) : null
 										}
 
 										{this.state.fontLoaded ? (
-											<Text style={[styles.cardDescription, {fontFamily: 'avenir-medium'}]}>
+											<CardDescription style={{fontFamily: 'avenir-medium'}}>
 												Description
-											</Text>
+											</CardDescription>
 											) : null
 										}
 										</TouchableOpacity>
-									</View>
-									<View style={styles.cardControls}>
-										<TouchableOpacity style={styles.cardButtonContainer} onPress={() => this.props.subtractDrink(card.card_id)}>
-											<Image style={styles.cardMinusButton} source={require('../../assets/minus_button.png')} />
-										</TouchableOpacity>
+									</CardHeader>
+									<CardControlsContainer>
+										<CardButtonContainer onPress={() => this.props.subtractDrink(card.card_id)}>
+											<CardMinusButton source={require('../../assets/minus_button.png')} />
+										</CardButtonContainer>
 										{this.state.fontLoaded ? (
-											<Text style={[styles.cardDrinkCount, {fontFamily: 'avenir-medium'}]}>
+											<CardDrinkCount style={{fontFamily: 'avenir-medium'}}>
 												{card.currentCount}
-											</Text>
+											</CardDrinkCount>
 											) : null
 										}
-										<TouchableOpacity style={styles.cardButtonContainer} onPress={() => this.props.addDrink(card.card_id)}>
-											<Image style={styles.cardPlusButton} source={require('../../assets/plus_button.png')} />
-										</TouchableOpacity>
-									</View>
-								</View>
+										<CardButtonContainer onPress={() => this.props.addDrink(card.card_id)}>
+											<CardPlusButton source={require('../../assets/plus_button.png')} />
+										</CardButtonContainer>
+									</CardControlsContainer>
+								</Card>
 								)
 							})}
-						</View>
+						</CardContainer>
 
 						{!kountersExist && !favoritesExist ? (
-	            			<View style={styles.emptyKountersContainer}>
-	            				<TouchableOpacity 
-									style={styles.emptyKountersAddButton} 
+	            			<EmptyKountersContainer style={{height: hp(90)}}>
+	            				<EmptyKountersAddButton 
 									onPress={() => {if (Platform.OS == 'ios') {
 														AlertIOS.prompt('Add New Kounter', 
 														   'Please name your Kounter.', 
@@ -282,24 +319,57 @@ class ListScreen extends Component {
 													} else { this.openDialog(true) }
 												}
 											}>
-									<Image style={[styles.emptyKountersAddButtonImage, {height: 48}]} source={require(plus_button_image)} />
-								</TouchableOpacity>
+									<EmptyKountersAddButtonImage source={require(plus_button_image)} />
+								</EmptyKountersAddButton>
 
 	            				{this.state.fontLoaded ? (
-	            					<Text style={[styles.addKounterText, {fontFamily: 'avenir-heavy'}]}> ADD KOUNTER </Text>
+	            					<EmptyAddKounterText style={{fontFamily: 'avenir-heavy'}}> ADD KOUNTER </EmptyAddKounterText>
 	            					) : null
 	            				}
-	            				<View style={styles.rocketShipContainer}>
-	            					<Image style={styles.rocketShip} source={require('../../assets/rocket_ship.png')} />
-	            				</View>
-	            			</View>
+	            				<RocketShipContainer>
+	            					<RocketShip source={require('../../assets/rocket_ship.png')} />
+	            				</RocketShipContainer>
+	            			</EmptyKountersContainer>
 	            			) : null
 	            		}
 
 					</ScrollView>
-					<LinearGradient colors={['rgba(0,0,0,0.9)', 'transparent']} start={[0, 1.0]} end={[0.0, 0.3]} style={[styles.newCardButtonContainer, {display: showAddButton}]}>
-						<TouchableOpacity 
-							style={styles.newCardButton} 
+
+
+					<AnimatedContainer 
+		          		style={{ 
+			            	transform: [{ translateY: this.state.menuTop }], 
+			            }}>
+
+			            <SettingsHeader>
+			            	<SettingsMenuSettingsImage source={require('../../assets/settings.png')} />
+			            	{this.state.fontLoaded ? (
+			            		<SettingsMenuText style={{fontFamily: 'avenir-medium'}}> Settings </SettingsMenuText>
+			            		) : null
+			            	}
+			            </SettingsHeader>
+
+			            <SettingsMenuList>
+			            	<SettingsMenuItem>
+			            		<MenuItemName>
+			            			iCloud Sync
+			            		</MenuItemName>
+			            		<MenuItemToggle>
+			            			<MenuItemToggleButton source={require('../../assets/toggle.png')} />
+			            		</MenuItemToggle>
+			            	</SettingsMenuItem>
+			            </SettingsMenuList>
+
+			            <SettingsDangerButton>
+			            	{this.state.fontLoaded ? (
+			            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>Erase All Data</SettingsDangerButtonText>
+			            		) : null
+			            	}
+			            </SettingsDangerButton>
+
+	            	</AnimatedContainer>
+					<LinearGradient colors={['rgba(0,0,0,0.9)', 'transparent']} start={[0, 1.0]} end={[0.0, 0.3]} style={{display: showAddButton, justifyContent: 'center', alignItems: 'center', bottom: '16%', height: '15%'}}>
+						<NewCardButton 
 							onPress={() => {if (Platform.OS == 'ios') {
 												AlertIOS.prompt('Add New Kounter', 
 												   'Please name your Kounter.', 
@@ -318,9 +388,10 @@ class ListScreen extends Component {
 											} else { this.openDialog(true) }
 										}
 									}>
-							<Image style={[styles.newCardButtonImage, {height: 48}]} source={require(plus_button_image)} />
-						</TouchableOpacity>
+							<NewCardButtonImage source={require(plus_button_image)} />
+						</NewCardButton>
 					</LinearGradient>
+
 				</SafeAreaView>
 				<DialogInput style={styles.dialog} isDialogVisible={this.state.dialogOpen}
 					             title={"Add New Kounter"}
@@ -329,7 +400,7 @@ class ListScreen extends Component {
 					             submitInput={ (inputText) => {this.props.addNewTracker(this.props.numberOfCards, inputText, getRandomColor()), this.openDialog(false)} }
 					             closeDialog={ () => {this.openDialog(false)}}>
 					</DialogInput>
-			</View>
+			</Container>
 		);
 	}
 }
@@ -337,179 +408,283 @@ class ListScreen extends Component {
 export default connect(mapStateToProps, mapDispatchToProps)(ListScreen);
 
 
+const Container = styled.View`
+	flex: 1;
+	background-color: #0d0f19;
+	width: 100%;
+	height: 100%;
+`;
+
+const Header = styled.View`
+	border-style: solid;
+	border-bottom-width: 1;
+	border-color: #292929;
+`;
+
+const HeaderTitle = styled.Text`
+	color: #ffffff;
+	text-align: center;
+	font-size: 18;
+	margin-bottom: 19;
+	letter-spacing: 5;
+	height: 20;
+`;
+
+const SettingsButton = styled.TouchableOpacity`
+	position: absolute;
+	right: 20;
+`;
+
+const CardContainer = styled.View`
+	padding: 0px 5px;
+	flex-wrap: wrap;
+	flex-direction: column;
+	justify-content: center;
+	margin: 18px 1% 10px 1%;
+`;
+
+const FavoritesContainer = styled.View`
+	flex-direction: row;
+	padding: 0;
+	margin: 0;
+	left: 0;
+	align-items: center;
+`;
+
+const FavoritesText = styled.Text`
+	color: white;
+	font-size: 18px;
+	left: 10;
+	padding-right: 15px;
+`;
+
+const FavoritesIcon = styled.Image`
+	margin-top: -1px;
+`;
+
+const Card = styled.View`
+	height: 72;
+	width: 94.66%;
+	background-color: #EF5350;
+	border-radius: 8;
+	margin: 7.5px;
+	position: relative;
+	flex: 1;
+	flex-direction: row;
+`;
+
+const CardHeader = styled.View`
+	justify-content:  flex-start;
+	width: 50%;
+`;
+
+const CardTitle = styled.Text`
+	padding-top: 13;
+	padding-left: 20;
+	color: white;
+	font-size: 18;
+	font-weight: 800;
+	text-align: left;
+`;
+
+const CardDescription = styled.Text`
+	font-size: 12;
+	color: #ffffff;
+	padding-left: 20;
+	padding-top: 1;
+	text-transform: uppercase;
+`;
+
+const KountersText = styled.Text`
+	color: white;
+	font-size: 18;
+	left: 10;
+	padding-top: 20;
+`;
+
+const EmptyKountersContainer = styled.View`
+	flex: 1;
+	align-items: center;
+	width: 100%;
+`;
+
+const EmptyAddKounterText = styled.Text`
+	color: #ffffff;
+	font-size: 24;
+	text-align: center;
+	margin-top: 22;
+`;
+
+const EmptyKountersAddButtonImage = styled.Image`
+	height: 48;
+	width: 48;
+`;
+
+const EmptyKountersAddButton = styled.TouchableOpacity`
+	height: 48;
+	margin-top: 50%;
+	width: 48;
+`;
+
+const RocketShipContainer = styled.View`
+	margin-bottom: 30%;
+	margin-top: auto;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	position: absolute;
+	bottom: 0;
+	z-index: 100;
+`;
+
+const RocketShip = styled.Image`
+	height: 280;
+	width: 306;
+	margin-top: auto;
+	margin-bottom: 10;
+`;
+
+const CardControlsContainer = styled.View`
+	flex: 1;
+	justify-content: center;
+	width: 50%;
+	align-items: center;
+	flex-direction: row;
+`;
+
+const CardButtonContainer = styled.TouchableOpacity`
+	height: 36;
+	width: 36;
+	justify-content: center;
+	align-items: center;
+`;
+
+const CardMinusButton = styled.Image`
+	height: 4;
+	width: 14.4;
+`;
+
+
+const CardPlusButton = styled.Image`
+	height: 14.4;
+	width: 14.4;
+`;
+
+const CardDrinkCount = styled.Text`
+	font-size: 36;
+	width: 70;
+	color: #ffffff;
+	textAlign: center;
+`;
+
+const NewCardButton = styled.TouchableOpacity`
+	height: 48;
+	width: 48;
+	margin-top: 5%;
+	margin-bottom: 10%;
+`;
+
+const NewCardButtonImage = styled.Image`
+	position: absolute;
+	height: 48;
+	width: 48;
+	resize-mode: center;
+`;
+
+const SettingsContainer = styled.View`
+	height: 207;
+	background-color: #0D0F19;
+	width: 100%;
+	position: absolute;
+	z-index: 1000;
+	bottom: 17.5%;
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+`;
+
+const AnimatedContainer = Animated.createAnimatedComponent(SettingsContainer);
+
+const SettingsHeader = styled.View`
+	padding-top: 21;
+	padding-left: 16;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+`;
+
+const SettingsMenuSettingsImage = styled.Image`
+	height: 20;
+	width: 20;
+`;
+
+const SettingsMenuText = styled.Text`
+	font-size: 18px;
+	padding-left: 11px;
+	color: #ffffff;
+`;
+
+const SettingsMenuList = styled.View`
+	height: auto;
+	width: 100%;
+	margin-top: 22px;
+`;
+
+const SettingsMenuItem = styled.View`
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	height: 43.5px;
+	padding-left: 16;
+	padding-right: 16;
+	border-top-width: 0.2px;
+	border-top-color: #292929;
+	border-bottom-width: 0.2px;
+	border-bottom-color: #292929;
+`;
+
+const MenuItemName = styled.Text`
+	color: #ffffff;
+	font-size: 17px;
+	letter-spacing: -0.41px;
+`;
+
+const MenuItemToggle = styled.View`
+	height: 32px;
+	width: 52px;
+`;
+
+const MenuItemToggleButton = styled.Image`
+	
+`;
+
+const SettingsDangerButton = styled.TouchableOpacity`
+	background-color: #DC2727;
+	justify-content: center;
+	margin:0 auto;
+	width: 220px;
+	margin-top: 20;
+	height: 40;
+	border-radius: 10px;
+`;
+
+const SettingsDangerButtonText = styled.Text`
+	color: #ffffff;
+	text-align: center;
+	font-size: 16;
+`;
+
+const Overlay = styled.View`
+	background-color: rgba(0,0,0,0.5);
+	height: 100%;
+	width: 100%;
+	top:0;
+	position: absolute;
+	z-index: 999;
+`;
 
 const styles = StyleSheet.create({
 	dialog: {
 		color: "#04bf72"
-	},
-	container: {
-		flex: 1,
-		backgroundColor: '#0d0f19',
-		width:'100%',
-		height:'100%'
-	},
-	header: {
-		borderStyle: 'solid',
-		borderBottomWidth: 1,
-		borderColor: '#292929',
-		// backgroundColor: 'red'
-	},
-	title: {
-		color: 'white',
-		textAlign: 'center',
-		fontSize: 18,
-		marginBottom: 19,
-		letterSpacing: 5,
-		height: 20
-	},
-	settingsButton: {
-		position: 'absolute',
-		right: 20,
-	},
-	cardContainer: {
-		padding: (0, 5),
-		flexWrap: 'wrap',
-		flexDirection: 'column',
-		justifyContent: 'center',
-		marginLeft: '1%',
-		marginRight: '1%',
-		marginTop: 18,
-		marginBottom: 10
-	},
-	favoritesTextContainer: {
-		flexDirection: 'row',
-		padding: 0,
-		margin: 0,
-		left:0,
-		alignItems: 'center',
-	},
-	favoritesText: {
-		color: 'white',
-		fontSize: 18,
-		left: 10,
-		paddingRight: 15,
-	},
-	favoritesIcon: {
-		marginTop: -1
-	},
-	allKountersText: {
-		color: 'white',
-		fontSize: 18,
-		left: 10,
-		paddingTop: 20,
-	},
-	emptyKountersContainer: {
-		height: hp(90),
-		flex: 1,
-		alignItems: 'center',
-		width: '100%',
-	},
-	addKounterText: {
-		color: 'white',
-		fontSize: 24,
-		textAlign: 'center',
-		marginTop: 22
-	},
-	emptyKountersAddButton: {
-		height: 48,
-		marginTop: '50%',
-		width: 48
-	},
-	emptyKountersAddButtonImage: {
-		height: 48,
-		width: 48
-	},
-	rocketShipContainer: {
-		marginBottom: 0,
-		marginTop: 'auto',
-		justifyContent: 'center',
-		alignItems: 'center',
-		textAlign: 'center',
-		position: 'absolute',
-		bottom: 0,
-		zIndex: 100
-	},
-	rocketShip: {
-		height: 280,
-		width: 306,
-		marginTop: 'auto',
-  		marginBottom: 10,
-	},
-	card: {
-		height: 72,
-		width: '94.66%',
-		backgroundColor: '#EF5350',
-		borderRadius: 8,
-		margin: 7.5,
-		position: 'relative',
-		flex: 1,
-		flexDirection: 'row'
-	},
-	cardTalk: {
-		justifyContent: 'flex-start',
-		width: '50%'
-	},
-	cardTitle: {
-		paddingTop: 13,
-		paddingLeft: 20,
-		color: 'white',
-		fontSize: 18,
-		fontWeight: '800',
-		textAlign: 'left',
-	},
-	cardDescription: {
-		fontSize: 12,
-		color: 'white',
-		paddingLeft: 20,
-		paddingTop: 1,
-		textTransform: 'uppercase'
-	},
-	cardControls: {
-		flex: 1,
-		justifyContent: 'center',
-		width: '50%',
-		alignItems: 'center',
-		flexDirection: 'row'
-	},
-	cardButtonContainer: {
-		height: 36,
-		width: 36,
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-	cardMinusButton: {
-		height: 4,
-		width: 14.4,
-		// marginRight: 28
-	},
-	cardPlusButton: {
-		height: 14.4,
-		width: 14.4,
-		// marginLeft: 28
-	},
-	cardDrinkCount: {
-		fontSize: 36,
-		width: 70,
-		color: 'white',
-		textAlign: 'center',
-		// backgroundColor: 'red'
-	},
-	newCardButtonContainer: {
-		justifyContent: 'center',
-		alignItems: 'center',
-		bottom: '16%',
-		height: '15%'
-	},
-	newCardButton: {
-		height: 48,
-		width: 48,
-		marginTop: '5%',
-		marginBottom: '10%'
-	},
-	newCardButtonImage: {
-		position: 'absolute',
-		width: 48,
-		resizeMode: 'center',
 	},
 });
 

@@ -14,8 +14,6 @@ const initialState = {
   totalCardHistory: 0
 }
 
-
-
 const reducer = (state = initialState, action) => {
 
   switch (action.type) {
@@ -91,8 +89,11 @@ const reducer = (state = initialState, action) => {
           ...state.trackerCards.slice(0, cardIndex), 
           ...state.trackerCards.slice(cardIndex + 1)
         ] 
-      };
-
+      }; 
+    case "OPEN_SETTINGS":
+      return {...state, action: 'openSettings' }
+    case "CLOSE_SETTINGS":
+      return {...state, action: 'closeSettings' }
     default:
       return state;
     }
