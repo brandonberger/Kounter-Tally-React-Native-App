@@ -7,8 +7,10 @@ import DialogInput from 'react-native-dialog-input';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {SafeAreaView} from 'react-navigation';
 import styled from "styled-components";
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 function mapStateToProps(state) {
+	console.log(state);
 	return { 
 			 action: state.action,
 		   	 trackerCards: state.trackerCards,
@@ -31,7 +33,7 @@ function mapDispatchToProps(dispatch) {
       				currentCount: 0
       				}
 	    	})
-	    	: null
+	    	: triggerError()
 	    },
 	    addDrink(card_id) {
 	    	dispatch({
@@ -54,9 +56,15 @@ function mapDispatchToProps(dispatch) {
 	    	dispatch({
 	    		type: "CLOSE_SETTINGS"
 	    	})
+	    },
+	    deleteAll() {
+	    	dispatch({
+	    		type: "DELETE_ALL"
+	    	})
 	    } 
 	}
 }
+
 
 function getRandomColor(lastColor = null) {
 	colors = [
@@ -91,7 +99,7 @@ class ListScreen extends Component {
 		  this.state = { 
 		  	isLoading: true, 
 		  	dialogOpen: false,
-		  	menuTop: new Animated.Value(0),
+		  	menuTop: new Animated.Value(300),
     	}
 	}
 
@@ -99,6 +107,12 @@ class ListScreen extends Component {
     	fontLoaded: false,
     	dialogOpen: false,
   	};
+
+
+
+	triggerError() {
+		this.setState({dialogError: true})
+	}
 
 	async componentDidMount() {
 
@@ -126,15 +140,22 @@ class ListScreen extends Component {
   	}
 
   	toggleSettings = () => {
+  		if (Platform.OS == 'ios') {
+			toValue = hp(0 );
+		} else {
+			toValue = hp(0);
+		}
+
+
   		if (this.props.action == "openSettings") {
 			Animated.spring(this.state.menuTop, {
-				toValue: 0
+				toValue: toValue
 			}).start();
   		}
 
   		if (this.props.action == "closeSettings") {
 			Animated.spring(this.state.menuTop, {
-				toValue: 300
+				toValue: 207
 			}).start();
   		}
   	};	
@@ -176,8 +197,60 @@ class ListScreen extends Component {
 			showAddButton = 'none';
 		}
 
+
+		showDialog = 'none';
+
+		if (this.state.dialogOpen) {
+			showDialog = 'flex';
+			dialogWidth = 300;
+			dialogContainerWidth = '100%';
+		} else {
+			showDialog = 'none';
+			dialogWidth = '0%';
+			dialogContainerWidth = '0%';
+		}
+
+		console.log(showDialog);
+
+		const config = {
+	      velocityThreshold: 0.01,
+	      directionalOffsetThreshold: 20
+	    };
+
+	    newKounterTitle = '';
+
 		return (
 			<Container>
+				<DialogContainer style={{ display: showDialog, width: dialogContainerWidth }}>
+					<Dialog style={{top: hp(50) - 185 / 2, width: dialogWidth}}>
+						<DialogTitle>
+							Add New Kounter
+						</DialogTitle>
+						<DialogSubtitle>
+							Enter name of your kounter.
+						</DialogSubtitle>
+
+						<DialogError>
+							Please Enter a name.
+						</DialogError>
+
+						<DialogField ref={input => {this.dialogField = input}} onSubmitEditing={() => {this.props.addNewTracker(this.props.numberOfCards, newKounterTitle, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)), newKounterTitle = null, this.openDialog(false), this.dialogField.clear()} } placeholder="Enter Name" placeholderTextColor="#828282" onChangeText={(text) => newKounterTitle = text}>
+						</DialogField>
+						<DialogButtons>
+							<DialogCancel onPress={() => {this.openDialog(false), this.dialogField.clear()}} >
+								<DialogCancelText>
+									Cancel
+								</DialogCancelText>
+							</DialogCancel>
+							<DialogSubmit onPress={() => {this.props.addNewTracker(this.props.numberOfCards, newKounterTitle, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)), newKounterTitle = null, this.openDialog(false), this.dialogField.clear()}}>
+								<DialogSubmitText>
+									Add
+								</DialogSubmitText>
+							</DialogSubmit>
+						</DialogButtons>
+					</Dialog>
+				</DialogContainer>
+
 				<SafeAreaView forceInset={{ bottom: 'never'}}> 
 						<Header style={{marginTop: headerMargin}}>
 							{this.state.fontLoaded ? (
@@ -191,7 +264,6 @@ class ListScreen extends Component {
 
 						</Header>
 	            	<ScrollView style={{ height: "100%"}}>
-
 						<CardContainer>
 							<FavoritesContainer style={{display: showFavorites}}>
 								{this.state.fontLoaded ? (
@@ -253,7 +325,7 @@ class ListScreen extends Component {
 								) : null
 							}
 
-							{this.props.trackerCards.filter(card=>!card.favorite_status).map((card, card_id) => {
+							{this.props.trackerCards.filter(card=>!card.favorite_status).sort(card=>card.card_id).map((card, card_id) => {
 								return (
 								<Card key={card_id} style={{backgroundColor: card.color}}>
 									<CardHeader>
@@ -296,116 +368,168 @@ class ListScreen extends Component {
 								</Card>
 								)
 							})}
+							<View style={{paddingBottom: '35%'}}></View>
 						</CardContainer>
 
-						{!kountersExist && !favoritesExist ? (
-	            			<EmptyKountersContainer style={{height: hp(90)}}>
-	            				<EmptyKountersAddButton 
-									onPress={() => {if (Platform.OS == 'ios') {
-														AlertIOS.prompt('Add New Kounter', 
-														   'Please name your Kounter.', 
-														   [
-															   {
-															   	text: 'Cancel',
-															   	style: 'cancel',
-															   },
-															   {
-															   	text: 'OK',
-															   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)),
-															   },
-														   ],
-														   'plain-text',
-														)
-													} else { this.openDialog(true) }
-												}
-											}>
-									<EmptyKountersAddButtonImage source={require(plus_button_image)} />
-								</EmptyKountersAddButton>
-
-	            				{this.state.fontLoaded ? (
-	            					<EmptyAddKounterText style={{fontFamily: 'avenir-heavy'}}> ADD KOUNTER </EmptyAddKounterText>
-	            					) : null
-	            				}
-	            				<RocketShipContainer>
-	            					<RocketShip source={require('../../assets/rocket_ship.png')} />
-	            				</RocketShipContainer>
-	            			</EmptyKountersContainer>
-	            			) : null
-	            		}
-
 					</ScrollView>
-
-
-					<AnimatedContainer 
-		          		style={{ 
-			            	transform: [{ translateY: this.state.menuTop }], 
-			            }}>
-
-			            <SettingsHeader>
-			            	<SettingsMenuSettingsImage source={require('../../assets/settings.png')} />
-			            	{this.state.fontLoaded ? (
-			            		<SettingsMenuText style={{fontFamily: 'avenir-medium'}}> Settings </SettingsMenuText>
-			            		) : null
-			            	}
-			            </SettingsHeader>
-
-			            <SettingsMenuList>
-			            	<SettingsMenuItem>
-			            		<MenuItemName>
-			            			iCloud Sync
-			            		</MenuItemName>
-			            		<MenuItemToggle>
-			            			<MenuItemToggleButton source={require('../../assets/toggle.png')} />
-			            		</MenuItemToggle>
-			            	</SettingsMenuItem>
-			            </SettingsMenuList>
-
-			            <SettingsDangerButton>
-			            	{this.state.fontLoaded ? (
-			            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>Erase All Data</SettingsDangerButtonText>
-			            		) : null
-			            	}
-			            </SettingsDangerButton>
-
-	            	</AnimatedContainer>
 					<LinearGradient colors={['rgba(0,0,0,0.9)', 'transparent']} start={[0, 1.0]} end={[0.0, 0.3]} style={{display: showAddButton, justifyContent: 'center', alignItems: 'center', bottom: '16%', height: '15%'}}>
-						<NewCardButton 
-							onPress={() => {if (Platform.OS == 'ios') {
-												AlertIOS.prompt('Add New Kounter', 
-												   'Please name your Kounter.', 
-												   [
-													   {
-													   	text: 'Cancel',
-													   	style: 'cancel',
-													   },
-													   {
-													   	text: 'OK',
-													   	onPress: (name) => name ? this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)) : null,
-													   },
-												   ],
-												   'plain-text',
-												)
-											} else { this.openDialog(true) }
-										}
-									}>
+						<NewCardButton onPress={() => { this.openDialog(true)} } >
 							<NewCardButtonImage source={require(plus_button_image)} />
 						</NewCardButton>
 					</LinearGradient>
-
 				</SafeAreaView>
-				<DialogInput style={styles.dialog} isDialogVisible={this.state.dialogOpen}
-					             title={"Add New Kounter"}
-					             message={"Please name your Kounter"}
-					             hintInput ={"Enter Name"}
-					             submitInput={ (inputText) => {this.props.addNewTracker(this.props.numberOfCards, inputText, getRandomColor()), this.openDialog(false)} }
-					             closeDialog={ () => {this.openDialog(false)}}>
-					</DialogInput>
+
+				<AnimatedContainer 
+		          		style={{ 
+			            	transform: [{ translateY: this.state.menuTop }], 
+			            }}>
+			            <GestureRecognizer style={{height: '100%', width: '100%', backgroundColor: '#0D0F19'}} onSwipeDown={this.props.closeSettings} config={config}>
+				            <SettingsHeader>
+				            	<SettingsMenuSettingsImage source={require('../../assets/settings.png')} />
+				            	{this.state.fontLoaded ? (
+				            		<SettingsMenuText style={{fontFamily: 'avenir-medium'}}> Settings </SettingsMenuText>
+				            		) : null
+				            	}
+				            </SettingsHeader>
+
+				            <SettingsMenuList>
+				            	<SettingsMenuItem>
+				            		<MenuItemName>
+				            			iCloud Sync
+				            		</MenuItemName>
+				            		<MenuItemToggle>
+				            			<MenuItemToggleButton source={require('../../assets/toggle.png')} />
+				            		</MenuItemToggle>
+				            	</SettingsMenuItem>
+				            </SettingsMenuList>
+
+				            <SettingsDangerButton onPress={this.props.deleteAll}>
+				            	{this.state.fontLoaded ? (
+				            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>Erase All Data</SettingsDangerButtonText>
+				            		) : null
+				            	}
+				            </SettingsDangerButton>
+	            		</GestureRecognizer>
+	            	</AnimatedContainer>
+
+
+	            	{!kountersExist && !favoritesExist ? (
+            			<EmptyKountersContainer style={{height: hp(90)}}>
+            				<EmptyKountersAddButton 
+								// onPress={() => {if (Platform.OS == 'ios') {
+								// 					AlertIOS.prompt('Add New Kounter', 
+								// 					   'Please name your Kounter.', 
+								// 					   [
+								// 						   {
+								// 						   	text: 'Cancel',
+								// 						   	style: 'cancel',
+								// 						   },
+								// 						   {
+								// 						   	text: 'OK',
+								// 						   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)),
+								// 						   },
+								// 					   ],
+								// 					   'plain-text',
+								// 					)
+								// 				} else { this.openDialog(true) }
+								// 			}
+									onPress={() => { this.openDialog(true)} }
+
+										>
+								<EmptyKountersAddButtonImage source={require(plus_button_image)} />
+							</EmptyKountersAddButton>
+
+            				{this.state.fontLoaded ? (
+            					<EmptyAddKounterText style={{fontFamily: 'avenir-heavy'}}> ADD KOUNTER </EmptyAddKounterText>
+            					) : null
+            				}
+            				<RocketShipContainer>
+            					<RocketShip source={require('../../assets/rocket_ship.png')} />
+            				</RocketShipContainer>
+            			</EmptyKountersContainer>
+            			) : null
+            		}
+
 			</Container>
 		);
 	}
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ListScreen);
+
+const DialogContainer = styled.View`
+	flex: 1;
+	z-index: 99;
+	height: 100%;
+	background-color: rgba(0,0,0,0.6);
+	position: absolute;
+	margin:0 auto;
+	justify-content: center;
+	align-items: center;
+`;
+	
+const Dialog = styled.View`
+	height: 185px;
+	z-index: 100;
+	position:absolute;
+	background-color:#0D0F19;
+	border-radius: 10px;
+`;
+const DialogTitle = styled.Text`
+	color: white;
+	font-size: 18px;
+	letter-spacing: -0.375px;
+	top: 20px;
+	text-align: center;
+	
+`;
+const DialogSubtitle = styled.Text`
+	color: #BDBDBD;
+	font-size: 14px;
+	text-align: center;
+	margin-top: 24px;
+`;
+
+const DialogError = styled.Text`
+	color: red;
+	font-size: 12px;
+	text-align: center;
+	margin-top: 10px;
+`;
+
+const DialogField = styled.TextInput`
+	width: 258px;
+	height: 40px;
+	background: #090909;
+	margin:0 auto;
+	margin-top: 17px;
+	border-radius: 10px;
+	color: white;
+	padding: 11px;
+`;
+
+const DialogButtons = styled.View`
+	flex: 1;
+	flex-direction: row;
+	margin-top: 20px;
+	justify-content: space-evenly;
+`;
+
+const DialogCancel = styled.TouchableOpacity`
+`;
+const DialogSubmit = styled.TouchableOpacity`
+`;
+
+const DialogSubmitText = styled.Text`
+	color: white;
+	font-size: 18px;
+	letter-spacing: -0.375px;
+`;
+const DialogCancelText = styled.Text`
+	color: white;
+	font-size: 18px;
+	letter-spacing: -0.375px;
+`;
 
 
 const Container = styled.View`
@@ -506,6 +630,8 @@ const EmptyKountersContainer = styled.View`
 	flex: 1;
 	align-items: center;
 	width: 100%;
+	position: absolute;
+	bottom:0;
 `;
 
 const EmptyAddKounterText = styled.Text`
@@ -527,7 +653,6 @@ const EmptyKountersAddButton = styled.TouchableOpacity`
 `;
 
 const RocketShipContainer = styled.View`
-	margin-bottom: 30%;
 	margin-top: auto;
 	justify-content: center;
 	align-items: center;
@@ -538,10 +663,10 @@ const RocketShipContainer = styled.View`
 `;
 
 const RocketShip = styled.Image`
-	height: 280;
-	width: 306;
+	height: 257;
+	width: 300;
 	margin-top: auto;
-	margin-bottom: 10;
+	margin-left: 0;
 `;
 
 const CardControlsContainer = styled.View`
@@ -597,7 +722,7 @@ const SettingsContainer = styled.View`
 	width: 100%;
 	position: absolute;
 	z-index: 1000;
-	bottom: 17.5%;
+	bottom: 0;
 	border-top-left-radius: 20px;
 	border-top-right-radius: 20px;
 `;
@@ -671,15 +796,6 @@ const SettingsDangerButtonText = styled.Text`
 	color: #ffffff;
 	text-align: center;
 	font-size: 16;
-`;
-
-const Overlay = styled.View`
-	background-color: rgba(0,0,0,0.5);
-	height: 100%;
-	width: 100%;
-	top:0;
-	position: absolute;
-	z-index: 999;
 `;
 
 const styles = StyleSheet.create({

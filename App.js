@@ -16,88 +16,90 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
 
-  switch (action.type) {
-    case "ADD_DRINK":
-       return {
-        ...state,
-        trackerCards: state.trackerCards.map((item, index) => {
-          if (item.card_id !== action.card_id) { 
-            return item
-          }
+    switch (action.type) {
+        case "ADD_DRINK":
+        return {
+            ...state,
+            trackerCards: state.trackerCards.map((item, index) => {
+                if (item.card_id !== action.card_id) { 
+                    return item
+                }
 
-          return { ...item, currentCount: item.currentCount + 1 }
-        })
-      };
-    case "SUBTRACT_DRINK":
-      return {
-        ...state,
-        trackerCards: state.trackerCards.map((item, index) => {
-          if (item.card_id !== action.card_id) { 
-            return item
-          }
+                return { ...item, currentCount: item.currentCount + 1 }
+            })
+        };
+        case "SUBTRACT_DRINK":
+        return {
+            ...state,
+            trackerCards: state.trackerCards.map((item, index) => {
+                if (item.card_id !== action.card_id) { 
+                    return item
+                }
 
-          if (item.currentCount === 0) {
-            return item;
-          }
+                if (item.currentCount === 0) {
+                    return item;
+                }
 
-          return { ...item, currentCount: item.currentCount - 1 }
+                return { ...item, currentCount: item.currentCount - 1 }
 
-        })
-      };
-    case "RESET_TRACKER":
-      return {
-        ...state,
-        trackerCards: state.trackerCards.map((item, index) => {
-          if (item.card_id !== action.card_id) { 
-            return item
-          }
+            })
+        };
+        case "RESET_TRACKER":
+        return {
+            ...state,
+            trackerCards: state.trackerCards.map((item, index) => {
+                if (item.card_id !== action.card_id) { 
+                    return item
+                }
 
-          return { ...item, currentCount: 0 }
+                return { ...item, currentCount: 0 }
 
-        })
-      };
-    case "FAVORITE":
-      return {
-        ...state,
-        trackerCards: state.trackerCards.map((item, index) => {
-          if (item.card_id !== action.card_id) { 
-            return item
-          }
+            })
+        };
+        case "FAVORITE":
+        return {
+            ...state,
+            trackerCards: state.trackerCards.map((item, index) => {
+                if (item.card_id !== action.card_id) { 
+                    return item
+                }
 
-          if (item.favorite_status == false || item.favorite_status == null) {
-            return { ...item, favorite_status: true }
-          } else {
-            return { ...item, favorite_status: false }
-          }
+                if (item.favorite_status == false || item.favorite_status == null) {
+                    return { ...item, favorite_status: true }
+                } else {
+                    return { ...item, favorite_status: false }
+                }
 
-        })
-      };
-    case "ADD_NEW_TRACKER":
-      return {...state, trackerCards: [...state.trackerCards, action.new_tracker], 
-             totalCardHistory: state.totalCardHistory + 1 }
-    case "REMOVE_TRACKER":
-      state.trackerCards.map((item, index) => {
-        if (item.card_id == action.card_id) {
-          return cardIndex = index;
+            })
+        };
+        case "ADD_NEW_TRACKER":
+        return {...state, trackerCards: [...state.trackerCards, action.new_tracker], 
+            totalCardHistory: state.totalCardHistory + 1 }
+        case "REMOVE_TRACKER":
+            state.trackerCards.map((item, index) => {
+                if (item.card_id == action.card_id) {
+                    return cardIndex = index;
+                }
+            });
+
+            return { 
+                ...state,
+                ...state.trackerCards, 
+                trackerCards: [
+                ...state.trackerCards.slice(0, cardIndex), 
+                ...state.trackerCards.slice(cardIndex + 1)
+                ] 
+            }; 
+            case "DELETE_ALL":
+                return {...state, trackerCards: []}
+            case "OPEN_SETTINGS":
+                return {...state, action: 'openSettings' }
+            case "CLOSE_SETTINGS":
+                return {...state, action: 'closeSettings' }
+            default:
+                return state;
         }
-      });
-      
-      return { 
-        ...state,
-        ...state.trackerCards, 
-        trackerCards: [
-          ...state.trackerCards.slice(0, cardIndex), 
-          ...state.trackerCards.slice(cardIndex + 1)
-        ] 
-      }; 
-    case "OPEN_SETTINGS":
-      return {...state, action: 'openSettings' }
-    case "CLOSE_SETTINGS":
-      return {...state, action: 'closeSettings' }
-    default:
-      return state;
-    }
-};
+    };
 
 
 const persistConfig = {

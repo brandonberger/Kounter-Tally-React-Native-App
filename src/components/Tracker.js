@@ -189,7 +189,7 @@ class Tracker extends React.Component {
 		      			{kounter.favorite_status ? (
 		      				<Image style={styles.favoriteIcon} source={require('../../assets/favorites.png')} />
 		      				) : (
-		      				<Image style={styles.favoriteIcon} source={require('../../assets/favorite_false.png')} />
+		      				<Image style={styles.favoriteIcon} source={require('../../assets/favorites_false.png')} />
 		      				)
 		      			}
 		      			{this.state.fontLoaded ? (
