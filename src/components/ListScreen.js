@@ -33,7 +33,7 @@ function mapDispatchToProps(dispatch) {
       				currentCount: 0
       				}
 	    	})
-	    	: triggerError()
+	    	: null
 	    },
 	    addDrink(card_id) {
 	    	dispatch({
@@ -210,8 +210,6 @@ class ListScreen extends Component {
 			dialogContainerWidth = '0%';
 		}
 
-		console.log(showDialog);
-
 		const config = {
 	      velocityThreshold: 0.01,
 	      directionalOffsetThreshold: 20
@@ -230,11 +228,14 @@ class ListScreen extends Component {
 							Enter name of your kounter.
 						</DialogSubtitle>
 
-						<DialogError>
+						{this.state.dialogError ? (
+							<DialogError>
 							Please Enter a name.
-						</DialogError>
+							</DialogError>
+							) : null
+						}
 
-						<DialogField ref={input => {this.dialogField = input}} onSubmitEditing={() => {this.props.addNewTracker(this.props.numberOfCards, newKounterTitle, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)), newKounterTitle = null, this.openDialog(false), this.dialogField.clear()} } placeholder="Enter Name" placeholderTextColor="#828282" onChangeText={(text) => newKounterTitle = text}>
+						<DialogField ref={input => {this.dialogField = input}} onSubmitEditing={() => { if(newKounterTitle) { this.props.addNewTracker(this.props.numberOfCards, newKounterTitle, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)), newKounterTitle = null, this.openDialog(false), this.dialogField.clear()} else { this.triggerError(); }} } placeholder="Enter Name" placeholderTextColor="#828282" onChangeText={(text) => newKounterTitle = text}>
 						</DialogField>
 						<DialogButtons>
 							<DialogCancel onPress={() => {this.openDialog(false), this.dialogField.clear()}} >
@@ -242,7 +243,7 @@ class ListScreen extends Component {
 									Cancel
 								</DialogCancelText>
 							</DialogCancel>
-							<DialogSubmit onPress={() => {this.props.addNewTracker(this.props.numberOfCards, newKounterTitle, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)), newKounterTitle = null, this.openDialog(false), this.dialogField.clear()}}>
+							<DialogSubmit onPress={() => {if(newKounterTitle) { this.props.addNewTracker(this.props.numberOfCards, newKounterTitle, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)), newKounterTitle = null, this.openDialog(false), this.dialogField.clear()} else { this.triggerError() }}}>
 								<DialogSubmitText>
 									Add
 								</DialogSubmitText>
@@ -494,7 +495,9 @@ const DialogError = styled.Text`
 	color: red;
 	font-size: 12px;
 	text-align: center;
-	margin-top: 10px;
+	position: absolute;
+	top: 35%;
+	width: 100%;
 `;
 
 const DialogField = styled.TextInput`
