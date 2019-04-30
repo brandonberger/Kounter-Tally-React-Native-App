@@ -8,6 +8,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import {SafeAreaView} from 'react-navigation';
 import styled from "styled-components";
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
+import { Ionicons } from '@expo/vector-icons';
 
 function mapStateToProps(state) {
 	console.log(state);
@@ -128,7 +129,7 @@ class ListScreen extends Component {
 	}
 
 	openDialog(status) {
-		this.setState({ dialogOpen: status})
+		this.setState({ dialogOpen: status, dialogError: false})
 	}
 
 	static navigationOptions = {
@@ -210,6 +211,17 @@ class ListScreen extends Component {
 			dialogContainerWidth = '0%';
 		}
 
+
+		if (this.state.dialogError) {
+			errorBorderStyle = "solid";
+			errorBorderColor = "red";
+			errorBorderWidth = 1;
+		} else {
+			errorBorderStyle = "solid";
+			errorBorderColor = "transparent";
+			errorBorderWidth = 0;
+		}
+
 		const config = {
 	      velocityThreshold: 0.01,
 	      directionalOffsetThreshold: 20
@@ -228,15 +240,14 @@ class ListScreen extends Component {
 							Enter name of your kounter.
 						</DialogSubtitle>
 
+						<DialogFieldContainer>
 						{this.state.dialogError ? (
-							<DialogError>
-							Please Enter a name.
-							</DialogError>
+							<Ionicons style={{position: 'absolute', right: 35, top: 25, zIndex: 90}} size={24} color="red" name="ios-alert" />
 							) : null
 						}
-
-						<DialogField ref={input => {this.dialogField = input}} onSubmitEditing={() => { if(newKounterTitle) { this.props.addNewTracker(this.props.numberOfCards, newKounterTitle, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)), newKounterTitle = null, this.openDialog(false), this.dialogField.clear()} else { this.triggerError(); }} } placeholder="Enter Name" placeholderTextColor="#828282" onChangeText={(text) => newKounterTitle = text}>
-						</DialogField>
+							<DialogField style={{borderStyle: errorBorderStyle, borderColor: errorBorderColor, borderWidth: errorBorderWidth}} ref={input => {this.dialogField = input}} onSubmitEditing={() => { if(newKounterTitle) { this.props.addNewTracker(this.props.numberOfCards, newKounterTitle, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)), newKounterTitle = null, this.openDialog(false), this.dialogField.clear(), this.setState({dialogError: false})} else { this.triggerError(); }} } placeholder="Enter Name" placeholderTextColor="#828282" onChangeText={(text) => newKounterTitle = text}>
+							</DialogField>
+						</DialogFieldContainer>
 						<DialogButtons>
 							<DialogCancel onPress={() => {this.openDialog(false), this.dialogField.clear()}} >
 								<DialogCancelText>
@@ -493,11 +504,22 @@ const DialogSubtitle = styled.Text`
 
 const DialogError = styled.Text`
 	color: red;
-	font-size: 12px;
+	font-size: 10px;
 	text-align: center;
 	position: absolute;
 	top: 35%;
 	width: 100%;
+`;
+
+const DialogFieldContainer = styled.View`
+	position: relative;
+`;
+
+const DialogErrorIcon = styled.Image`
+	position: absolute;
+	right: 35;
+	top: 25;
+	z-index: 90;
 `;
 
 const DialogField = styled.TextInput`
