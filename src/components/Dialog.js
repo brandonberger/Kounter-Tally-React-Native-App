@@ -92,7 +92,7 @@ class Dialog extends React.Component {
 		return (
 			<DialogContainer style={{ display: showDialog, width: dialogContainerWidth }}>
 
-				<DialogModal style={{top: hp(50) - 185 / 2, width: dialogWidth}}>
+				<DialogModal style={{bottom: hp(60) - 185 / 2, width: dialogWidth}}>
 					<DialogTitle>
 						Add New Kounter
 					</DialogTitle>
@@ -149,7 +149,6 @@ const DialogContainer = styled.View`
 	height: 100%;
 	background-color: rgba(0,0,0,0.6);
 	position: absolute;
-	margin:0 auto;
 	justify-content: center;
 	align-items: center;
 `;
@@ -160,6 +159,7 @@ const DialogModal = styled.View`
 	position:absolute;
 	background-color:#0D0F19;
 	border-radius: 10px;
+	bottom: 90%;
 `;
 const DialogTitle = styled.Text`
 	color: white;
