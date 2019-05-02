@@ -24,6 +24,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   	return {
 	    addNewTracker(newCardNumber, name, color) {
+
 	    	name ? 
 	    	dispatch({
 	      		type: "ADD_NEW_TRACKER",
@@ -31,6 +32,7 @@ function mapDispatchToProps(dispatch) {
 	      			{
 	      			card_id: newCardNumber + 1,
 	      			title: name,
+	      			description: null,
 	      			color: color,
       				currentCount: 0
       				}
@@ -130,7 +132,7 @@ class ListScreen extends Component {
 	}
 
 	openDialog(status) {
-		this.setState({ dialogOpen: status, dialogError: false})
+		this.setState({ dialogOpen: status, dialogError: false});
 	}
 
 	static navigationOptions = {
@@ -206,7 +208,7 @@ class ListScreen extends Component {
 	    };
 
 	    newKounterTitle = '';
-
+	    
 		return (
 			<Container>
 				<DialogComponent 
@@ -214,7 +216,7 @@ class ListScreen extends Component {
 					open={this.state.dialogOpen} 
 					openDialogMethod={this.openDialog.bind(this)}
 					addNewTracker={this.props.addNewTracker.bind(this)}
-					totalNumberOfCards={this.props.numberOfCards}
+					numberOfCards={this.props.numberOfCards}
 					getRandomColor={getRandomColor.bind(this)}
 					trackerCards={this.props.trackerCards}
 					triggerError={this.triggerError.bind(this)} 
@@ -247,7 +249,7 @@ class ListScreen extends Component {
 								return (
 								<Card key={card_id} style={{backgroundColor: card.color}}>
 									<CardHeader>
-										<TouchableOpacity 
+										<TouchableOpacity style={{justifyContent: 'center', flex: 1}} 
 											onPress={() => { 
 				                              this.props.navigation.push("Tracker", {
 				                                kounter: card
@@ -261,9 +263,9 @@ class ListScreen extends Component {
 											) : null
 										}
 
-										{this.state.fontLoaded ? (
+										{this.state.fontLoaded && card.description ? (
 											<CardDescription style={{fontFamily: 'avenir-medium'}}>
-												Description
+												{card.description}
 											</CardDescription>
 											) : null
 										}
@@ -288,7 +290,7 @@ class ListScreen extends Component {
 							})}
 
 							{this.state.fontLoaded ? (
-								<KountersText style={{fontFamily: 'avenir-heavy'}, {display: showFavorites}}>
+								<KountersText style={{fontFamily: 'avenir-heavy'}, {display: showKounters}}>
 									KOUNTERS
 								</KountersText>
 								) : null
@@ -298,7 +300,7 @@ class ListScreen extends Component {
 								return (
 								<Card key={card_id} style={{backgroundColor: card.color}}>
 									<CardHeader>
-										<TouchableOpacity 
+										<TouchableOpacity style={{justifyContent: 'center', flex: 1}} 
 											onPress={() => { 
 				                              this.props.navigation.push("Tracker", {
 				                                kounter: card
@@ -312,9 +314,9 @@ class ListScreen extends Component {
 											) : null
 										}
 
-										{this.state.fontLoaded ? (
+										{this.state.fontLoaded && card.description ? (
 											<CardDescription style={{fontFamily: 'avenir-medium'}}>
-												Description
+												{card.description}
 											</CardDescription>
 											) : null
 										}
@@ -497,7 +499,6 @@ const CardHeader = styled.View`
 `;
 
 const CardTitle = styled.Text`
-	padding-top: 13;
 	padding-left: 20;
 	color: white;
 	font-size: 18;
@@ -572,8 +573,8 @@ const CardControlsContainer = styled.View`
 `;
 
 const CardButtonContainer = styled.TouchableOpacity`
-	height: 36;
-	width: 36;
+	height: 70;
+	width: 56;
 	justify-content: center;
 	align-items: center;
 `;
@@ -581,12 +582,13 @@ const CardButtonContainer = styled.TouchableOpacity`
 const CardMinusButton = styled.Image`
 	height: 4;
 	width: 14.4;
+	margin-left: 20;
 `;
-
 
 const CardPlusButton = styled.Image`
 	height: 14.4;
 	width: 14.4;
+	margin-right: 20;
 `;
 
 const CardDrinkCount = styled.Text`

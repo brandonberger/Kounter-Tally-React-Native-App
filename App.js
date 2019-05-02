@@ -72,6 +72,35 @@ const reducer = (state = initialState, action) => {
 
             })
         };
+        case "EDIT_NAME":
+        return {
+            ...state,
+            trackerCards: state.trackerCards.map((item, index) => {
+                if (item.card_id !== action.card_id) {
+                    return item;
+                }
+
+                if (item.title != action.newName && action.newName.trim() != '' ) {
+                    return {...item, title: action.newName}
+                } else {
+                    return item;
+                }
+            })
+        }
+        case "EDIT_DESCRIPTION":
+        return {
+            ...state,
+            trackerCards: state.trackerCards.map((item, index) => {
+                if (item.card_id !== action.card_id) {
+                    return item;
+                }
+
+                if (item.description !== action.newDescription) {
+                    return {...item, description: action.newDescription}
+                }
+            })
+        }
+
         case "ADD_NEW_TRACKER":
         return {...state, trackerCards: [...state.trackerCards, action.new_tracker], 
             totalCardHistory: state.totalCardHistory + 1 }

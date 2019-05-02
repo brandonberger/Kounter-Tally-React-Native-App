@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {AlertIOS, Alert, StyleSheet, Text, View, TouchableOpacity, Platform, Image} from 'react-native';
+import {Keyboard, TouchableWithoutFeedback, AlertIOS, Alert, StyleSheet, Text, View, TouchableOpacity, Platform, Image, TextInput} from 'react-native';
 import { Font } from 'expo';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
@@ -43,6 +43,20 @@ function mapDispatchToProps(dispatch) {
     favorite(card_id) {
     	dispatch({
     		type: "FAVORITE",
+    		card_id: card_id
+    	})
+    },
+    editKounterName(card_id, newName) {
+    	dispatch({
+    		type: "EDIT_NAME",
+    		newName: newName,
+    		card_id: card_id
+    	})
+    },
+    editDescription(card_id, newDescription) {
+    	dispatch({
+    		type: "EDIT_DESCRIPTION",
+    		newDescription: newDescription,
     		card_id: card_id
     	})
     }
@@ -98,107 +112,126 @@ class Tracker extends React.Component {
 		if (kounter == undefined) { return null; this.props.navigation.push('List'); }
 
 		return (
-			<View style={[styles.container, {backgroundColor: kounter.color}]}>
-				<View style={styles.navigationContainer}>
-					<TouchableOpacity 
-						onPress={() => this.props.navigation.push('List')}
-					>
-						<Image source={require('../../assets/back_arrow.png')} style={styles.navigationItems} />
-					</TouchableOpacity>
-					<TouchableOpacity onPress={() => {
-										if(Platform.OS == 'ios') { 
-											AlertIOS.alert(
-										    'Delete Kounter', 
-										    'Are you sure you want to delete this Kounter?', 
-								    		[
-								   		   		{
-										   			text: 'Cancel',
-												   	style: 'cancel',
-											   	},
-											   	{
-												   	text: 'Delete',
-												   	onPress: (name) => this.props.removeTracker(card_id, this.props.navigation),
-												   	style: 'destructive'
-											   	},
-										   	],
-											) 
-										} else { this.openDialog(true) } } }>
-						<Image 
-							source={require('../../assets/trash_button.png')} 
-							style={styles.navigationItems}  
-						/>
-					</TouchableOpacity>
-					
-					<MaterialDialog
-					  title="Delete Kounter"
-					  visible={this.state.dialogOpen}
-					  onOk={() => {this.props.removeTracker(card_id, this.props.navigation), this.openDialog(false)} }
-					  onCancel={() => this.openDialog(false)}
-					  okLabel="Delete"
-					>
-					  <Text style={styles.dialogText}>
-					    Are you sure you want to delete this Kounter?
-					  </Text>
-					</MaterialDialog>
-
-				</View>
-
-
-				<View style={styles.trackerContainer}>
-					{this.state.fontLoaded ? (
-						<Text style={[styles.itemName, {fontFamily: 'avenir-medium'} ]}>
-							{kounter.title}
-						</Text>
-						) : null
-					}
-					{this.state.fontLoaded ? (
-						<Text style={[styles.itemDescription, {fontFamily: 'avenir-medium'} ]}>
-							Description
-						</Text>
-						) : null
-					}
-
-					{this.state.fontLoaded ? (
-						<Text style={[styles.currentCount, {fontFamily: 'avenir-medium'}]}>
-							{kounter.currentCount}
-						</Text>
-						):null
-					}
-				</View>
-				<View>
-					<View style={styles.buttonContainer}>
-						<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.subtractDrink(kounter.card_id)}>
-							<Image style={[styles.buttonImage, {height: 48}]} source={require(minus_button_image)} />
+			<TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss(); } }>
+				<View style={[styles.container, {backgroundColor: kounter.color}]}>
+					<View style={styles.navigationContainer}>
+						<TouchableOpacity 
+							onPress={() => this.props.navigation.push('List')}
+						>
+							<Image source={require('../../assets/back_arrow.png')} style={styles.navigationItems} />
 						</TouchableOpacity>
-						<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.addDrink(kounter.card_id)}>
-							<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
+						<TouchableOpacity onPress={() => {
+											if(Platform.OS == 'ios') { 
+												AlertIOS.alert(
+											    'Delete Kounter', 
+											    'Are you sure you want to delete this Kounter?', 
+									    		[
+									   		   		{
+											   			text: 'Cancel',
+													   	style: 'cancel',
+												   	},
+												   	{
+													   	text: 'Delete',
+													   	onPress: (name) => this.props.removeTracker(card_id, this.props.navigation),
+													   	style: 'destructive'
+												   	},
+											   	],
+												) 
+											} else { this.openDialog(true) } } }>
+							<Image 
+								source={require('../../assets/trash_button.png')} 
+								style={styles.navigationItems}  
+							/>
 						</TouchableOpacity>
-			      	</View>
-		      	</View>
+						
+						<MaterialDialog
+						  title="Delete Kounter"
+						  visible={this.state.dialogOpen}
+						  onOk={() => {this.props.removeTracker(card_id, this.props.navigation), this.openDialog(false)} }
+						  onCancel={() => this.openDialog(false)}
+						  okLabel="Delete"
+						>
+						  <Text style={styles.dialogText}>
+						    Are you sure you want to delete this Kounter?
+						  </Text>
+						</MaterialDialog>
+
+					</View>
 
 
-		      	<View style={styles.trackerFooter}>
-		      		<TouchableOpacity style={styles.resetButton} onPress={() => this.props.resetCount(kounter.card_id)}>
-		      			<Image style={styles.resetIcon} source={require('../../assets/reset_button.png')} />
-							{this.state.fontLoaded ? (
-		      					<Text style={[styles.resetButtonText, {fontFamily: 'avenir-medium'}]}> Reset </Text>
-								) : null
-							}
-		      		</TouchableOpacity>
-		      		<TouchableOpacity style={styles.favoriteButton} onPress={() => this.props.favorite(kounter.card_id)}>
-		      			{kounter.favorite_status ? (
-		      				<Image style={styles.favoriteIcon} source={require('../../assets/favorites.png')} />
-		      				) : (
-		      				<Image style={styles.favoriteIcon} source={require('../../assets/favorites_false.png')} />
-		      				)
-		      			}
-		      			{this.state.fontLoaded ? (
-	      					<Text style={[styles.favoriteButtonText, {fontFamily: 'avenir-medium'}]}> Favorite </Text>
+					<View style={styles.trackerContainer}>
+						{this.state.fontLoaded ? (
+							<TextInput 
+								autoFocus={false} 
+								style={[styles.itemName, {fontFamily: 'avenir-medium'} ]}
+								onChangeText={(text) => {this.props.editKounterName(kounter.card_id, text)}}
+							>
+								{kounter.title}
+							</TextInput>
 							) : null
 						}
-		      		</TouchableOpacity>
-		      	</View>
-			</View>
+						{this.state.fontLoaded && !kounter.description ? (
+							<TextInput 
+								autoFocus={false}
+								style={[styles.itemDescription, {fontFamily: 'avenir-medium'} ]}
+								onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
+								placeholder="Add Description"
+								placeholderTextColor="white"
+							>
+							</TextInput>
+							) : (
+							<TextInput 
+								autoFocus={false}
+								style={[styles.itemDescription, {fontFamily: 'avenir-medium'} ]}
+								onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
+							>
+								{kounter.description}
+							</TextInput>
+							)
+						}
+
+						{this.state.fontLoaded ? (
+							<Text style={[styles.currentCount, {fontFamily: 'avenir-medium'}]}>
+								{kounter.currentCount}
+							</Text>
+							):null
+						}
+					</View>
+					<View>
+						<View style={styles.buttonContainer}>
+							<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.subtractDrink(kounter.card_id)}>
+								<Image style={[styles.buttonImage, {height: 48}]} source={require(minus_button_image)} />
+							</TouchableOpacity>
+							<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.addDrink(kounter.card_id)}>
+								<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
+							</TouchableOpacity>
+				      	</View>
+			      	</View>
+
+
+			      	<View style={styles.trackerFooter}>
+			      		<TouchableOpacity style={styles.resetButton} onPress={() => this.props.resetCount(kounter.card_id)}>
+			      			<Image style={styles.resetIcon} source={require('../../assets/reset_button.png')} />
+								{this.state.fontLoaded ? (
+			      					<Text style={[styles.resetButtonText, {fontFamily: 'avenir-medium'}]}> Reset </Text>
+									) : null
+								}
+			      		</TouchableOpacity>
+			      		<TouchableOpacity style={styles.favoriteButton} onPress={() => this.props.favorite(kounter.card_id)}>
+			      			{kounter.favorite_status ? (
+			      				<Image style={styles.favoriteIcon} source={require('../../assets/favorites.png')} />
+			      				) : (
+			      				<Image style={styles.favoriteIcon} source={require('../../assets/favorites_false.png')} />
+			      				)
+			      			}
+			      			{this.state.fontLoaded ? (
+		      					<Text style={[styles.favoriteButtonText, {fontFamily: 'avenir-medium'}]}> Favorite </Text>
+								) : null
+							}
+			      		</TouchableOpacity>
+			      	</View>
+				</View>
+			</TouchableWithoutFeedback>
 		);
 	}
 }
@@ -256,7 +289,6 @@ const styles = StyleSheet.create({
 		color: '#fff',
 		fontSize: 16,
 		marginTop: 8,
-		textTransform: 'uppercase',
 		textAlign: 'center',
 	},
 	currentCount: {

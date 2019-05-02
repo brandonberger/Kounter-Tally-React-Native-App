@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, View, Text, Image } from 'react-native';
+import { Keyboard, TouchableOpacity, View, Text, Image } from 'react-native';
 import styled from "styled-components";
 import { Ionicons } from '@expo/vector-icons';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -8,22 +8,28 @@ class Dialog extends React.Component {
 	
 	constructor(props){
    		super(props);
+   		this.state = {
+   			submitButtonDisabled: true
+   		}
  	}
+
+
+ 	componentDidUpdate() {
+  		if (this.props.open && !this.dialogField.isFocused()) {
+  			this.dialogField.focus();
+  		}
+  	}
 
 	render() {
 		let dialogOpen = this.props.open;
+
+
 		let dialogErrorStatus = this.props.dialogErrorStatus;
 
-		showDialog = 'none';
-
-		if (dialogOpen) {
-			showDialog = 'flex';
-			dialogWidth = 300;
-			dialogContainerWidth = '100%';
+		if (this.state.submitButtonDisabled) {
+			submitButtonColor = '#828282';
 		} else {
-			showDialog = 'none';
-			dialogWidth = '0%';
-			dialogContainerWidth = '0%';
+			submitButtonColor = '#FFFFFF';
 		}
 
 		if (dialogErrorStatus) {
@@ -37,9 +43,22 @@ class Dialog extends React.Component {
 		}
 
 
-		addNewKounter = (newKounterTitle) => {
+		handleDialog = () => {
+			showDialog = 'none';
+			if (dialogOpen) {
+				showDialog = 'flex';
+				dialogWidth = 300;
+				dialogContainerWidth = '100%';
+			} else {
+				showDialog = 'none';
+				dialogWidth = '0%';
+				dialogContainerWidth = '0%';
+			}
+		}
 
-			console.log(this.props.numberOfCards);
+		handleDialog();
+
+		addNewKounter = (newKounterTitle) => {
 
 			if(newKounterTitle) { 
 				this.props.addNewTracker(
@@ -55,13 +74,24 @@ class Dialog extends React.Component {
 				this.props.openDialogMethod(false), 
 				this.dialogField.clear(), 
 				this.setState({dialogError: false})
+				Keyboard.dismiss();
 			} else { 
 				this.props.triggerError(); 
 			}
 		}
 
+
+		handleDisabledButton = (text) => {
+			if (text.trim() != '' && text.length < 15) {
+				this.setState({submitButtonDisabled: false});
+			} else {
+				this.setState({submitButtonDisabled: true});
+			}
+		}
+
 		return (
 			<DialogContainer style={{ display: showDialog, width: dialogContainerWidth }}>
+
 				<DialogModal style={{top: hp(50) - 185 / 2, width: dialogWidth}}>
 					<DialogTitle>
 						Add New Kounter
@@ -89,18 +119,18 @@ class Dialog extends React.Component {
 							} 
 							placeholder="Enter Name" 
 							placeholderTextColor="#828282" 
-							onChangeText={(text) => newKounterTitle = text}
+							onChangeText={(text) => {newKounterTitle = text, handleDisabledButton(text)}}
 						>
 						</DialogField>
 					</DialogFieldContainer>
 					<DialogButtons>
-						<DialogCancel onPress={() => {this.props.openDialogMethod(false), this.dialogField.clear()}} >
+						<DialogCancel onPress={() => {this.props.openDialogMethod(false), this.dialogField.clear(), Keyboard.dismiss()}} >
 							<DialogCancelText>
 								Cancel
 							</DialogCancelText>
 						</DialogCancel>
-						<DialogSubmit onPress={() => { addNewKounter(newKounterTitle) }}>
-							<DialogSubmitText>
+						<DialogSubmit onPress={() => { addNewKounter(newKounterTitle) }} disabled={this.state.submitButtonDisabled}>
+							<DialogSubmitText style={{color: submitButtonColor}}>
 								Add
 							</DialogSubmitText>
 						</DialogSubmit>
@@ -190,7 +220,6 @@ const DialogSubmit = styled.TouchableOpacity`
 `;
 
 const DialogSubmitText = styled.Text`
-	color: white;
 	font-size: 18px;
 	letter-spacing: -0.375px;
 `;
