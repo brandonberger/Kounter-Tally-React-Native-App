@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import { Font, LinearGradient } from 'expo';
-import { Keyboard, Animated, Easing, StatusBar, Alert, Platform, AlertIOS, ScrollView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
+import { TouchableWithoutFeedback, Keyboard, Animated, Easing, StatusBar, Alert, Platform, AlertIOS, ScrollView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
 import { persistStore, persistReducer } from 'redux-persist';
 import { connect } from 'react-redux';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {SafeAreaView} from 'react-navigation';
 import styled from "styled-components";
-import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 import { Ionicons } from '@expo/vector-icons';
 import { Dialog as DialogComponent } from './Dialog';
-
+import { Modal as ModalComponent } from './Modal';
 
 function mapStateToProps(state) {
-	console.log(state);
 	return { 
 			 action: state.action,
 		   	 trackerCards: state.trackerCards,
@@ -49,16 +47,6 @@ function mapDispatchToProps(dispatch) {
 	    	dispatch({
 	      		type: "SUBTRACT_DRINK",
 	      		card_id: card_id
-	    	})
-	    },
-	    openSettings() {
-	    	dispatch({
-	    		type: "OPEN_SETTINGS"
-	    	})
-	    },
-	    closeSettings() {
-	    	dispatch({
-	    		type: "CLOSE_SETTINGS"
 	    	})
 	    },
 	    deleteAll() {
@@ -103,7 +91,7 @@ class ListScreen extends Component {
 		  this.state = { 
 		  	isLoading: true, 
 		  	dialogOpen: false,
-		  	menuTop: new Animated.Value(300),
+		  	modalOpen: false
     	}
 	}
 
@@ -112,10 +100,9 @@ class ListScreen extends Component {
     	dialogOpen: false,
   	};
 
-
-
-	triggerError() {
-		this.setState({dialogError: true})
+	triggerError(status) {
+		console.log('1'+status);
+		this.setState({dialogError: status})
 	}
 
 	async componentDidMount() {
@@ -135,36 +122,23 @@ class ListScreen extends Component {
 		this.setState({ dialogOpen: status, dialogError: false});
 	}
 
+	openSettings(status = true) {
+		this.setState({ modalOpen: status });
+		this.showOverlay(status);
+	}
+
+	showOverlay(status = false) {
+		(status) ? overlayWidth = '100%' : overlayWidth = '0%';
+		this.setState({ showOverlay: overlayWidth })
+	}
+
 	static navigationOptions = {
 	    header: null
   	};
 
-  	componentDidUpdate() {
-  		this.toggleSettings();
-  	}
-
-  	toggleSettings = () => {
-  		if (Platform.OS == 'ios') {
-			toValue = hp(0 );
-		} else {
-			toValue = hp(0);
-		}
-
-
-  		if (this.props.action == "openSettings") {
-			Animated.spring(this.state.menuTop, {
-				toValue: toValue
-			}).start();
-  		}
-
-  		if (this.props.action == "closeSettings") {
-			Animated.spring(this.state.menuTop, {
-				toValue: 207
-			}).start();
-  		}
-  	};	
 
 	render() {
+
 		const newCardName = 'card_'+this.props.currentTrackerCount;
 
 		if (Platform.OS == 'android') { 
@@ -201,12 +175,6 @@ class ListScreen extends Component {
 			showAddButton = 'none';
 		}
 
-
-		const config = {
-	      velocityThreshold: 0.01,
-	      directionalOffsetThreshold: 20
-	    };
-
 	    newKounterTitle = '';
 	    
 		return (
@@ -229,7 +197,8 @@ class ListScreen extends Component {
 								) : null
 							}
 							<SettingsButton 
-								onPress={this.props.openSettings}>
+								onPress={() => this.openSettings(true)}
+							>
 								<Image source={require('../../assets/settings.png')} />
 							</SettingsButton>
 
@@ -350,63 +319,24 @@ class ListScreen extends Component {
 					</LinearGradient>
 				</SafeAreaView>
 
-				<AnimatedContainer 
-		          		style={{ 
-			            	transform: [{ translateY: this.state.menuTop }], 
-			            }}>
-			            <GestureRecognizer style={{height: '100%', width: '100%', backgroundColor: '#0D0F19'}} onSwipeDown={this.props.closeSettings} config={config}>
-				            <SettingsHeader>
-				            	<SettingsMenuSettingsImage source={require('../../assets/settings.png')} />
-				            	{this.state.fontLoaded ? (
-				            		<SettingsMenuText style={{fontFamily: 'avenir-medium'}}> Settings </SettingsMenuText>
-				            		) : null
-				            	}
-				            </SettingsHeader>
+				<TouchableWithoutFeedback onPress={() => this.openSettings(false)}>
+					<Overlay style={{width: this.state.showOverlay}}>
+					</Overlay>
+				</TouchableWithoutFeedback>
 
-				            <SettingsMenuList>
-				            	<SettingsMenuItem>
-				            		<MenuItemName>
-				            			iCloud Sync
-				            		</MenuItemName>
-				            		<MenuItemToggle>
-				            			<MenuItemToggleButton source={require('../../assets/toggle.png')} />
-				            		</MenuItemToggle>
-				            	</SettingsMenuItem>
-				            </SettingsMenuList>
-
-				            <SettingsDangerButton onPress={this.props.deleteAll}>
-				            	{this.state.fontLoaded ? (
-				            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>Erase All Data</SettingsDangerButtonText>
-				            		) : null
-				            	}
-				            </SettingsDangerButton>
-	            		</GestureRecognizer>
-	            	</AnimatedContainer>
-
+				<ModalComponent 
+					toggleStatus={this.state.modalOpen}
+					openModalMethod={this.openSettings.bind(this)}
+					fontLoaded={this.state.fontLoaded}
+					buttonContent="Erase All Data"
+					buttonMethod={this.props.deleteAll}
+				/>
 
 	            	{!kountersExist && !favoritesExist ? (
             			<EmptyKountersContainer style={{height: hp(90)}}>
             				<EmptyKountersAddButton 
-								// onPress={() => {if (Platform.OS == 'ios') {
-								// 					AlertIOS.prompt('Add New Kounter', 
-								// 					   'Please name your Kounter.', 
-								// 					   [
-								// 						   {
-								// 						   	text: 'Cancel',
-								// 						   	style: 'cancel',
-								// 						   },
-								// 						   {
-								// 						   	text: 'OK',
-								// 						   	onPress: (name) => this.props.addNewTracker(this.props.numberOfCards, name, getRandomColor((this.props.trackerCards.length > 0) ? this.props.trackerCards[this.props.trackerCards.length - 1].color : null)),
-								// 						   },
-								// 					   ],
-								// 					   'plain-text',
-								// 					)
-								// 				} else { this.openDialog(true) }
-								// 			}
-									onPress={() => { this.openDialog(true)} }
-
-										>
+								onPress={() => { this.openDialog(true)} }
+							>
 								<EmptyKountersAddButtonImage source={require(plus_button_image)} />
 							</EmptyKountersAddButton>
 
@@ -427,6 +357,16 @@ class ListScreen extends Component {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ListScreen);
+
+
+
+const Overlay = styled.View`
+	height: 100%;
+	background-color: rgba(0,0,0,0.6);
+	position: absolute;
+	z-index: 999;
+`;
+
 
 const Container = styled.View`
 	flex: 1;
@@ -486,7 +426,7 @@ const Card = styled.View`
 	height: 72;
 	width: 94.66%;
 	background-color: #EF5350;
-	border-radius: 8;
+	border-radius: 10;
 	margin: 7.5px;
 	position: relative;
 	flex: 1;
@@ -612,87 +552,6 @@ const NewCardButtonImage = styled.Image`
 	resize-mode: center;
 `;
 
-const SettingsContainer = styled.View`
-	height: 207;
-	background-color: #0D0F19;
-	width: 100%;
-	position: absolute;
-	z-index: 1000;
-	bottom: 0;
-	border-top-left-radius: 20px;
-	border-top-right-radius: 20px;
-`;
-
-const AnimatedContainer = Animated.createAnimatedComponent(SettingsContainer);
-
-const SettingsHeader = styled.View`
-	padding-top: 21;
-	padding-left: 16;
-	flex-direction: row;
-	justify-content: flex-start;
-	align-items: center;
-`;
-
-const SettingsMenuSettingsImage = styled.Image`
-	height: 20;
-	width: 20;
-`;
-
-const SettingsMenuText = styled.Text`
-	font-size: 18px;
-	padding-left: 11px;
-	color: #ffffff;
-`;
-
-const SettingsMenuList = styled.View`
-	height: auto;
-	width: 100%;
-	margin-top: 22px;
-`;
-
-const SettingsMenuItem = styled.View`
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-	height: 43.5px;
-	padding-left: 16;
-	padding-right: 16;
-	border-top-width: 0.2px;
-	border-top-color: #292929;
-	border-bottom-width: 0.2px;
-	border-bottom-color: #292929;
-`;
-
-const MenuItemName = styled.Text`
-	color: #ffffff;
-	font-size: 17px;
-	letter-spacing: -0.41px;
-`;
-
-const MenuItemToggle = styled.View`
-	height: 32px;
-	width: 52px;
-`;
-
-const MenuItemToggleButton = styled.Image`
-	
-`;
-
-const SettingsDangerButton = styled.TouchableOpacity`
-	background-color: #DC2727;
-	justify-content: center;
-	margin:0 auto;
-	width: 220px;
-	margin-top: 20;
-	height: 40;
-	border-radius: 10px;
-`;
-
-const SettingsDangerButtonText = styled.Text`
-	color: #ffffff;
-	text-align: center;
-	font-size: 16;
-`;
 
 const styles = StyleSheet.create({
 	dialog: {

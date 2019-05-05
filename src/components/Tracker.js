@@ -5,6 +5,8 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { connect } from 'react-redux';
 import DialogInput from 'react-native-dialog-input';
 import { MaterialDialog } from 'react-native-material-dialog';
+import { Modal as ModalComponent } from './Modal';
+import styled from "styled-components";
 
 function mapStateToProps(state) {
 	console.log(state.trackerCards);
@@ -62,16 +64,17 @@ function mapDispatchToProps(dispatch) {
     }
   }
 }
-
 var plus_button_image = '../../assets/plus_button.png';
 var minus_button_image = '../../assets/minus_button.png';
 
 
 class Tracker extends React.Component {
 	
+
 	state = {
     	fontLoaded: false,
     	dialogOpen: false,
+    	modalOpen: false,
   	};
 
 	async componentDidMount() {
@@ -93,6 +96,15 @@ class Tracker extends React.Component {
 		this.setState({ dialogOpen: status})
 	}
 
+	openModal(status = true) {
+		this.setState({ modalOpen: status });
+		this.showOverlay(status);
+	}
+
+	showOverlay(status = false) {
+		(status) ? overlayWidth = '100%' : overlayWidth = '0%';
+		this.setState({ showOverlay: overlayWidth })
+	}
 
 	render() {
 
@@ -112,37 +124,45 @@ class Tracker extends React.Component {
 		if (kounter == undefined) { return null; this.props.navigation.push('List'); }
 
 		return (
+			<View style={{flex: 1}}>
 			<TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss(); } }>
+
 				<View style={[styles.container, {backgroundColor: kounter.color}]}>
+
 					<View style={styles.navigationContainer}>
 						<TouchableOpacity 
 							onPress={() => this.props.navigation.push('List')}
 						>
 							<Image source={require('../../assets/back_arrow.png')} style={styles.navigationItems} />
 						</TouchableOpacity>
-						<TouchableOpacity onPress={() => {
-											if(Platform.OS == 'ios') { 
-												AlertIOS.alert(
-											    'Delete Kounter', 
-											    'Are you sure you want to delete this Kounter?', 
-									    		[
-									   		   		{
-											   			text: 'Cancel',
-													   	style: 'cancel',
-												   	},
-												   	{
-													   	text: 'Delete',
-													   	onPress: (name) => this.props.removeTracker(card_id, this.props.navigation),
-													   	style: 'destructive'
-												   	},
-											   	],
-												) 
-											} else { this.openDialog(true) } } }>
+						<TouchableOpacity 
+							onPress={() => this.openModal(true)}
+
+							// onPress={() => {
+							// 	if(Platform.OS == 'ios') { 
+							// 		AlertIOS.alert(
+							// 	    'Delete Kounter', 
+							// 	    'Are you sure you want to delete this Kounter?', 
+						 //    		[
+						 //   		   		{
+							// 	   			text: 'Cancel',
+							// 			   	style: 'cancel',
+							// 		   	},
+							// 		   	{
+							// 			   	text: 'Delete',
+							// 			   	onPress: (name) => this.props.removeTracker(card_id, this.props.navigation),
+							// 			   	style: 'destructive'
+							// 		   	},
+							// 	   	],
+							// 		) 
+							// 	} else { this.openDialog(true) } } }
+							>
 							<Image 
 								source={require('../../assets/trash_button.png')} 
 								style={styles.navigationItems}  
 							/>
 						</TouchableOpacity>
+
 						
 						<MaterialDialog
 						  title="Delete Kounter"
@@ -199,12 +219,12 @@ class Tracker extends React.Component {
 					</View>
 					<View>
 						<View style={styles.buttonContainer}>
-							<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.subtractDrink(kounter.card_id)}>
-								<Image style={[styles.buttonImage, {height: 48}]} source={require(minus_button_image)} />
-							</TouchableOpacity>
-							<TouchableOpacity style={styles.RoundButton} onPress={() => this.props.addDrink(kounter.card_id)}>
-								<Image style={[styles.buttonImage, {height: 48}]} source={require(plus_button_image)} />
-							</TouchableOpacity>
+							<KounterControlButton onPress={() => this.props.subtractDrink(kounter.card_id)}>
+								<KounterControlButtonImage style={{height: 48}} source={require(minus_button_image)} />
+							</KounterControlButton>
+							<KounterControlButton onPress={() => this.props.addDrink(kounter.card_id)}>
+								<KounterControlButtonImage style={{height: 48}} source={require(plus_button_image)} />
+							</KounterControlButton>
 				      	</View>
 			      	</View>
 
@@ -230,26 +250,50 @@ class Tracker extends React.Component {
 							}
 			      		</TouchableOpacity>
 			      	</View>
+
+
 				</View>
 			</TouchableWithoutFeedback>
+			
+			<TouchableWithoutFeedback onPress={() => this.openModal(false)}>
+				<Overlay style={{width: this.state.showOverlay}}></Overlay>
+			</TouchableWithoutFeedback>		 
+			<ModalComponent 
+				toggleStatus={this.state.modalOpen}
+				openModalMethod={this.openModal.bind(this)}
+				fontLoaded={this.state.fontLoaded}
+				buttonContent="Erase All Data"
+				modalText={'Are you sure you want to delete “'+ kounter.title + '"?'}
+			/>
+
+			</View>
+
 		);
 	}
 }
 
 
-const styles = StyleSheet.create({
+const Overlay = styled.View`
+	height: 100%;
+	background-color: rgba(0,0,0,0.6);
+	position: absolute;
+	z-index: 999;
+`;
 
-	RoundButton: {
-		height: 48,
-		width: 48,
-		borderColor: '#fff',
-	    alignItems: 'center',
-	},
-	buttonImage: {
-		position: 'absolute',
-		width: 48,
-		resizeMode: 'center'
-	},
+const KounterControlButton = styled.View`
+	height: 48;
+	width: 48;
+	border-color: #fff;
+	align-items: center;
+`;
+
+const KounterControlButtonImage = styled.Image`
+	position: absolute;
+	width: 48;
+	resize-mode: center;
+`;
+
+const styles = StyleSheet.create({
 	navigationContainer: {
 		marginTop: '7.5%',
 		width: '100%',

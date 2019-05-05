@@ -13,7 +13,6 @@ class Dialog extends React.Component {
    		}
  	}
 
-
  	componentDidUpdate() {
   		if (this.props.open && !this.dialogField.isFocused()) {
   			this.dialogField.focus();
@@ -25,6 +24,7 @@ class Dialog extends React.Component {
 
 
 		let dialogErrorStatus = this.props.dialogErrorStatus;
+
 
 		if (this.state.submitButtonDisabled) {
 			submitButtonColor = '#828282';
@@ -60,7 +60,9 @@ class Dialog extends React.Component {
 
 		addNewKounter = (newKounterTitle) => {
 
-			if(newKounterTitle) { 
+			console.log(newKounterTitle);
+
+			if(newKounterTitle.trim()) { 
 				this.props.addNewTracker(
 					this.props.numberOfCards, 
 				 	newKounterTitle, 
@@ -73,10 +75,10 @@ class Dialog extends React.Component {
 				newKounterTitle = null, 
 				this.props.openDialogMethod(false), 
 				this.dialogField.clear(), 
-				this.setState({dialogError: false})
+				this.props.triggerError(false);
 				Keyboard.dismiss();
 			} else { 
-				this.props.triggerError(); 
+				this.props.triggerError(true);
 			}
 		}
 
@@ -84,6 +86,7 @@ class Dialog extends React.Component {
 		handleDisabledButton = (text) => {
 			if (text.trim() != '' && text.length < 15) {
 				this.setState({submitButtonDisabled: false});
+				// this.props.triggerError(false);
 			} else {
 				this.setState({submitButtonDisabled: true});
 			}
@@ -119,7 +122,7 @@ class Dialog extends React.Component {
 							} 
 							placeholder="Enter Name" 
 							placeholderTextColor="#828282" 
-							onChangeText={(text) => {newKounterTitle = text, handleDisabledButton(text)}}
+							onChangeText={(text) => { newKounterTitle = text, handleDisabledButton(text)}}
 						>
 						</DialogField>
 					</DialogFieldContainer>
@@ -129,7 +132,7 @@ class Dialog extends React.Component {
 								Cancel
 							</DialogCancelText>
 						</DialogCancel>
-						<DialogSubmit onPress={() => { addNewKounter(newKounterTitle) }} disabled={this.state.submitButtonDisabled}>
+						<DialogSubmit onPress={() => {addNewKounter(newKounterTitle) }} disabled={this.state.submitButtonDisabled}>
 							<DialogSubmitText style={{color: submitButtonColor}}>
 								Add
 							</DialogSubmitText>
