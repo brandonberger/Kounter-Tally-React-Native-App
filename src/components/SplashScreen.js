@@ -1,6 +1,7 @@
 import React from 'react';
 import {Text, View} from 'react-native';
 import { Font } from 'expo';
+import styled from "styled-components";
 
 class SplashScreen extends React.Component {
 
@@ -11,16 +12,15 @@ class SplashScreen extends React.Component {
   	static navigationOptions = {
 	    header: null
   	};
- 
 
   	performTimeConsumingTask = async() => {
 	    return new Promise((resolve) =>
-	      setTimeout(
-	        () => { resolve('result') },
-	        200
-	      )
+	    	setTimeout(
+	        	() => { resolve('result') },
+	        	200
+	      	)
 	    )
-	  }
+  	}
 
   	async componentDidMount() {
 		await Font.loadAsync({
@@ -38,66 +38,63 @@ class SplashScreen extends React.Component {
 	}
 
 	render() {
-		const viewStyles = {
-			backgroundColor: '#0d0f19',
-			flex: 1,
-			// justifyContent: 'flex-start',
-		};
-		const kStyles = {
-			color: 'white',
-			fontSize: 250,
-			textAlign: 'center',
-			fontWeight: 'bold',
-			top: '30%',
-			fontFamily: 'anodina-regular'
-		};
-		const subtitleStyles = {
-			color: 'white',
-			fontFamily: 'anodina-regular',
-			fontSize: 40,
-			letterSpacing: 5,
-			textAlign: 'center',
-			top: '20%'
-		};
-
-		const madeWithContainer = {
-	  		marginTop: 'auto',
-	  		marginBottom: 50,
-
-		}
-
-		const madeWithStyles = {
-			color: 'white',
-			fontFamily: 'anodina-regular',
-			fontSize: 12,
-			textAlign: 'center'
-		}
-
 		return (
-			<View style={viewStyles}>
+			<SplashContainer>
 				<View>
 					{this.state.fontLoaded ? (
-						<Text style={kStyles}>
+						<SplashTitle style={{fontFamily: 'anodina-regular'}}>
 							K
-						</Text>
+						</SplashTitle>
 					) : null }
 					{this.state.fontLoaded ? (
-						<Text style={subtitleStyles}>
+						<SplashSubTitle style={{fontFamily: 'anodina-regular'}}>
 							KOUNTER
-						</Text>
+						</SplashSubTitle>
 					) : null }
 					</View>
-					<View style={madeWithContainer}>
+					<SplashFooter>
 						{this.state.fontLoaded ? (
-							<Text style={madeWithStyles}>
+							<SplashFooterText style={{fontFamily: 'anodina-regular'}}>
 								Made with {String.fromCodePoint(0x1F92C)} in Melbourne, FL
-							</Text>
+							</SplashFooterText>
 						) : null }
 
-					</View>
-			</View>
+					</SplashFooter>
+			</SplashContainer>
 		);
 	}
 }
 
 export default SplashScreen;
+
+const SplashContainer = styled.View`
+	background-color: #0d0f19;
+	flex: 1;
+`;
+
+const SplashTitle = styled.Text`
+	color: white;
+	font-size: 250;
+	text-align: center;
+	font-weight: bold;
+	top: 30%;
+`;
+
+const SplashSubTitle = styled.Text`
+	color: white;
+	font-size: 40;
+	letter-spacing: 5;
+	text-align: center;
+	top: 20%;
+`;
+
+const SplashFooter = styled.View`
+	margin-top: auto;
+	margin-bottom: 50;
+`;
+
+const SplashFooterText = styled.Text`
+	color: white;
+	font-size: 12;
+	text-align: center;
+`;

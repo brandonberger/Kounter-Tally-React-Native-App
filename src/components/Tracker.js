@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import {Keyboard, TouchableWithoutFeedback, AlertIOS, Alert, StyleSheet, Text, View, TouchableOpacity, Platform, Image, TextInput} from 'react-native';
+import {Keyboard, TouchableWithoutFeedback, Text, View, TouchableOpacity, Image, TextInput} from 'react-native';
 import { Font } from 'expo';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
-import DialogInput from 'react-native-dialog-input';
-import { MaterialDialog } from 'react-native-material-dialog';
 import { Modal as ModalComponent } from './Modal';
 import styled from "styled-components";
 
@@ -127,13 +125,13 @@ class Tracker extends React.Component {
 			<View style={{flex: 1}}>
 			<TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss(); } }>
 
-				<View style={[styles.container, {backgroundColor: kounter.color}]}>
+				<Container style={{backgroundColor: kounter.color}}>
 
-					<View style={styles.navigationContainer}>
+					<NavigationContainer>
 						<TouchableOpacity 
 							onPress={() => this.props.navigation.push('List')}
 						>
-							<Image source={require('../../assets/back_arrow.png')} style={styles.navigationItems} />
+							<NavigationButtonImage source={require('../../assets/back_arrow.png')}/>
 						</TouchableOpacity>
 						<TouchableOpacity 
 							onPress={() => this.openModal(true)}
@@ -157,102 +155,88 @@ class Tracker extends React.Component {
 							// 		) 
 							// 	} else { this.openDialog(true) } } }
 							>
-							<Image 
+							<NavigationButtonImage 
 								source={require('../../assets/trash_button.png')} 
-								style={styles.navigationItems}  
 							/>
 						</TouchableOpacity>
 
-						
-						<MaterialDialog
-						  title="Delete Kounter"
-						  visible={this.state.dialogOpen}
-						  onOk={() => {this.props.removeTracker(card_id, this.props.navigation), this.openDialog(false)} }
-						  onCancel={() => this.openDialog(false)}
-						  okLabel="Delete"
-						>
-						  <Text style={styles.dialogText}>
-						    Are you sure you want to delete this Kounter?
-						  </Text>
-						</MaterialDialog>
-
-					</View>
+					</NavigationContainer>
 
 
-					<View style={styles.trackerContainer}>
+					<KounterContent style={{marginTop: hp('18%')}}>
 						{this.state.fontLoaded ? (
-							<TextInput 
+							<KounterTitleField 
 								autoFocus={false} 
-								style={[styles.itemName, {fontFamily: 'avenir-medium'} ]}
+								style={{fontFamily: 'avenir-medium'}}
 								onChangeText={(text) => {this.props.editKounterName(kounter.card_id, text)}}
 							>
 								{kounter.title}
-							</TextInput>
+							</KounterTitleField>
 							) : null
 						}
 						{this.state.fontLoaded && !kounter.description ? (
-							<TextInput 
+							<ItemDescriptionField 
 								autoFocus={false}
-								style={[styles.itemDescription, {fontFamily: 'avenir-medium'} ]}
+								style={{fontFamily: 'avenir-medium'}}
 								onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
 								placeholder="Add Description"
 								placeholderTextColor="white"
 							>
-							</TextInput>
+							</ItemDescriptionField>
 							) : (
-							<TextInput 
+							<ItemDescriptionField 
 								autoFocus={false}
-								style={[styles.itemDescription, {fontFamily: 'avenir-medium'} ]}
+								style={{fontFamily: 'avenir-medium'}}
 								onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
 							>
 								{kounter.description}
-							</TextInput>
+							</ItemDescriptionField>
 							)
 						}
 
 						{this.state.fontLoaded ? (
-							<Text style={[styles.currentCount, {fontFamily: 'avenir-medium'}]}>
+							<KounterCount style={{fontFamily: 'avenir-medium'}}>
 								{kounter.currentCount}
-							</Text>
+							</KounterCount>
 							):null
 						}
-					</View>
+					</KounterContent>
 					<View>
-						<View style={styles.buttonContainer}>
+						<KounterControls>
 							<KounterControlButton onPress={() => this.props.subtractDrink(kounter.card_id)}>
 								<KounterControlButtonImage style={{height: 48}} source={require(minus_button_image)} />
 							</KounterControlButton>
 							<KounterControlButton onPress={() => this.props.addDrink(kounter.card_id)}>
 								<KounterControlButtonImage style={{height: 48}} source={require(plus_button_image)} />
 							</KounterControlButton>
-				      	</View>
+				      	</KounterControls>
 			      	</View>
 
 
-			      	<View style={styles.trackerFooter}>
-			      		<TouchableOpacity style={styles.resetButton} onPress={() => this.props.resetCount(kounter.card_id)}>
-			      			<Image style={styles.resetIcon} source={require('../../assets/reset_button.png')} />
+			      	<KounterSubControls>
+			      		<ResetButton onPress={() => this.props.resetCount(kounter.card_id)}>
+			      			<ResetIcon source={require('../../assets/reset_button.png')} />
 								{this.state.fontLoaded ? (
-			      					<Text style={[styles.resetButtonText, {fontFamily: 'avenir-medium'}]}> Reset </Text>
+			      					<ResetButtonText style={{fontFamily: 'avenir-medium'}}> Reset </ResetButtonText>
 									) : null
 								}
-			      		</TouchableOpacity>
-			      		<TouchableOpacity style={styles.favoriteButton} onPress={() => this.props.favorite(kounter.card_id)}>
+			      		</ResetButton>
+			      		<FavoriteButton onPress={() => this.props.favorite(kounter.card_id)}>
 			      			{kounter.favorite_status ? (
-			      				<Image style={styles.favoriteIcon} source={require('../../assets/favorites.png')} />
+			      				<FavoriteIcon source={require('../../assets/favorites.png')} />
 			      				) : (
-			      				<Image style={styles.favoriteIcon} source={require('../../assets/favorites_false.png')} />
+			      				<FavoriteIcon source={require('../../assets/favorites_false.png')} />
 			      				)
 			      			}
 			      			{this.state.fontLoaded ? (
-		      					<Text style={[styles.favoriteButtonText, {fontFamily: 'avenir-medium'}]}> Favorite </Text>
+		      					<FavoriteButtonText style={{fontFamily: 'avenir-medium'}}> Favorite </FavoriteButtonText>
 								) : null
 							}
-			      		</TouchableOpacity>
-			      	</View>
+			      		</FavoriteButton>
+			      	</KounterSubControls>
 
 
-				</View>
+				</Container>
 			</TouchableWithoutFeedback>
 			
 			<TouchableWithoutFeedback onPress={() => this.openModal(false)}>
@@ -273,6 +257,19 @@ class Tracker extends React.Component {
 }
 
 
+const NavigationContainer = styled.View`
+	margin-top: 14%;
+	width: 100%;
+	color: #fff;
+	position: absolute;
+	top: 0;
+	height: 20%;
+	flex-direction: row;
+	justify-content: space-between;
+	padding-left: 25;
+	padding-right: 25;
+`;
+
 const Overlay = styled.View`
 	height: 100%;
 	background-color: rgba(0,0,0,0.6);
@@ -280,7 +277,7 @@ const Overlay = styled.View`
 	z-index: 999;
 `;
 
-const KounterControlButton = styled.View`
+const KounterControlButton = styled.TouchableOpacity`
 	height: 48;
 	width: 48;
 	border-color: #fff;
@@ -293,95 +290,91 @@ const KounterControlButtonImage = styled.Image`
 	resize-mode: center;
 `;
 
-const styles = StyleSheet.create({
-	navigationContainer: {
-		marginTop: '7.5%',
-		width: '100%',
-		color: '#fff',
-		position: 'absolute',
-		top: 0,
-		height: '20%',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		padding: (0, 25),
-	},
-	navigationItems: {
-		height: 23.85,
-		width: 25,
-	},
-	container: {
-		flex:1,
-		flexDirection: 'column',
-    	alignItems: 'center',
-    	justifyContent: 'center',
-    	width: '100%',
-    	backgroundColor: '#c74463',
-	},
-	trackerContainer: {
-    	marginTop: hp('18%'),
-	},
-	itemName: {
-		color: '#fff',
-		fontSize: 36,
-		fontWeight: 'bold',
-		marginTop: 10,
-		textAlign: 'center',
-		height: 36
+const NavigationButtonImage = styled.Image`
+	height: 23.85;
+	width: 25;
+`;
 
-	},
-	itemDescription: {
-		color: '#fff',
-		fontSize: 16,
-		marginTop: 8,
-		textAlign: 'center',
-	},
-	currentCount: {
-		fontSize: 140,
-		textAlign: 'center',
-		color: 'white',
-		marginTop: '10%'
-	},
-	buttonContainer: {
-	    justifyContent: 'space-between',
-	    flexDirection: 'row',
-	    marginTop: 50,
-	    height: 48,
-	    width: 200
-  	},
-  	trackerFooter: {
-  		marginTop: 'auto',
-  		marginBottom: 100,
-  		flexDirection: 'row',
-  		width: '60%',
-  		justifyContent: 'space-between'
-  	},
-  	resetButton: {
-  		flexDirection: 'row'
-  	},
-  	resetIcon: {
-  		width: 23.5,
-  		height: 20
-  	},
-  	resetButtonText: {
-  		color: '#fff',
-  		textAlign: 'center',
-  		fontSize: 18,
-  		paddingLeft: 10
-  	},
-  	favoriteButton: {
-  		flexDirection: 'row'
-  	},
-  	favoriteButtonText: {
-  		color: '#fff',
-  		textAlign: 'center',
-  		fontSize: 18,
-  		paddingLeft: 10
-  	},
-  	favoriteIcon: {
-  		width: 20.9,
-  		height: 20
-  	},
-});
+const Container = styled.View`
+	flex:1;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	background-color: #c74463;
+`;
 
+const KounterContent = styled.View``;
+
+const KounterTitleField = styled.TextInput`
+	color: #fff;
+	font-size: 36;
+	font-weight: bold;
+	margin-top: 10;
+	text-align: center;
+	height: 36;
+`;
+
+const ItemDescriptionField = styled.TextInput`
+	color: #fff;
+	font-size: 16;
+	margin-top: 8;
+	text-align: center;
+`;
+
+const KounterCount = styled.Text`
+	font-size: 140;
+	text-align: center;
+	color: white;
+	margin-top: 10%;
+`;
+
+const KounterControls = styled.View`
+	justify-content: space-between;
+	flex-direction: row;
+	margin-top: 50;
+	height: 48;
+	width: 200;
+`;
+
+const KounterSubControls = styled.View`
+	margin-top: auto;
+	margin-bottom: 100;
+	flex-direction: row;
+	width: 60%;
+	justify-content: space-between;
+`;
+
+const ResetButton = styled.TouchableOpacity`
+	flex-direction: row;
+`;
+
+const ResetIcon = styled.Image`
+	width: 23.5;
+	height: 20;
+`;
+
+const ResetButtonText = styled.Text`
+	color: #fff;
+	text-align: center;
+	font-size: 18;
+	padding-left: 10;
+`;
+
+const FavoriteButton = styled.TouchableOpacity`
+	flex-direction: row;
+`;
+
+const FavoriteButtonText = styled.Text`
+	color: #fff;
+	text-align: center;
+	font-size: 18;
+	padding-left: 10;
+`;
+
+const FavoriteIcon = styled.Image`
+	width: 20.9;
+	height: 20;
+`;
 
 export default connect(mapStateToProps, mapDispatchToProps)(Tracker);

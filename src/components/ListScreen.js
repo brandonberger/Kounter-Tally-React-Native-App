@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Font, LinearGradient } from 'expo';
-import { TouchableWithoutFeedback, Keyboard, Animated, Easing, StatusBar, Alert, Platform, AlertIOS, ScrollView, TouchableOpacity, View, Text, TouchableHighlight, StyleSheet, Image } from 'react-native';
+import { TouchableWithoutFeedback, StatusBar, Platform, ScrollView, TouchableOpacity, View, Text, Image } from 'react-native';
 import { persistStore, persistReducer } from 'redux-persist';
 import { connect } from 'react-redux';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -11,6 +11,7 @@ import { Dialog as DialogComponent } from './Dialog';
 import { Modal as ModalComponent } from './Modal';
 
 function mapStateToProps(state) {
+	// console.log(state);
 	return { 
 			 action: state.action,
 		   	 trackerCards: state.trackerCards,
@@ -32,7 +33,8 @@ function mapDispatchToProps(dispatch) {
 	      			title: name,
 	      			description: null,
 	      			color: color,
-      				currentCount: 0
+      				currentCount: 0,
+      				lastUpdated: 0
       				}
 	    	})
 	    	: null
@@ -101,7 +103,6 @@ class ListScreen extends Component {
   	};
 
 	triggerError(status) {
-		console.log('1'+status);
 		this.setState({dialogError: status})
 	}
 
@@ -241,7 +242,7 @@ class ListScreen extends Component {
 										</TouchableOpacity>
 									</CardHeader>
 									<CardControlsContainer>
-										<CardButtonContainer style={styles.cardButtonContainer} onPress={() => this.props.subtractDrink(card.card_id)}>
+										<CardButtonContainer onPress={() => this.props.subtractDrink(card.card_id)}>
 											<CardMinusButton source={require('../../assets/minus_button.png')} />
 										</CardButtonContainer>
 										{this.state.fontLoaded ? (
@@ -265,7 +266,7 @@ class ListScreen extends Component {
 								) : null
 							}
 
-							{this.props.trackerCards.filter(card=>!card.favorite_status).sort(card=>card.card_id).map((card, card_id) => {
+							{this.props.trackerCards.filter(card=>!card.favorite_status).sort((a,b) => a.id > b.id).map((card, card_id) => {
 								return (
 								<Card key={card_id} style={{backgroundColor: card.color}}>
 									<CardHeader>
@@ -414,8 +415,8 @@ const FavoritesContainer = styled.View`
 const FavoritesText = styled.Text`
 	color: white;
 	font-size: 18px;
-	left: 10;
-	padding-right: 15px;
+	left: 20;
+	padding-right: 25px;
 `;
 
 const FavoritesIcon = styled.Image`
@@ -457,7 +458,7 @@ const CardDescription = styled.Text`
 const KountersText = styled.Text`
 	color: white;
 	font-size: 18;
-	left: 10;
+	left: 20;
 	padding-top: 20;
 `;
 
@@ -551,11 +552,3 @@ const NewCardButtonImage = styled.Image`
 	width: 48;
 	resize-mode: center;
 `;
-
-
-const styles = StyleSheet.create({
-	dialog: {
-		color: "#04bf72"
-	},
-});
-

@@ -22,10 +22,10 @@ const reducer = (state = initialState, action) => {
             ...state,
             trackerCards: state.trackerCards.map((item, index) => {
                 if (item.card_id !== action.card_id) { 
-                    return item
+                    return { ...item, lastUpdated: 0 }
                 }
 
-                return { ...item, currentCount: item.currentCount + 1 }
+                return { ...item, currentCount: item.currentCount + 1, lastUpdated: 1 }
             })
         };
         case "SUBTRACT_DRINK":

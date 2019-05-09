@@ -39,7 +39,7 @@ class Modal extends React.Component {
 
 	  		if (status == false) {
 				Animated.spring(this.state.menuTop, {
-					toValue: 207
+					toValue: hp(100)
 				}).start();
 				showOverlay = '0%';
 	  		}
@@ -63,19 +63,59 @@ class Modal extends React.Component {
 		            
 		            <ModalHeader>
 		            	<ModalHandle source={require('../../assets/modal_handle.png')} />
+		            	<ModalTitleContainer>
+		            		<ModalHeaderIcon source={require('../../assets/settings.png')} />
+
+		            		<ModalTitle>
+								SETTINGS	            		
+		            		</ModalTitle>
+		            	</ModalTitleContainer>
 		            </ModalHeader>
+		            <ModalContainer>
+			            <ModalItem>
+			            	<ModalItemHeader>
+				            	<ModalItemTitle>
+				            		iCloud Sync
+				            	</ModalItemTitle>
+				            	<ModalItemDescription>
+				            		Coming Soon...
+				            	</ModalItemDescription>
+			            	</ModalItemHeader>
+			            	<ModalIconContainer>
+			            		<ModalItemIcon>
+			            			<ToggleParent>
+			            				<ToggleChild>
 
-		            {this.props.modalText ? 
-		            (<ModalText>
-		            	{this.props.modalText}
-		            </ModalText>) : null }
+			            				</ToggleChild>
+			            			</ToggleParent>
+			            		</ModalItemIcon>
+			            	</ModalIconContainer>
+			            </ModalItem>
 
-		            <SettingsDangerButton onPress={this.props.buttonMethod}>
-		            	{this.props.fontLoaded ? (
-		            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>{this.props.buttonContent}</SettingsDangerButtonText>
-		            		) : null
-		            	}
-		            </SettingsDangerButton>
+			            {this.props.modalText ? 
+			            (<ModalText>
+			            	{this.props.modalText}
+			            </ModalText>) : null }
+
+			            <ModalButtonTitle>
+			            	Want to start new?
+			            </ModalButtonTitle>
+			            <SettingsDangerButton onPress={this.props.buttonMethod}>
+			            	{this.props.fontLoaded ? (
+			            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>{this.props.buttonContent}</SettingsDangerButtonText>
+			            		) : null
+			            	}
+			            </SettingsDangerButton>
+			            <ModalFooter>
+			            	<ModalFooterIcons>
+			            		<TwitterIcon source={require('../../assets/twitter_icon.png')}/>
+			            		<InstagramIcon source={require('../../assets/twitter_icon.png')}/>
+			            	</ModalFooterIcons>
+			            	<ModalFooterMessage>
+			            		INNOVATED AT BLCKWHTE.CO
+			            	</ModalFooterMessage>
+			            </ModalFooter>
+			        </ModalContainer>
         		</GestureRecognizer>
         	</AnimatedContainer>
 		);
@@ -102,13 +142,96 @@ const AnimatedContainer = Animated.createAnimatedComponent(SettingsContainer);
 const ModalHeader = styled.View`
 	width: 100%;
 	justify-content: center;
-	flex-direction: row;
+	align-items: center;
+	flex-direction: column;
 	margin-top: 11px;
 	margin-bottom: 25px;
 `;
 
-const ModalHandle = styled.Image`
+const ModalHandle = styled.Image``;
+
+
+const ModalTitleContainer = styled.View`
+	width: 100%;
+	height: auto;
+	flex-direction: row;
+	justify-content: center;
+	margin-top: 20px;
+`;
+
+const ModalHeaderIcon = styled.Image`
+	height: 14px;
+	width: 14px;
+`;
+
+const ModalTitle = styled.Text`
+	padding-left: 10px;
+	color: white;
+	font-size: 14px;
+	text-align: center;
+	font-weight:bold;
+`;
+
+const ModalContainer = styled.View`
+	margin-left: 20px;
+	margin-right:  20px;
+`;
+
+const ModalItem = styled.View`
+	width: 100%;
+	height: 60px;
+	border-top-width: 1px;
+	border-bottom-width: 1px;
+	border-style: solid;
+	border-top-color: #292929;
+	border-bottom-color: #292929;
+	flex: 1;
+	margin-bottom: 20px;
+	flex-direction: row;
+`;
+
+const ModalItemHeader = styled.View`
+	height: 100%;
+	width: 50%;
+	flex-direction: column;
+	justify-content: center;
+`;
 	
+const ModalItemTitle = styled.Text`
+	font-size: 14px;
+	color: white;
+`;
+
+const ModalItemDescription = styled.Text`
+	color: white;
+	font-size: 10px;
+`;
+
+const ModalItemIcon = styled.View``;
+
+const ModalIconContainer = styled.View`
+	width: 50%;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-end;
+`;
+
+const ToggleParent = styled.View`
+	width: 50px;
+	height: 30px;
+	background: #303030;
+	border-radius: 15px;
+	position: relative;
+	right: 0;
+`;
+const ToggleChild = styled.View`
+	background: #212121;
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	border-radius: 100;
+	left: 5px;
+	top: 5px;
 `;
 
 const ModalText = styled.Text`
@@ -121,12 +244,19 @@ const ModalText = styled.Text`
 	margin-bottom: 40;
 `;
 
+const ModalButtonTitle = styled.Text`
+	font-size: 14px;
+	color: white;
+	text-align: center;
+	margin-bottom: 20px;
+`;
+
 const SettingsDangerButton = styled.TouchableOpacity`
 	background-color: #DC2727;
 	justify-content: center;
 	margin:0 auto;
 	width: 335px;
-	margin-bottom: 40;
+	margin-bottom: 20;
 	height: 40;
 	border-radius: 8px;
 `;
@@ -136,3 +266,37 @@ const SettingsDangerButtonText = styled.Text`
 	text-align: center;
 	font-size: 16;
 `;
+
+const ModalFooter = styled.View`
+	padding-bottom: 44px;
+	border-style: solid;
+	border-top-width: 1px;
+	border-color: #292929;
+`;
+const ModalFooterIcons = styled.View`
+	flex: 1;
+	justify-content: center;
+	flex-direction: row;
+	align-items: center;
+	margin-top: 20px;
+`;
+const TwitterIcon = styled.Image`
+	height: 24px;
+	width: 24px;
+	margin-right: 10px;
+`;
+const InstagramIcon = styled.Image`
+	height: 24px;
+	width: 24px;
+	margin-left: 10px;
+`;
+const ModalFooterMessage = styled.Text`
+	font-size: 10px;
+	color: white;
+	text-align: center;
+	padding-top: 20px;
+`;
+
+
+
+
