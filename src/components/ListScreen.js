@@ -88,22 +88,25 @@ var plus_button_image = '../../assets/plus_button.png';
 
 class ListScreen extends Component {
 
+	static navigationOptions = {
+	    header: null
+  	};
+
 	constructor(props) {
 	  super(props);
 		  this.state = { 
 		  	isLoading: true, 
 		  	dialogOpen: false,
-		  	modalOpen: false
+		  	modalOpen: false,
+		  	currentFilters: {
+		  		favoritesFilter: "SORT_BY_ID",
+		  		kountersFilter: "SORT_BY_ID"
+		  	},
+		  	nextSort: {
+		  		favorites: "SORT_BY_A_Z",
+		  		kounters: "SORT_BY_A_Z",
+		  	}
     	}
-	}
-
-	state = {
-    	fontLoaded: false,
-    	dialogOpen: false,
-  	};
-
-	triggerError(status) {
-		this.setState({dialogError: status})
 	}
 
 	async componentDidMount() {
@@ -132,16 +135,50 @@ class ListScreen extends Component {
 		(status) ? overlayWidth = '100%' : overlayWidth = '0%';
 		this.setState({ showOverlay: overlayWidth })
 	}
+	
+	triggerError(status) {
+		this.setState({dialogError: status})
+	}
 
-	static navigationOptions = {
-	    header: null
-  	};
 
+	sortKounters(list, sortMethod) {
+		switch (list) {
+			case 'FAVORITES':
+				switch (sortMethod) {
+					case 'SORT_BY_ID':
+						this.setState({ nextSort: { favorites: 'SORT_BY_A_Z' }});
+						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_ID'}});
+						break;
+					case 'SORT_BY_A_Z':
+						this.setState({ nextSort: { favorites: 'SORT_BY_Z_A' }});
+						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_A_Z'}});
+						break;
+					case 'SORT_BY_Z_A':
+						this.setState({ nextSort: { favorites: 'SORT_BY_ID' }});
+						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_Z_A'}});
+						break;
+				}
+				break;
+			case 'KOUNTERS':
+				switch (sortMethod) {
+					case 'SORT_BY_ID':
+						this.setState({ nextSort: { favorites: 'SORT_BY_A_Z' }});
+						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_ID'}});
+						break;
+					case 'SORT_BY_A_Z':
+						this.setState({ nextSort: { favorites: 'SORT_BY_Z_A' }});
+						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_A_Z'}});
+						break;
+					case 'SORT_BY_Z_A':
+						this.setState({ nextSort: { favorites: 'SORT_BY_ID' }});
+						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_Z_A'}});
+						break;
+				}
+				break;
+		}
+	}
 
 	render() {
-
-		const newCardName = 'card_'+this.props.currentTrackerCount;
-
 		if (Platform.OS == 'android') { 
 			headerMargin = StatusBar.currentHeight + 11 
 		} else { 
@@ -176,8 +213,60 @@ class ListScreen extends Component {
 			showAddButton = 'none';
 		}
 
-	    newKounterTitle = '';
-	    
+
+	    kounters = this.props.trackerCards;
+
+	    const sorts = {
+	    	SORT_BY_ID: {
+	    		image: require('../../assets/a_z_filter_disabled.png')
+	    	},
+	    	SORT_BY_A_Z: {
+	    		image: require('../../assets/a_z_filter.png')
+	    	},
+	    	SORT_BY_Z_A: {
+	    		image: require('../../assets/z_a_filter.png')
+	    	}
+	    };
+
+
+	    const filters = {
+	    	favoriteFilters: {
+	    		filterFavoritesById: kounters.filter(card=>card.favorite_status).sort((a,b) => a.id > b.id),
+	    		filterFavoritesAZ: kounters.filter(card=>card.favorite_status).sort((a,b) => a.title > b.title),
+	    		filterFavoritesZA: kounters.filter(card=>card.favorite_status).sort((a,b) => a.title < b.title),
+	    	},
+	    	kounterFilters: {
+	    		filterKountersById: kounters.filter(card=>!card.favorite_status).sort((a,b) => a.id > b.id),
+	    		filterKountersAZ: kounters.filter(card=>!card.favorite_status).sort((a,b) => a.title > b.title),
+	    		filterKountersZA: kounters.filter(card=>!card.favorite_status).sort((a,b) => a.title < b.title),
+	    	}
+	    }
+
+	    console.log(this.state.currentFilters.favoritesFilter);
+	   	switch (this.state.currentFilters.favoritesFilter) {
+	   		case 'SORT_BY_ID':
+	   			filterFavorites = filters.favoriteFilters.filterFavoritesById;
+	   			break;
+	   		case 'SORT_BY_A_Z':
+	   			filterFavorites = filters.favoriteFilters.filterFavoritesAZ;
+	   			break;
+	   		case 'SORT_BY_Z_A':
+	   			filterFavorites = filters.favoriteFilters.filterFavoritesZA;
+	   			break;
+	   	}
+
+	   	switch (this.state.currentFilters.kountersFilter) {
+	   		case 'SORT_BY_ID':
+	   			filterKounters = filters.kounterFilters.filterKountersById;
+	   			break;
+	   		case 'SORT_BY_A_Z':
+	   			filterKounters = filters.kounterFilters.filterKountersAZ;
+	   			break;
+	   		case 'SORT_BY_Z_A':
+	   			filterKounters = filters.kounterFilters.filterKountersZA;
+	   			break;
+	   	}
+
 		return (
 			<Container>
 				<DialogComponent 
@@ -206,16 +295,23 @@ class ListScreen extends Component {
 						</Header>
 	            	<ScrollView style={{ height: "100%"}}>
 						<CardContainer>
-							<FavoritesContainer style={{display: showFavorites}}>
-								{this.state.fontLoaded ? (
-									<FavoritesText style={{fontFamily: 'avenir-heavy'}}>FAVORITES</FavoritesText>
-									) : null
-								}
-								<FavoritesIcon source={require('../../assets/favorites.png')} />
-							</FavoritesContainer>
+							<FavoritesHeader>
+								<FavoritesContainer style={{display: showFavorites}}>
+									{this.state.fontLoaded ? (
+										<FavoritesText style={{fontFamily: 'avenir-heavy'}}>FAVORITES</FavoritesText>
+										) : null
+									}
+									<FavoritesIcon source={require('../../assets/favorites.png')} />
+								</FavoritesContainer>
+								<SortingAction>
+									<TouchableOpacity onPress={() => this.sortKounters('FAVORITES', this.state.nextSort.favorites)}>
+										<SortingIcon source={sorts[this.state.currentFilters.favoritesFilter].image} />
+									</TouchableOpacity>
+								</SortingAction>
+							</FavoritesHeader>
 
 
-							{this.props.trackerCards.filter(card=>card.favorite_status).map((card, card_id) => {
+							{filterFavorites.map((card, card_id) => {
 								return (
 								<Card key={card_id} style={{backgroundColor: card.color}}>
 									<CardHeader>
@@ -266,7 +362,7 @@ class ListScreen extends Component {
 								) : null
 							}
 
-							{this.props.trackerCards.filter(card=>!card.favorite_status).sort((a,b) => a.id > b.id).map((card, card_id) => {
+							{filterKounters.map((card, card_id) => {
 								return (
 								<Card key={card_id} style={{backgroundColor: card.color}}>
 									<CardHeader>
@@ -404,12 +500,20 @@ const CardContainer = styled.View`
 	margin: 18px 1% 10px 1%;
 `;
 
+
+const FavoritesHeader = styled.View`
+	justify-content: space-between;
+	flex: 1;
+	flex-direction: row;
+`;
+
 const FavoritesContainer = styled.View`
 	flex-direction: row;
 	padding: 0;
 	margin: 0;
 	left: 0;
 	align-items: center;
+	width: 50%;
 `;
 
 const FavoritesText = styled.Text`
@@ -423,12 +527,24 @@ const FavoritesIcon = styled.Image`
 	margin-top: -1px;
 `;
 
+
+const SortingAction = styled.View`
+	width: 50%;
+	flex: 1;
+	flex-direction: row;
+	justify-content: flex-end;
+
+`;
+const SortingIcon = styled.Image`
+	right: 20;
+`;
+
 const Card = styled.View`
 	height: 72;
 	width: 94.66%;
 	background-color: #EF5350;
 	border-radius: 10;
-	margin: 7.5px;
+	margin: 5px;
 	position: relative;
 	flex: 1;
 	flex-direction: row;
