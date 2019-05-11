@@ -146,32 +146,32 @@ class ListScreen extends Component {
 			case 'FAVORITES':
 				switch (sortMethod) {
 					case 'SORT_BY_ID':
-						this.setState({ nextSort: { favorites: 'SORT_BY_A_Z' }});
-						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_ID'}});
+						this.setState({ nextSort: { favorites: 'SORT_BY_A_Z', kounters: this.state.nextSort.kounters }});
+						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_ID', kountersFilter: this.state.currentFilters.kountersFilter}});
 						break;
 					case 'SORT_BY_A_Z':
-						this.setState({ nextSort: { favorites: 'SORT_BY_Z_A' }});
-						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_A_Z'}});
+						this.setState({ nextSort: { favorites: 'SORT_BY_Z_A', kounters: this.state.nextSort.kounters }});
+						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_A_Z', kountersFilter: this.state.currentFilters.kountersFilter}});
 						break;
 					case 'SORT_BY_Z_A':
-						this.setState({ nextSort: { favorites: 'SORT_BY_ID' }});
-						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_Z_A'}});
+						this.setState({ nextSort: { favorites: 'SORT_BY_ID', kounters: this.state.nextSort.kounters }});
+						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_Z_A', kountersFilter: this.state.currentFilters.kountersFilter}});
 						break;
 				}
 				break;
 			case 'KOUNTERS':
 				switch (sortMethod) {
 					case 'SORT_BY_ID':
-						this.setState({ nextSort: { favorites: 'SORT_BY_A_Z' }});
-						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_ID'}});
+						this.setState({ nextSort: { kounters: 'SORT_BY_A_Z', favorites: this.state.nextSort.favorites }});
+						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_ID', favoritesFilter: this.state.currentFilters.favoritesFilter}});
 						break;
 					case 'SORT_BY_A_Z':
-						this.setState({ nextSort: { favorites: 'SORT_BY_Z_A' }});
-						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_A_Z'}});
+						this.setState({ nextSort: { kounters: 'SORT_BY_Z_A', favorites: this.state.nextSort.favorites }});
+						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_A_Z', favoritesFilter: this.state.currentFilters.favoritesFilter}});
 						break;
 					case 'SORT_BY_Z_A':
-						this.setState({ nextSort: { favorites: 'SORT_BY_ID' }});
-						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_Z_A'}});
+						this.setState({ nextSort: { kounters: 'SORT_BY_ID', favorites: this.state.nextSort.favorites }});
+						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_Z_A', favoritesFilter: this.state.currentFilters.favoritesFilter}});
 						break;
 				}
 				break;
@@ -242,7 +242,6 @@ class ListScreen extends Component {
 	    	}
 	    }
 
-	    console.log(this.state.currentFilters.favoritesFilter);
 	   	switch (this.state.currentFilters.favoritesFilter) {
 	   		case 'SORT_BY_ID':
 	   			filterFavorites = filters.favoriteFilters.filterFavoritesById;
@@ -295,20 +294,20 @@ class ListScreen extends Component {
 						</Header>
 	            	<ScrollView style={{ height: "100%"}}>
 						<CardContainer>
-							<FavoritesHeader>
-								<FavoritesContainer style={{display: showFavorites}}>
+							<ListHeader>
+								<ListHeaderContainer style={{display: showFavorites}}>
 									{this.state.fontLoaded ? (
-										<FavoritesText style={{fontFamily: 'avenir-heavy'}}>FAVORITES</FavoritesText>
+										<ListHeaderText style={{fontFamily: 'avenir-heavy'}}>FAVORITES</ListHeaderText>
 										) : null
 									}
 									<FavoritesIcon source={require('../../assets/favorites.png')} />
-								</FavoritesContainer>
+								</ListHeaderContainer>
 								<SortingAction>
 									<TouchableOpacity onPress={() => this.sortKounters('FAVORITES', this.state.nextSort.favorites)}>
 										<SortingIcon source={sorts[this.state.currentFilters.favoritesFilter].image} />
 									</TouchableOpacity>
 								</SortingAction>
-							</FavoritesHeader>
+							</ListHeader>
 
 
 							{filterFavorites.map((card, card_id) => {
@@ -355,12 +354,21 @@ class ListScreen extends Component {
 								)
 							})}
 
-							{this.state.fontLoaded ? (
-								<KountersText style={{fontFamily: 'avenir-heavy'}, {display: showKounters}}>
-									KOUNTERS
-								</KountersText>
-								) : null
-							}
+
+							<ListHeader>
+								<ListHeaderContainer style={{display: showKounters}}>
+									{this.state.fontLoaded ? (
+										<ListHeaderText style={{fontFamily: 'avenir-heavy'}}>KOUNTERS</ListHeaderText>
+										) : null
+									}
+								</ListHeaderContainer>
+								<SortingAction>
+									<TouchableOpacity onPress={() => this.sortKounters('KOUNTERS', this.state.nextSort.kounters)}>
+										<SortingIcon source={sorts[this.state.currentFilters.kountersFilter].image} />
+									</TouchableOpacity>
+								</SortingAction>
+							</ListHeader>
+							
 
 							{filterKounters.map((card, card_id) => {
 								return (
@@ -422,11 +430,15 @@ class ListScreen extends Component {
 				</TouchableWithoutFeedback>
 
 				<ModalComponent 
+					modalTitle="SETTINGS"
 					toggleStatus={this.state.modalOpen}
 					openModalMethod={this.openSettings.bind(this)}
 					fontLoaded={this.state.fontLoaded}
 					buttonContent="Erase All Data"
 					buttonMethod={this.props.deleteAll}
+					modalItem={true}
+					modalButtonTitle="Want to start new?"
+					modalFooter={true}
 				/>
 
 	            	{!kountersExist && !favoritesExist ? (
@@ -497,17 +509,18 @@ const CardContainer = styled.View`
 	flex-wrap: wrap;
 	flex-direction: column;
 	justify-content: center;
-	margin: 18px 1% 10px 1%;
+	margin: 0px 1% 10px 1%;
 `;
 
 
-const FavoritesHeader = styled.View`
+const ListHeader = styled.View`
 	justify-content: space-between;
 	flex: 1;
 	flex-direction: row;
+	margin-top: 20px;
 `;
 
-const FavoritesContainer = styled.View`
+const ListHeaderContainer = styled.View`
 	flex-direction: row;
 	padding: 0;
 	margin: 0;
@@ -516,7 +529,7 @@ const FavoritesContainer = styled.View`
 	width: 50%;
 `;
 
-const FavoritesText = styled.Text`
+const ListHeaderText = styled.Text`
 	color: white;
 	font-size: 18px;
 	left: 20;

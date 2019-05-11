@@ -67,15 +67,17 @@ class Modal extends React.Component {
 		            		<ModalHeaderIcon source={require('../../assets/settings.png')} />
 
 		            		<ModalTitle>
-								SETTINGS	            		
+								{this.props.modalTitle}	            		
 		            		</ModalTitle>
 		            	</ModalTitleContainer>
 		            </ModalHeader>
 		            <ModalContainer>
+
+		            	{this.props.modalItem ? (
 			            <ModalItem>
 			            	<ModalItemHeader>
 				            	<ModalItemTitle>
-				            		iCloud Sync
+				            		Sync to Cloud
 				            	</ModalItemTitle>
 				            	<ModalItemDescription>
 				            		Coming Soon...
@@ -90,15 +92,11 @@ class Modal extends React.Component {
 			            			</ToggleParent>
 			            		</ModalItemIcon>
 			            	</ModalIconContainer>
-			            </ModalItem>
+			            </ModalItem> ) : null }
 
-			            {this.props.modalText ? 
-			            (<ModalText>
-			            	{this.props.modalText}
-			            </ModalText>) : null }
 
 			            <ModalButtonTitle>
-			            	Want to start new?
+			            	{this.props.modalButtonTitle}
 			            </ModalButtonTitle>
 			            <SettingsDangerButton onPress={this.props.buttonMethod}>
 			            	{this.props.fontLoaded ? (
@@ -106,6 +104,7 @@ class Modal extends React.Component {
 			            		) : null
 			            	}
 			            </SettingsDangerButton>
+			            {this.props.modalFooter ? (
 			            <ModalFooter>
 			            	<ModalFooterIcons>
 			            		<TwitterIcon source={require('../../assets/twitter_icon.png')}/>
@@ -114,7 +113,7 @@ class Modal extends React.Component {
 			            	<ModalFooterMessage>
 			            		INNOVATED AT BLCKWHTE.CO
 			            	</ModalFooterMessage>
-			            </ModalFooter>
+			            </ModalFooter>) : null }
 			        </ModalContainer>
         		</GestureRecognizer>
         	</AnimatedContainer>

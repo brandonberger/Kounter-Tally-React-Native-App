@@ -243,11 +243,12 @@ class Tracker extends React.Component {
 				<Overlay style={{width: this.state.showOverlay}}></Overlay>
 			</TouchableWithoutFeedback>		 
 			<ModalComponent 
+				modalTitle="DELETE KOUNTER"
 				toggleStatus={this.state.modalOpen}
 				openModalMethod={this.openModal.bind(this)}
 				fontLoaded={this.state.fontLoaded}
-				buttonContent="Erase All Data"
-				modalText={'Are you sure you want to delete “'+ kounter.title + '"?'}
+				buttonContent="Delete"
+				modalButtonTitle={'Are you sure you want to delete “'+ kounter.title + '"?'}
 			/>
 
 			</View>
