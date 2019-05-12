@@ -7,7 +7,7 @@ import { Modal as ModalComponent } from './Modal';
 import styled from "styled-components";
 
 function mapStateToProps(state) {
-	console.log(state.trackerCards);
+	// console.log(state.trackerCards);
   return { action: state.action,
   		   trackerCards: state.trackerCards,
   		 }
@@ -249,6 +249,7 @@ class Tracker extends React.Component {
 				fontLoaded={this.state.fontLoaded}
 				buttonContent="Delete"
 				modalButtonTitle={'Are you sure you want to delete “'+ kounter.title + '"?'}
+				buttonMethod={() => this.props.removeTracker(kounter.card_id, this.props.navigation)}
 			/>
 
 			</View>
@@ -305,7 +306,9 @@ const Container = styled.View`
 	background-color: #c74463;
 `;
 
-const KounterContent = styled.View``;
+const KounterContent = styled.View`
+	width: 100%;
+`;
 
 const KounterTitleField = styled.TextInput`
 	color: #fff;

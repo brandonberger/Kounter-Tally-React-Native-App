@@ -11,12 +11,15 @@ import { Dialog as DialogComponent } from './Dialog';
 import { Modal as ModalComponent } from './Modal';
 
 function mapStateToProps(state) {
-	// console.log(state);
+	console.log(state.currentSort);
+	console.log(state.nextSort);
 	return { 
 			 action: state.action,
 		   	 trackerCards: state.trackerCards,
 		   	 numberOfCards: state.trackerCards.length,
-		   	 totalCardsEver: state.totalCardHistory
+		   	 totalCardsEver: state.totalCardHistory,
+		   	 currentSort: state.currentSort,
+		   	 nextSort: state.nextSort,
  	  	   }	
 }
 
@@ -55,7 +58,20 @@ function mapDispatchToProps(dispatch) {
 	    	dispatch({
 	    		type: "DELETE_ALL"
 	    	})
-	    } 
+	    },
+	    sortKounters(list, sortMethod, nextSortMethod) {
+    		dispatch({
+    			type: "SORT",
+    			list: list,
+    			sortMethod: sortMethod,
+    			nextSortMethod: nextSortMethod
+    		})
+	    },
+	    resetEverything() {
+	    	dispatch({
+	    		type: 'RESET_EVERYTHING'
+	    	})
+	    }
 	}
 }
 
@@ -92,6 +108,7 @@ class ListScreen extends Component {
 	    header: null
   	};
 
+
 	constructor(props) {
 	  super(props);
 		  this.state = { 
@@ -120,6 +137,12 @@ class ListScreen extends Component {
 		});
 
 		await this.setState({ fontLoaded: true });
+
+		// DANGER
+		// this.props.resetEverything();
+
+		this.setState({ currentFilters: { favoritesFilter: this.props.currentSort.favorites, kountersFilter: this.props.currentSort.kounters }});
+		this.setState({ nextSort: { favorites: this.props.nextSort.favorites, kounters: this.props.nextSort.kounters }});
 	}
 
 	openDialog(status) {
@@ -146,14 +169,17 @@ class ListScreen extends Component {
 			case 'FAVORITES':
 				switch (sortMethod) {
 					case 'SORT_BY_ID':
+						this.props.sortKounters(list, sortMethod, "SORT_BY_A_Z");
 						this.setState({ nextSort: { favorites: 'SORT_BY_A_Z', kounters: this.state.nextSort.kounters }});
 						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_ID', kountersFilter: this.state.currentFilters.kountersFilter}});
 						break;
 					case 'SORT_BY_A_Z':
+						this.props.sortKounters(list, sortMethod, "SORT_BY_Z_A");
 						this.setState({ nextSort: { favorites: 'SORT_BY_Z_A', kounters: this.state.nextSort.kounters }});
 						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_A_Z', kountersFilter: this.state.currentFilters.kountersFilter}});
 						break;
 					case 'SORT_BY_Z_A':
+						this.props.sortKounters(list, sortMethod, "SORT_BY_ID");
 						this.setState({ nextSort: { favorites: 'SORT_BY_ID', kounters: this.state.nextSort.kounters }});
 						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_Z_A', kountersFilter: this.state.currentFilters.kountersFilter}});
 						break;
@@ -162,14 +188,17 @@ class ListScreen extends Component {
 			case 'KOUNTERS':
 				switch (sortMethod) {
 					case 'SORT_BY_ID':
+						this.props.sortKounters(list, sortMethod, "SORT_BY_A_Z");
 						this.setState({ nextSort: { kounters: 'SORT_BY_A_Z', favorites: this.state.nextSort.favorites }});
 						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_ID', favoritesFilter: this.state.currentFilters.favoritesFilter}});
 						break;
 					case 'SORT_BY_A_Z':
+						this.props.sortKounters(list, sortMethod, "SORT_BY_Z_A");
 						this.setState({ nextSort: { kounters: 'SORT_BY_Z_A', favorites: this.state.nextSort.favorites }});
 						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_A_Z', favoritesFilter: this.state.currentFilters.favoritesFilter}});
 						break;
 					case 'SORT_BY_Z_A':
+						this.props.sortKounters(list, sortMethod, "SORT_BY_ID");
 						this.setState({ nextSort: { kounters: 'SORT_BY_ID', favorites: this.state.nextSort.favorites }});
 						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_Z_A', favoritesFilter: this.state.currentFilters.favoritesFilter}});
 						break;
@@ -294,8 +323,8 @@ class ListScreen extends Component {
 						</Header>
 	            	<ScrollView style={{ height: "100%"}}>
 						<CardContainer>
-							<ListHeader>
-								<ListHeaderContainer style={{display: showFavorites}}>
+							<ListHeader style={{display: showFavorites}}>
+								<ListHeaderContainer>
 									{this.state.fontLoaded ? (
 										<ListHeaderText style={{fontFamily: 'avenir-heavy'}}>FAVORITES</ListHeaderText>
 										) : null
@@ -355,8 +384,8 @@ class ListScreen extends Component {
 							})}
 
 
-							<ListHeader>
-								<ListHeaderContainer style={{display: showKounters}}>
+							<ListHeader style={{display: showKounters}}>
+								<ListHeaderContainer>
 									{this.state.fontLoaded ? (
 										<ListHeaderText style={{fontFamily: 'avenir-heavy'}}>KOUNTERS</ListHeaderText>
 										) : null
@@ -549,7 +578,7 @@ const SortingAction = styled.View`
 
 `;
 const SortingIcon = styled.Image`
-	right: 20;
+	margin-right: 20;
 `;
 
 const Card = styled.View`

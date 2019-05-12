@@ -11,7 +11,15 @@ import { StyleSheet, Text, View } from 'react-native';
 const initialState = {
   trackerCards: [],
   action: "",
-  totalCardHistory: 0
+  totalCardHistory: 0,
+  currentSort: {
+    favorites: "SORT_BY_ID",
+    kounters: "SORT_BY_ID",
+  },
+  nextSort: {
+    favorites: "SORT_BY_A_Z",
+    kounters: "SORT_BY_A_Z",
+  }
 }
 
 const reducer = (state = initialState, action) => {
@@ -125,6 +133,31 @@ const reducer = (state = initialState, action) => {
                 return {...state, action: 'openSettings' }
             case "CLOSE_SETTINGS":
                 return {...state, action: 'closeSettings' }
+            case "SORT":
+                if (action.list == 'FAVORITES') {
+                    return {
+                        ...state, 
+                        currentSort: { 
+                            ...state.currentSort, favorites: action.sortMethod
+                        },
+                        nextSort: {
+                            ...state.nextSort, favorites: action.nextSortMethod
+                        }
+                    }
+                } else if (action.list == 'KOUNTERS') {
+                    return {
+                        ...state,
+                        currentSort: { 
+                            ...state.currentSort, kounters:action.sortMethod
+                        },
+                        nextSort: {
+                            ...state.nextSort, kounters: action.nextSortMethod
+                        }
+                    }
+                }
+                break;
+            case "RESET_EVERYTHING": 
+                return {state: []}
             default:
                 return state;
         }
