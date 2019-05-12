@@ -468,6 +468,7 @@ class ListScreen extends Component {
 					modalItem={true}
 					modalButtonTitle="Want to start new?"
 					modalFooter={true}
+					confirmPrompt={true}
 				/>
 
 	            	{!kountersExist && !favoritesExist ? (

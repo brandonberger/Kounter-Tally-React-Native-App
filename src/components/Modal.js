@@ -10,6 +10,8 @@ class Modal extends React.Component {
 	  	super(props);
   		this.state = { 
 	  		menuTop: new Animated.Value(300),
+	  		showConfirmButtons: 'none',
+	  		showPreConfirmButton: 'flex'
 		}
 
 	}
@@ -49,6 +51,18 @@ class Modal extends React.Component {
 	      velocityThreshold: 0.01,
 	      directionalOffsetThreshold: 20
 	    };
+
+	    confirmPrompt = (status = true) => {
+	    	if (status) {
+	    		this.props.modalButtonTitle = 'Are you sure?';
+    			this.setState({showConfirmButtons: 'flex'});
+	    		this.setState({showPreConfirmButton: 'none'});
+	    	} else {
+	    		this.setState({showConfirmButtons: 'none'});
+	    		this.setState({showPreConfirmButton: 'flex'});
+	    	}
+	    }
+
 
 		return (
 
@@ -95,15 +109,37 @@ class Modal extends React.Component {
 			            </ModalItem> ) : null }
 
 
-			            <ModalButtonTitle>
+			            <ModalButtonTitle style={{ display: this.state.showPreConfirmButton }}>
 			            	{this.props.modalButtonTitle}
 			            </ModalButtonTitle>
-			            <SettingsDangerButton onPress={this.props.buttonMethod}>
+			            <SettingsDangerButton style={{ display: this.state.showPreConfirmButton }} onPress={(this.props.confirmPrompt) ? () => confirmPrompt() : this.props.buttonMethod}>
 			            	{this.props.fontLoaded ? (
 			            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>{this.props.buttonContent}</SettingsDangerButtonText>
 			            		) : null
 			            	}
 			            </SettingsDangerButton>
+
+
+			            <ModalButtonTitle style={{ display: this.state.showConfirmButtons }}>
+			            	Are you sure you want to erase all data?
+			            </ModalButtonTitle>
+			            <ModalConfirmButton style={{ display: this.state.showConfirmButtons }}>
+				            <ModalConfirmDangerButton onPress={() => confirmPrompt(false)}>
+				            	{this.props.fontLoaded ? (
+				            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>No Way!</SettingsDangerButtonText>
+				            		) : null
+				            	}
+				            </ModalConfirmDangerButton>
+				            <ModalConfirmSuccessButton onPress={ this.props.buttonMethod }>
+				            	{this.props.fontLoaded ? (
+				            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>Yea, I’m sure.</SettingsDangerButtonText>
+				            		) : null
+				            	}
+				            </ModalConfirmSuccessButton>
+				           </ModalConfirmButton>
+
+
+
 			            {this.props.modalFooter ? (
 			            <ModalFooter>
 			            	<ModalFooterIcons>
@@ -248,6 +284,30 @@ const ModalButtonTitle = styled.Text`
 	color: white;
 	text-align: center;
 	margin-bottom: 20px;
+`;
+
+
+const ModalConfirmButton = styled.View`
+	flex-direction: row;
+`;
+
+const ModalConfirmDangerButton = styled.TouchableOpacity`
+	background-color: #DC2727;
+	justify-content: center;
+	margin:0 auto;
+	width: 157px;
+	margin-bottom: 20;
+	height: 40;
+	border-radius: 8px;
+`;
+const ModalConfirmSuccessButton = styled.TouchableOpacity`
+	background-color: #4CD964;
+	justify-content: center;
+	margin:0 auto;
+	width: 157px;
+	margin-bottom: 20;
+	height: 40;
+	border-radius: 8px;
 `;
 
 const SettingsDangerButton = styled.TouchableOpacity`
