@@ -3,16 +3,14 @@ import { Font, LinearGradient } from 'expo';
 import { TouchableWithoutFeedback, StatusBar, Platform, ScrollView, TouchableOpacity, View, Text, Image } from 'react-native';
 import { persistStore, persistReducer } from 'redux-persist';
 import { connect } from 'react-redux';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {SafeAreaView} from 'react-navigation';
 import styled from "styled-components";
-import { Ionicons } from '@expo/vector-icons';
 import { Dialog as DialogComponent } from './Dialog';
 import { Modal as ModalComponent } from './Modal';
 
 function mapStateToProps(state) {
-	console.log(state.currentSort);
-	console.log(state.nextSort);
+	console.log(state);
 	return { 
 			 action: state.action,
 		   	 trackerCards: state.trackerCards,
@@ -20,6 +18,8 @@ function mapStateToProps(state) {
 		   	 totalCardsEver: state.totalCardHistory,
 		   	 currentSort: state.currentSort,
 		   	 nextSort: state.nextSort,
+		   	 showConfirmButtons: state.showConfirmButtons,
+		   	 showPreConfirmButtons: state.showPreConfirmButtons
  	  	   }	
 }
 
@@ -42,15 +42,15 @@ function mapDispatchToProps(dispatch) {
 	    	})
 	    	: null
 	    },
-	    addDrink(card_id) {
+	    addKounter(card_id) {
 	    	dispatch({
-	      		type: "ADD_DRINK",
+	      		type: "ADD_KOUNTER",
 	      		card_id: card_id
 	    	})
 	    },
-	    subtractDrink(card_id) {
+	    subtractKounter(card_id) {
 	    	dispatch({
-	      		type: "SUBTRACT_DRINK",
+	      		type: "SUBTRACT_KOUNTER",
 	      		card_id: card_id
 	    	})
 	    },
@@ -70,6 +70,12 @@ function mapDispatchToProps(dispatch) {
 	    resetEverything() {
 	    	dispatch({
 	    		type: 'RESET_EVERYTHING'
+	    	})
+	    },
+	    toggleEraseAllConfirmButtons(status) {
+	    	dispatch({
+	    		type: "TOGGLE_ERASE_CONFIRM_BUTTONS",
+	    		showConfirmButtonsStatus: status
 	    	})
 	    }
 	}
@@ -108,7 +114,6 @@ class ListScreen extends Component {
 	    header: null
   	};
 
-
 	constructor(props) {
 	  super(props);
 		  this.state = { 
@@ -134,6 +139,7 @@ class ListScreen extends Component {
 		  'anodina-xbold': require('../../assets/fonts/Anodina-ExtraBold.otf'),
 		  'avenir-medium': require('../../assets/fonts/Avenir-Medium.ttf'),
 		  'avenir-heavy': require('../../assets/fonts/Avenir-Heavy.ttf'),
+		  'avenir-black': require('../../assets/fonts/Avenir-Black.ttf'),
 		});
 
 		await this.setState({ fontLoaded: true });
@@ -162,7 +168,6 @@ class ListScreen extends Component {
 	triggerError(status) {
 		this.setState({dialogError: status})
 	}
-
 
 	sortKounters(list, sortMethod) {
 		switch (list) {
@@ -306,6 +311,7 @@ class ListScreen extends Component {
 					getRandomColor={getRandomColor.bind(this)}
 					trackerCards={this.props.trackerCards}
 					triggerError={this.triggerError.bind(this)} 
+					fontLoaded={this.state.fontLoaded}
 				/>
 
 				<SafeAreaView forceInset={{ bottom: 'never'}}> 
@@ -366,16 +372,16 @@ class ListScreen extends Component {
 										</TouchableOpacity>
 									</CardHeader>
 									<CardControlsContainer>
-										<CardButtonContainer onPress={() => this.props.subtractDrink(card.card_id)}>
+										<CardButtonContainer onPress={() => this.props.subtractKounter(card.card_id)}>
 											<CardMinusButton source={require('../../assets/minus_button.png')} />
 										</CardButtonContainer>
 										{this.state.fontLoaded ? (
-											<CardDrinkCount style={{fontFamily: 'avenir-medium'}}>
+											<CardCount style={{fontFamily: 'avenir-medium'}}>
 												{card.currentCount}
-											</CardDrinkCount>
+											</CardCount>
 											) : null
 										}
-										<CardButtonContainer onPress={() => this.props.addDrink(card.card_id)}>
+										<CardButtonContainer onPress={() => this.props.addKounter(card.card_id)}>
 											<CardPlusButton source={require('../../assets/plus_button.png')} />
 										</CardButtonContainer>
 									</CardControlsContainer>
@@ -426,16 +432,16 @@ class ListScreen extends Component {
 										</TouchableOpacity>
 									</CardHeader>
 									<CardControlsContainer>
-										<CardButtonContainer onPress={() => this.props.subtractDrink(card.card_id)}>
+										<CardButtonContainer onPress={() => this.props.subtractKounter(card.card_id)}>
 											<CardMinusButton source={require('../../assets/minus_button.png')} />
 										</CardButtonContainer>
 										{this.state.fontLoaded ? (
-											<CardDrinkCount style={{fontFamily: 'avenir-medium'}}>
+											<CardCount style={{fontFamily: 'avenir-medium'}}>
 												{card.currentCount}
-											</CardDrinkCount>
+											</CardCount>
 											) : null
 										}
-										<CardButtonContainer onPress={() => this.props.addDrink(card.card_id)}>
+										<CardButtonContainer onPress={() => this.props.addKounter(card.card_id)}>
 											<CardPlusButton source={require('../../assets/plus_button.png')} />
 										</CardButtonContainer>
 									</CardControlsContainer>
@@ -469,6 +475,10 @@ class ListScreen extends Component {
 					modalButtonTitle="Want to start new?"
 					modalFooter={true}
 					confirmPrompt={true}
+					hasCardData={this.props.trackerCards.length}
+					showConfirmButtons={this.props.showConfirmButtons}
+					showPreConfirmButtons={this.props.showPreConfirmButtons}
+					showConfirmButtonsMethod={this.props.toggleEraseAllConfirmButtons}
 				/>
 
 	            	{!kountersExist && !favoritesExist ? (
@@ -568,6 +578,8 @@ const ListHeaderText = styled.Text`
 
 const FavoritesIcon = styled.Image`
 	margin-top: -1px;
+	height: 14px;
+	width: 14.63px;
 `;
 
 
@@ -611,7 +623,6 @@ const CardDescription = styled.Text`
 	color: #ffffff;
 	padding-left: 20;
 	padding-top: 1;
-	text-transform: uppercase;
 `;
 
 const KountersText = styled.Text`
@@ -691,7 +702,7 @@ const CardPlusButton = styled.Image`
 	margin-right: 20;
 `;
 
-const CardDrinkCount = styled.Text`
+const CardCount = styled.Text`
 	font-size: 36;
 	width: 70;
 	color: #ffffff;
@@ -702,7 +713,7 @@ const NewCardButton = styled.TouchableOpacity`
 	height: 48;
 	width: 48;
 	margin-top: 5%;
-	margin-bottom: 10%;
+	margin-bottom: 15%;
 `;
 
 const NewCardButtonImage = styled.Image`

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Drink Tracker",
-    "slug": "DrinkTracker",
+    "name": "Kounter",
+    "slug": "kounter",
     "privacy": "public",
     "sdkVersion": "32.0.0",
     "platforms": [
@@ -23,10 +23,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.blckwhte.kounter"
     },
     "android": {
-      "package": "com.superneato.kounter"
+      "package": "com.blckwhte.kounter"
     }
   }
 }

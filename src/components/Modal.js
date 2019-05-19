@@ -1,7 +1,7 @@
 import React from 'react';
-import {TouchableOpacity, Platform, Animated, View, Text, Image} from 'react-native';
+import {Linking, ouchableOpacity, Platform, Animated, View, Text, Image} from 'react-native';
 import styled from "styled-components";
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 class Modal extends React.Component {
@@ -10,10 +10,7 @@ class Modal extends React.Component {
 	  	super(props);
   		this.state = { 
 	  		menuTop: new Animated.Value(300),
-	  		showConfirmButtons: 'none',
-	  		showPreConfirmButton: 'flex'
 		}
-
 	}
 
 	componentDidUpdate() {
@@ -40,6 +37,9 @@ class Modal extends React.Component {
 	  		}
 
 	  		if (status == false) {
+
+	  			this.props.showConfirmButtonsMethod('none');
+
 				Animated.spring(this.state.menuTop, {
 					toValue: hp(100)
 				}).start();
@@ -53,14 +53,24 @@ class Modal extends React.Component {
 	    };
 
 	    confirmPrompt = (status = true) => {
-	    	if (status) {
-	    		this.props.modalButtonTitle = 'Are you sure?';
-    			this.setState({showConfirmButtons: 'flex'});
-	    		this.setState({showPreConfirmButton: 'none'});
-	    	} else {
-	    		this.setState({showConfirmButtons: 'none'});
-	    		this.setState({showPreConfirmButton: 'flex'});
+	    	if (this.props.hasCardData) {
+		    	if (status) {
+		    		this.props.modalButtonTitle = 'Are you sure?';
+	    			this.props.showConfirmButtonsMethod('flex');
+		    	} else {
+	    			this.props.showConfirmButtonsMethod('none');
+		    	}
 	    	}
+	    }
+
+	    if (this.props.hasCardData === 0) {
+	    	eraseButtonStatus = true;
+	    	eraseButtonColor = '#212121';
+	    	eraseButtonTextColor = '#303030';
+	    } else {
+	    	eraseButtonStatus = false;
+	    	eraseButtonColor = '#DC2727';
+	    	eraseButtonTextColor = '#FFFFFF';
 	    }
 
 
@@ -80,9 +90,10 @@ class Modal extends React.Component {
 		            	<ModalTitleContainer>
 		            		<ModalHeaderIcon source={require('../../assets/settings.png')} />
 
-		            		<ModalTitle>
+		            		{this.props.fontLoaded ? (
+	            			<ModalTitle style={{fontFamily: 'avenir-heavy'}}>
 								{this.props.modalTitle}	            		
-		            		</ModalTitle>
+	            			</ModalTitle>) : null }
 		            	</ModalTitleContainer>
 		            </ModalHeader>
 		            <ModalContainer>
@@ -90,12 +101,16 @@ class Modal extends React.Component {
 		            	{this.props.modalItem ? (
 			            <ModalItem>
 			            	<ModalItemHeader>
-				            	<ModalItemTitle>
+		            			{this.props.fontLoaded ? (
+				            	<ModalItemTitle style={{fontFamily: 'avenir-medium'}}>
 				            		Sync to Cloud
 				            	</ModalItemTitle>
-				            	<ModalItemDescription>
+				            	) : null }
+		            			{this.props.fontLoaded ? (
+				            	<ModalItemDescription style={{fontFamily: 'avenir-medium'}}>
 				            		Coming Soon...
 				            	</ModalItemDescription>
+				            	) : null }
 			            	</ModalItemHeader>
 			            	<ModalIconContainer>
 			            		<ModalItemIcon>
@@ -109,46 +124,59 @@ class Modal extends React.Component {
 			            </ModalItem> ) : null }
 
 
-			            <ModalButtonTitle style={{ display: this.state.showPreConfirmButton }}>
-			            	{this.props.modalButtonTitle}
-			            </ModalButtonTitle>
-			            <SettingsDangerButton style={{ display: this.state.showPreConfirmButton }} onPress={(this.props.confirmPrompt) ? () => confirmPrompt() : this.props.buttonMethod}>
-			            	{this.props.fontLoaded ? (
-			            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>{this.props.buttonContent}</SettingsDangerButtonText>
-			            		) : null
-			            	}
-			            </SettingsDangerButton>
-
-
-			            <ModalButtonTitle style={{ display: this.state.showConfirmButtons }}>
-			            	Are you sure you want to erase all data?
-			            </ModalButtonTitle>
-			            <ModalConfirmButton style={{ display: this.state.showConfirmButtons }}>
-				            <ModalConfirmDangerButton onPress={() => confirmPrompt(false)}>
+		            	<ModalMainButton>
+	            			{this.props.fontLoaded ? (
+				            <ModalButtonTitle style={{ fontFamily: 'avenir-medium', display: this.props.showPreConfirmButtons }}>
+				            	{this.props.modalButtonTitle}
+				            </ModalButtonTitle> ) : null }
+				            <SettingsDangerButton disabled={eraseButtonStatus} style={{ backgroundColor: eraseButtonColor, color: eraseButtonTextColor, display: this.props.showPreConfirmButtons }} onPress={(this.props.confirmPrompt) ? () => confirmPrompt() : this.props.buttonMethod}>
 				            	{this.props.fontLoaded ? (
-				            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>No Way!</SettingsDangerButtonText>
+				            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>{this.props.buttonContent}</SettingsDangerButtonText>
 				            		) : null
 				            	}
-				            </ModalConfirmDangerButton>
-				            <ModalConfirmSuccessButton onPress={ this.props.buttonMethod }>
-				            	{this.props.fontLoaded ? (
-				            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>Yea, I’m sure.</SettingsDangerButtonText>
-				            		) : null
-				            	}
-				            </ModalConfirmSuccessButton>
-				           </ModalConfirmButton>
+				            </SettingsDangerButton>
+				        </ModalMainButton>
 
+
+				        <ModalConfirmStuff>
+	            			{this.props.fontLoaded ? (
+				            <ModalButtonTitle style={{ fontFamily: 'avenir-medium', display: this.props.showConfirmButtons }}>
+				            	Are you sure you want to erase all data?
+				            </ModalButtonTitle> ) : null }
+				            <ModalConfirmButton style={{ display: this.props.showConfirmButtons }}>
+					            <ModalConfirmDangerButton onPress={() => confirmPrompt(false)}>
+					            	{this.props.fontLoaded ? (
+					            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>No Way!</SettingsDangerButtonText>
+					            		) : null
+					            	}
+					            </ModalConfirmDangerButton>
+					            <ModalConfirmSuccessButton onPress={ this.props.buttonMethod }>
+					            	{this.props.fontLoaded ? (
+					            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>Yea, I’m sure.</SettingsDangerButtonText>
+					            		) : null
+					            	}
+					            </ModalConfirmSuccessButton>
+				           	</ModalConfirmButton>
+					    </ModalConfirmStuff>
 
 
 			            {this.props.modalFooter ? (
 			            <ModalFooter>
 			            	<ModalFooterIcons>
-			            		<TwitterIcon source={require('../../assets/twitter_icon.png')}/>
-			            		<InstagramIcon source={require('../../assets/twitter_icon.png')}/>
+			            		<InstagramLink onPress={() => Linking.openURL('https://www.instagram.com/blckwhteco/')}>
+			            			<InstagramIcon source={require('../../assets/instagram_icon.png')} />
+			            		</InstagramLink>
+			            		<TwitterLink onPress={() => Linking.openURL('https://twitter.com/blckwhteco')}>
+			            			<TwitterIcon source={require('../../assets/twitter_icon.png')} />
+			            		</TwitterLink>
 			            	</ModalFooterIcons>
-			            	<ModalFooterMessage>
-			            		INNOVATED AT BLCKWHTE.CO
-			            	</ModalFooterMessage>
+			            	{this.props.fontLoaded ? (
+			            	<WebsiteLink onPress={() => Linking.openURL('http://blckwhte.co')}>
+			            		<ModalFooterMessage style={{fontFamily: 'avenir-black'}}>
+			            			INNOVATED AT BLCKWHTE.CO
+			            		</ModalFooterMessage>
+			            	</WebsiteLink>
+			            		) : null }
 			            </ModalFooter>) : null }
 			        </ModalContainer>
         		</GestureRecognizer>
@@ -169,6 +197,7 @@ const SettingsContainer = styled.View`
 	bottom: 0;
 	border-top-left-radius: 20px;
 	border-top-right-radius: 20px;
+	padding-bottom: 30px;
 `;
 
 const AnimatedContainer = Animated.createAnimatedComponent(SettingsContainer);
@@ -185,6 +214,9 @@ const ModalHeader = styled.View`
 
 const ModalHandle = styled.Image``;
 
+const ModalMainButton = styled.View``;
+
+const ModalConfirmStuff = styled.View``;
 
 const ModalTitleContainer = styled.View`
 	width: 100%;
@@ -192,6 +224,7 @@ const ModalTitleContainer = styled.View`
 	flex-direction: row;
 	justify-content: center;
 	margin-top: 20px;
+	align-items: center;
 `;
 
 const ModalHeaderIcon = styled.Image`
@@ -327,7 +360,7 @@ const SettingsDangerButtonText = styled.Text`
 `;
 
 const ModalFooter = styled.View`
-	padding-bottom: 44px;
+	padding-bottom: 30px;
 	border-style: solid;
 	border-top-width: 1px;
 	border-color: #292929;
@@ -339,16 +372,25 @@ const ModalFooterIcons = styled.View`
 	align-items: center;
 	margin-top: 20px;
 `;
+
+const TwitterLink = styled.TouchableOpacity``;
+
 const TwitterIcon = styled.Image`
-	height: 24px;
-	width: 24px;
-	margin-right: 10px;
-`;
-const InstagramIcon = styled.Image`
 	height: 24px;
 	width: 24px;
 	margin-left: 10px;
 `;
+
+const InstagramLink = styled.TouchableOpacity``;
+
+const InstagramIcon = styled.Image`
+	height: 24px;
+	margin-right: 10px;
+	width: 24px;
+`;
+
+const WebsiteLink = styled.TouchableOpacity``;
+
 const ModalFooterMessage = styled.Text`
 	font-size: 10px;
 	color: white;

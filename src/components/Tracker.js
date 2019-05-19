@@ -1,29 +1,29 @@
 import React, { Component } from 'react';
 import {Keyboard, TouchableWithoutFeedback, Text, View, TouchableOpacity, Image, TextInput} from 'react-native';
 import { Font } from 'expo';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
 import { Modal as ModalComponent } from './Modal';
 import styled from "styled-components";
 
 function mapStateToProps(state) {
-	// console.log(state.trackerCards);
-  return { action: state.action,
-  		   trackerCards: state.trackerCards,
-  		 }
+  	return { 
+  		action: state.action,
+		trackerCards: state.trackerCards,
+	}
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    addDrink(card_id) {
+    addKounter(card_id) {
     	dispatch({
-      		type: "ADD_DRINK",
+      		type: "ADD_KOUNTER",
       		card_id: card_id
     	})
     },
-    subtractDrink(card_id) {
+    subtractKounter(card_id) {
     	dispatch({
-      		type: "SUBTRACT_DRINK",
+      		type: "SUBTRACT_KOUNTER",
       		card_id: card_id
     	})
     },
@@ -54,13 +54,14 @@ function mapDispatchToProps(dispatch) {
     	})
     },
     editDescription(card_id, newDescription) {
-    	dispatch({
-    		type: "EDIT_DESCRIPTION",
-    		newDescription: newDescription,
-    		card_id: card_id
-    	})
-    }
-  }
+    	if (newDescription.trim().length == 0) { newDescription = ''; }
+	    	dispatch({
+	    		type: "EDIT_DESCRIPTION",
+	    		newDescription: newDescription,
+	    		card_id: card_id
+	    	})
+    	}
+  	}
 }
 var plus_button_image = '../../assets/plus_button.png';
 var minus_button_image = '../../assets/minus_button.png';
@@ -135,26 +136,7 @@ class Tracker extends React.Component {
 						</TouchableOpacity>
 						<TouchableOpacity 
 							onPress={() => this.openModal(true)}
-
-							// onPress={() => {
-							// 	if(Platform.OS == 'ios') { 
-							// 		AlertIOS.alert(
-							// 	    'Delete Kounter', 
-							// 	    'Are you sure you want to delete this Kounter?', 
-						 //    		[
-						 //   		   		{
-							// 	   			text: 'Cancel',
-							// 			   	style: 'cancel',
-							// 		   	},
-							// 		   	{
-							// 			   	text: 'Delete',
-							// 			   	onPress: (name) => this.props.removeTracker(card_id, this.props.navigation),
-							// 			   	style: 'destructive'
-							// 		   	},
-							// 	   	],
-							// 		) 
-							// 	} else { this.openDialog(true) } } }
-							>
+						>
 							<NavigationButtonImage 
 								source={require('../../assets/trash_button.png')} 
 							/>
@@ -166,6 +148,7 @@ class Tracker extends React.Component {
 					<KounterContent style={{marginTop: hp('18%')}}>
 						{this.state.fontLoaded ? (
 							<KounterTitleField 
+								maxLength={12}
 								autoFocus={false} 
 								style={{fontFamily: 'avenir-medium'}}
 								onChangeText={(text) => {this.props.editKounterName(kounter.card_id, text)}}
@@ -176,6 +159,7 @@ class Tracker extends React.Component {
 						}
 						{this.state.fontLoaded && !kounter.description ? (
 							<ItemDescriptionField 
+								maxLength={18}
 								autoFocus={false}
 								style={{fontFamily: 'avenir-medium'}}
 								onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
@@ -185,6 +169,7 @@ class Tracker extends React.Component {
 							</ItemDescriptionField>
 							) : (
 							<ItemDescriptionField 
+								maxLength={18}
 								autoFocus={false}
 								style={{fontFamily: 'avenir-medium'}}
 								onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
@@ -203,17 +188,17 @@ class Tracker extends React.Component {
 					</KounterContent>
 					<View>
 						<KounterControls>
-							<KounterControlButton onPress={() => this.props.subtractDrink(kounter.card_id)}>
+							<KounterControlButton onPress={() => this.props.subtractKounter(kounter.card_id)}>
 								<KounterControlButtonImage style={{height: 48}} source={require(minus_button_image)} />
 							</KounterControlButton>
-							<KounterControlButton onPress={() => this.props.addDrink(kounter.card_id)}>
+							<KounterControlButton onPress={() => this.props.addKounter(kounter.card_id)}>
 								<KounterControlButtonImage style={{height: 48}} source={require(plus_button_image)} />
 							</KounterControlButton>
 				      	</KounterControls>
 			      	</View>
 
 
-			      	<KounterSubControls>
+			      	<KounterSubControls style={{ marginBottom: hp(10)}}>
 			      		<ResetButton onPress={() => this.props.resetCount(kounter.card_id)}>
 			      			<ResetIcon source={require('../../assets/reset_button.png')} />
 								{this.state.fontLoaded ? (
@@ -316,7 +301,7 @@ const KounterTitleField = styled.TextInput`
 	font-weight: bold;
 	margin-top: 10;
 	text-align: center;
-	height: 36;
+	height: 40;
 `;
 
 const ItemDescriptionField = styled.TextInput`
@@ -343,7 +328,6 @@ const KounterControls = styled.View`
 
 const KounterSubControls = styled.View`
 	margin-top: auto;
-	margin-bottom: 100;
 	flex-direction: row;
 	width: 60%;
 	justify-content: space-between;
@@ -362,7 +346,7 @@ const ResetButtonText = styled.Text`
 	color: #fff;
 	text-align: center;
 	font-size: 18;
-	padding-left: 10;
+	padding-left: 5;
 `;
 
 const FavoriteButton = styled.TouchableOpacity`
@@ -373,7 +357,7 @@ const FavoriteButtonText = styled.Text`
 	color: #fff;
 	text-align: center;
 	font-size: 18;
-	padding-left: 10;
+	padding-left: 5;
 `;
 
 const FavoriteIcon = styled.Image`

@@ -19,13 +19,15 @@ const initialState = {
   nextSort: {
     favorites: "SORT_BY_A_Z",
     kounters: "SORT_BY_A_Z",
-  }
+  },
+  showConfirmButtons: 'none',
+  showPreConfirmButtons: 'flex'
 }
 
 const reducer = (state = initialState, action) => {
 
     switch (action.type) {
-        case "ADD_DRINK":
+        case "ADD_KOUNTER":
         return {
             ...state,
             trackerCards: state.trackerCards.map((item, index) => {
@@ -36,7 +38,7 @@ const reducer = (state = initialState, action) => {
                 return { ...item, currentCount: item.currentCount + 1, lastUpdated: 1 }
             })
         };
-        case "SUBTRACT_DRINK":
+        case "SUBTRACT_KOUNTER":
         return {
             ...state,
             trackerCards: state.trackerCards.map((item, index) => {
@@ -105,6 +107,8 @@ const reducer = (state = initialState, action) => {
 
                 if (item.description !== action.newDescription) {
                     return {...item, description: action.newDescription}
+                } else {
+                    return {...item, description: item.description}
                 }
             })
         }
@@ -158,6 +162,14 @@ const reducer = (state = initialState, action) => {
                 break;
             case "RESET_EVERYTHING": 
                 return {state: []}
+            case "TOGGLE_ERASE_CONFIRM_BUTTONS":
+
+                if (action.showConfirmButtonsStatus == 'flex') {
+                    return {...state, showConfirmButtons: 'flex', showPreConfirmButtons: 'none'}
+                } else {
+                     return {...state, showConfirmButtons: 'none', showPreConfirmButtons: 'flex'}
+                }
+
             default:
                 return state;
         }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Keyboard, TouchableOpacity, View, Text, Image } from 'react-native';
 import styled from "styled-components";
 import { Ionicons } from '@expo/vector-icons';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 class Dialog extends React.Component {
 	
@@ -48,10 +48,12 @@ class Dialog extends React.Component {
 			if (dialogOpen) {
 				showDialog = 'flex';
 				dialogWidth = 300;
+				dialogHeight = 'auto';
 				dialogContainerWidth = '100%';
 			} else {
 				showDialog = 'none';
 				dialogWidth = '0%';
+				dialogHeight = 0;
 				dialogContainerWidth = '0%';
 			}
 		}
@@ -95,23 +97,28 @@ class Dialog extends React.Component {
 		return (
 			<DialogContainer style={{ display: showDialog, width: dialogContainerWidth }}>
 
-				<DialogModal style={{bottom: hp(60) - 185 / 2, width: dialogWidth}}>
-					<DialogTitle>
+				<DialogModal style={{bottom: hp(60) - 185 / 2, width: dialogWidth, height: dialogHeight}}>
+	            	{this.props.fontLoaded ? (
+					<DialogTitle style={{fontFamily: 'avenir-medium'}}>
 						Add New Kounter
-					</DialogTitle>
-					<DialogSubtitle>
+					</DialogTitle> ) : null }
+	            	{this.props.fontLoaded ? (
+					<DialogSubtitle style={{fontFamily: 'avenir-medium'}}>
 						Enter name of your kounter.
-					</DialogSubtitle>
+					</DialogSubtitle> ) : null }
 
 					<DialogFieldContainer>
 					{dialogErrorStatus ? (
-						<Ionicons style={{position: 'absolute', right: 35, top: 25, zIndex: 90}} size={24} color="red" name="ios-alert" />
+						<Ionicons style={{position: 'absolute', right: 35, top: 25, zIndex: 90}} size={12} color="red" name="ios-alert" />
 						) : null
 					}
+	            		{this.props.fontLoaded ? (
 						<DialogField 
+							maxLength={12}
 							style={{borderStyle: errorBorderStyle, 
 									borderColor: errorBorderColor, 
-									borderWidth: errorBorderWidth}} 
+									borderWidth: errorBorderWidth,
+									fontFamily: 'avenir-medium'}} 
 							ref={
 								input => {
 									this.dialogField = input
@@ -124,18 +131,20 @@ class Dialog extends React.Component {
 							placeholderTextColor="#828282" 
 							onChangeText={(text) => { newKounterTitle = text, handleDisabledButton(text)}}
 						>
-						</DialogField>
+						</DialogField> ) : null }
 					</DialogFieldContainer>
 					<DialogButtons>
 						<DialogCancel onPress={() => {this.props.openDialogMethod(false), this.dialogField.clear(), Keyboard.dismiss()}} >
-							<DialogCancelText>
+			            	{this.props.fontLoaded ? (
+							<DialogCancelText style={{fontFamily: 'avenir-medium'}}>
 								Cancel
-							</DialogCancelText>
+							</DialogCancelText> ) : null }
 						</DialogCancel>
 						<DialogSubmit onPress={() => {addNewKounter(newKounterTitle) }} disabled={this.state.submitButtonDisabled}>
-							<DialogSubmitText style={{color: submitButtonColor}}>
+			            	{this.props.fontLoaded ? (
+							<DialogSubmitText style={{fontFamily: 'avenir-medium', color: submitButtonColor}}>
 								Add
-							</DialogSubmitText>
+							</DialogSubmitText> ) : null }
 						</DialogSubmit>
 					</DialogButtons>
 				</DialogModal>
@@ -157,7 +166,8 @@ const DialogContainer = styled.View`
 `;
 	
 const DialogModal = styled.View`
-	height: 185px;
+	min-height: 185px;
+	height: auto;
 	z-index: 100;
 	position:absolute;
 	background-color:#0D0F19;
@@ -212,15 +222,14 @@ const DialogField = styled.TextInput`
 
 const DialogButtons = styled.View`
 	flex: 1;
+	height: 45px;
 	flex-direction: row;
 	margin-top: 20px;
 	justify-content: space-evenly;
 `;
 
-const DialogCancel = styled.TouchableOpacity`
-`;
-const DialogSubmit = styled.TouchableOpacity`
-`;
+const DialogCancel = styled.TouchableOpacity``;
+const DialogSubmit = styled.TouchableOpacity``;
 
 const DialogSubmitText = styled.Text`
 	font-size: 18px;
