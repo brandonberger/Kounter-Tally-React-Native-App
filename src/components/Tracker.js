@@ -10,6 +10,8 @@ function mapStateToProps(state) {
   	return { 
   		action: state.action,
 		trackerCards: state.trackerCards,
+	   	showConfirmButtons: state.showConfirmButtons,
+	   	showPreConfirmButtons: state.showPreConfirmButtons
 	}
 }
 
@@ -55,13 +57,20 @@ function mapDispatchToProps(dispatch) {
     },
     editDescription(card_id, newDescription) {
     	if (newDescription.trim().length == 0) { newDescription = ''; }
-	    	dispatch({
-	    		type: "EDIT_DESCRIPTION",
-	    		newDescription: newDescription,
-	    		card_id: card_id
-	    	})
-    	}
-  	}
+    	dispatch({
+    		type: "EDIT_DESCRIPTION",
+    		newDescription: newDescription,
+    		card_id: card_id
+    	})
+	},
+	toggleEraseAllConfirmButtons(status) {
+    	dispatch({
+    		type: "TOGGLE_ERASE_CONFIRM_BUTTONS",
+    		showConfirmButtonsStatus: status
+    	})
+    }
+
+}
 }
 var plus_button_image = '../../assets/plus_button.png';
 var minus_button_image = '../../assets/minus_button.png';
@@ -235,6 +244,10 @@ class Tracker extends React.Component {
 				buttonContent="Delete"
 				modalButtonTitle={'Are you sure you want to delete “'+ kounter.title + '"?'}
 				buttonMethod={() => this.props.removeTracker(kounter.card_id, this.props.navigation)}
+				showConfirmButtons={this.props.showConfirmButtons}
+				showPreConfirmButtons={this.props.showPreConfirmButtons}
+				showConfirmButtonsMethod={() => this.props.toggleEraseAllConfirmButtons}
+
 			/>
 
 			</View>

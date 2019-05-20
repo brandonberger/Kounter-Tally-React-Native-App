@@ -10,7 +10,7 @@ import { Dialog as DialogComponent } from './Dialog';
 import { Modal as ModalComponent } from './Modal';
 
 function mapStateToProps(state) {
-	console.log(state);
+	// console.log(state);
 	return { 
 			 action: state.action,
 		   	 trackerCards: state.trackerCards,
@@ -158,6 +158,10 @@ class ListScreen extends Component {
 	openSettings(status = true) {
 		this.setState({ modalOpen: status });
 		this.showOverlay(status);
+
+		if (status == false) {
+			this.props.toggleEraseAllConfirmButtons('none')
+		}
 	}
 
 	showOverlay(status = false) {

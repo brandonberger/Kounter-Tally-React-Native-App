@@ -13,10 +13,6 @@ class Modal extends React.Component {
 		}
 	}
 
-	componentDidUpdate() {
-		toggleSettings(this.props.toggleStatus);
-	}
-
 	render() {
 
 		let showOverlay = 0;
@@ -37,15 +33,15 @@ class Modal extends React.Component {
 	  		}
 
 	  		if (status == false) {
-
-	  			this.props.showConfirmButtonsMethod('none');
-
 				Animated.spring(this.state.menuTop, {
 					toValue: hp(100)
 				}).start();
 				showOverlay = '0%';
 	  		}
-	  	};	
+	  	}
+
+		toggleSettings(this.props.toggleStatus);
+
 
 		const config = {
 	      velocityThreshold: 0.01,
@@ -63,6 +59,11 @@ class Modal extends React.Component {
 	    	}
 	    }
 
+	    confirmDeleteAll = () => {
+			this.props.buttonMethod();
+			this.props.openModalMethod(false);
+	    }
+
 	    if (this.props.hasCardData === 0) {
 	    	eraseButtonStatus = true;
 	    	eraseButtonColor = '#212121';
@@ -73,6 +74,8 @@ class Modal extends React.Component {
 	    	eraseButtonTextColor = '#FFFFFF';
 	    }
 
+	    // console.log('Confirm buttons: ' + this.props.showConfirmButtons);
+	    // console.log('PreConfirm: ' + this.props.showPreConfirmButtons);
 
 		return (
 
@@ -129,7 +132,11 @@ class Modal extends React.Component {
 				            <ModalButtonTitle style={{ fontFamily: 'avenir-medium', display: this.props.showPreConfirmButtons }}>
 				            	{this.props.modalButtonTitle}
 				            </ModalButtonTitle> ) : null }
-				            <SettingsDangerButton disabled={eraseButtonStatus} style={{ backgroundColor: eraseButtonColor, color: eraseButtonTextColor, display: this.props.showPreConfirmButtons }} onPress={(this.props.confirmPrompt) ? () => confirmPrompt() : this.props.buttonMethod}>
+				            <SettingsDangerButton 
+				            	disabled={eraseButtonStatus} 
+				            	style={{ backgroundColor: eraseButtonColor, color: eraseButtonTextColor, display: this.props.showPreConfirmButtons }} 
+				            	onPress={(this.props.confirmPrompt) ? () => confirmPrompt() : this.props.buttonMethod}
+				            >
 				            	{this.props.fontLoaded ? (
 				            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>{this.props.buttonContent}</SettingsDangerButtonText>
 				            		) : null
@@ -150,7 +157,7 @@ class Modal extends React.Component {
 					            		) : null
 					            	}
 					            </ModalConfirmDangerButton>
-					            <ModalConfirmSuccessButton onPress={ this.props.buttonMethod }>
+					            <ModalConfirmSuccessButton onPress={ () => confirmDeleteAll() }>
 					            	{this.props.fontLoaded ? (
 					            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>Yea, I’m sure.</SettingsDangerButtonText>
 					            		) : null
