@@ -106,7 +106,32 @@ function getRandomColor(lastColor = null) {
 }
 
 
-var plus_button_image = '../../assets/plus_button.png';
+var plus_button = require('../../assets/plus_button.png');
+var minus_button = require('../../assets/minus_button.png');
+
+if (Platform.OS == 'android') { 
+	headerMargin = StatusBar.currentHeight + 11 
+} else { 
+	headerMargin = 11
+}
+
+favoritesExist = false;
+kountersExist = false;
+
+const sorts = {
+	SORT_BY_ID: {
+		image: require('../../assets/a_z_filter_disabled.png')
+	},
+	SORT_BY_A_Z: {
+		image: require('../../assets/a_z_filter.png')
+	},
+	SORT_BY_Z_A: {
+		image: require('../../assets/z_a_filter.png')
+	}
+};
+
+var settingsButton = require('../../assets/settings.png');
+var favoritesIcon = require('../../assets/favorites.png');
 
 class ListScreen extends Component {
 
@@ -217,14 +242,7 @@ class ListScreen extends Component {
 	}
 
 	render() {
-		if (Platform.OS == 'android') { 
-			headerMargin = StatusBar.currentHeight + 11 
-		} else { 
-			headerMargin = 11
-		}
 
-		favoritesExist = false;
-		kountersExist = false;
 		this.props.trackerCards.filter(card=>card.favorite_status).map((card, card_id) => {
 			favoritesExist = true;
 		});
@@ -253,18 +271,6 @@ class ListScreen extends Component {
 
 
 	    kounters = this.props.trackerCards;
-
-	    const sorts = {
-	    	SORT_BY_ID: {
-	    		image: require('../../assets/a_z_filter_disabled.png')
-	    	},
-	    	SORT_BY_A_Z: {
-	    		image: require('../../assets/a_z_filter.png')
-	    	},
-	    	SORT_BY_Z_A: {
-	    		image: require('../../assets/z_a_filter.png')
-	    	}
-	    };
 
 
 	    const filters = {
@@ -327,7 +333,7 @@ class ListScreen extends Component {
 							<SettingsButton 
 								onPress={() => this.openSettings(true)}
 							>
-								<Image source={require('../../assets/settings.png')} />
+								<Image source={settingsButton} />
 							</SettingsButton>
 
 						</Header>
@@ -339,7 +345,7 @@ class ListScreen extends Component {
 										<ListHeaderText style={{fontFamily: 'avenir-heavy'}}>FAVORITES</ListHeaderText>
 										) : null
 									}
-									<FavoritesIcon source={require('../../assets/favorites.png')} />
+									<FavoritesIcon source={favoritesIcon} />
 								</ListHeaderContainer>
 								<SortingAction>
 									<TouchableOpacity onPress={() => this.sortKounters('FAVORITES', this.state.nextSort.favorites)}>
@@ -377,7 +383,7 @@ class ListScreen extends Component {
 									</CardHeader>
 									<CardControlsContainer>
 										<CardButtonContainer onPress={() => this.props.subtractKounter(card.card_id)}>
-											<CardMinusButton source={require('../../assets/minus_button.png')} />
+											<CardMinusButton source={minus_button} />
 										</CardButtonContainer>
 										{this.state.fontLoaded ? (
 											<CardCount style={{fontFamily: 'avenir-medium'}}>
@@ -386,7 +392,7 @@ class ListScreen extends Component {
 											) : null
 										}
 										<CardButtonContainer onPress={() => this.props.addKounter(card.card_id)}>
-											<CardPlusButton source={require('../../assets/plus_button.png')} />
+											<CardPlusButton source={plus_button} />
 										</CardButtonContainer>
 									</CardControlsContainer>
 								</Card>
@@ -437,7 +443,7 @@ class ListScreen extends Component {
 									</CardHeader>
 									<CardControlsContainer>
 										<CardButtonContainer onPress={() => this.props.subtractKounter(card.card_id)}>
-											<CardMinusButton source={require('../../assets/minus_button.png')} />
+											<CardMinusButton source={minus_button} />
 										</CardButtonContainer>
 										{this.state.fontLoaded ? (
 											<CardCount style={{fontFamily: 'avenir-medium'}}>
@@ -446,7 +452,7 @@ class ListScreen extends Component {
 											) : null
 										}
 										<CardButtonContainer onPress={() => this.props.addKounter(card.card_id)}>
-											<CardPlusButton source={require('../../assets/plus_button.png')} />
+											<CardPlusButton source={plus_button} />
 										</CardButtonContainer>
 									</CardControlsContainer>
 								</Card>
@@ -458,7 +464,7 @@ class ListScreen extends Component {
 					</ScrollView>
 					<LinearGradient colors={['rgba(0,0,0,0.9)', 'transparent']} start={[0, 1.0]} end={[0.0, 0.3]} style={{display: showAddButton, justifyContent: 'center', alignItems: 'center', bottom: '16%', height: '15%'}}>
 						<NewCardButton onPress={() => { this.openDialog(true)} } >
-							<NewCardButtonImage source={require(plus_button_image)} />
+							<NewCardButtonImage source={plus_button} />
 						</NewCardButton>
 					</LinearGradient>
 				</SafeAreaView>
@@ -490,7 +496,7 @@ class ListScreen extends Component {
             				<EmptyKountersAddButton 
 								onPress={() => { this.openDialog(true)} }
 							>
-								<EmptyKountersAddButtonImage source={require(plus_button_image)} />
+								<EmptyKountersAddButtonImage source={plus_button} />
 							</EmptyKountersAddButton>
 
             				{this.state.fontLoaded ? (

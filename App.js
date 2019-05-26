@@ -8,7 +8,7 @@ import InitialNavigator from './src/InitialNavigator';
 import {AsyncStorage} from 'react-native';
 import { PersistGate } from 'redux-persist/integration/react'
 
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 const initialState = {
   trackerCards: [],
   action: "",

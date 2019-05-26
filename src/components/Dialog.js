@@ -62,8 +62,6 @@ class Dialog extends React.Component {
 
 		addNewKounter = (newKounterTitle) => {
 
-			console.log(newKounterTitle);
-
 			if(newKounterTitle.trim()) { 
 				this.props.addNewTracker(
 					this.props.numberOfCards, 
@@ -88,7 +86,6 @@ class Dialog extends React.Component {
 		handleDisabledButton = (text) => {
 			if (text.trim() != '' && text.length < 15) {
 				this.setState({submitButtonDisabled: false});
-				// this.props.triggerError(false);
 			} else {
 				this.setState({submitButtonDisabled: true});
 			}

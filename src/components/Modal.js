@@ -4,6 +4,19 @@ import styled from "styled-components";
 import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
+
+var modal_handle = require('../../assets/modal_handle.png');
+var settings_icon = require('../../assets/settings.png');
+var instagram_icon = require('../../assets/instagram_icon.png');
+var twitter_icon = require('../../assets/twitter_icon.png');
+
+
+const config = {
+  velocityThreshold: 0.01,
+  directionalOffsetThreshold: 20
+};
+
+
 class Modal extends React.Component {
 
 	constructor(props) {
@@ -42,11 +55,6 @@ class Modal extends React.Component {
 
 		toggleSettings(this.props.toggleStatus);
 
-
-		const config = {
-	      velocityThreshold: 0.01,
-	      directionalOffsetThreshold: 20
-	    };
 
 	    confirmPrompt = (status = true) => {
 	    	if (this.props.hasCardData) {
@@ -89,9 +97,9 @@ class Modal extends React.Component {
 	            	config={config}>
 		            
 		            <ModalHeader>
-		            	<ModalHandle source={require('../../assets/modal_handle.png')} />
+		            	<ModalHandle source={modal_handle} />
 		            	<ModalTitleContainer>
-		            		<ModalHeaderIcon source={require('../../assets/settings.png')} />
+		            		<ModalHeaderIcon source={settings_icon} />
 
 		            		{this.props.fontLoaded ? (
 	            			<ModalTitle style={{fontFamily: 'avenir-heavy'}}>
@@ -171,10 +179,10 @@ class Modal extends React.Component {
 			            <ModalFooter>
 			            	<ModalFooterIcons>
 			            		<InstagramLink onPress={() => Linking.openURL('https://www.instagram.com/blckwhteco/')}>
-			            			<InstagramIcon source={require('../../assets/instagram_icon.png')} />
+			            			<InstagramIcon source={instagram_icon} />
 			            		</InstagramLink>
 			            		<TwitterLink onPress={() => Linking.openURL('https://twitter.com/blckwhteco')}>
-			            			<TwitterIcon source={require('../../assets/twitter_icon.png')} />
+			            			<TwitterIcon source={twitter_icon} />
 			            		</TwitterLink>
 			            	</ModalFooterIcons>
 			            	{this.props.fontLoaded ? (

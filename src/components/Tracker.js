@@ -72,9 +72,13 @@ function mapDispatchToProps(dispatch) {
 
 }
 }
-var plus_button_image = '../../assets/plus_button.png';
-var minus_button_image = '../../assets/minus_button.png';
-
+var plus_button_image = require('../../assets/plus_button.png');
+var minus_button_image = require('../../assets/minus_button.png');
+var back_arrow = require('../../assets/back_arrow.png');
+var trash_button = require('../../assets/trash_button.png');
+var reset_button = require('../../assets/reset_button.png');
+var favorites_button = require('../../assets/favorites.png');
+var favorites_false_button = require('../../assets/favorites_false.png');
 
 class Tracker extends React.Component {
 	
@@ -141,13 +145,13 @@ class Tracker extends React.Component {
 						<TouchableOpacity 
 							onPress={() => this.props.navigation.push('List')}
 						>
-							<NavigationButtonImage source={require('../../assets/back_arrow.png')}/>
+							<NavigationButtonImage source={back_arrow}/>
 						</TouchableOpacity>
 						<TouchableOpacity 
 							onPress={() => this.openModal(true)}
 						>
 							<NavigationButtonImage 
-								source={require('../../assets/trash_button.png')} 
+								source={trash_button} 
 							/>
 						</TouchableOpacity>
 
@@ -198,10 +202,10 @@ class Tracker extends React.Component {
 					<View>
 						<KounterControls>
 							<KounterControlButton onPress={() => this.props.subtractKounter(kounter.card_id)}>
-								<KounterControlButtonImage style={{height: 48}} source={require(minus_button_image)} />
+								<KounterControlButtonImage style={{height: 48}} source={minus_button_image} />
 							</KounterControlButton>
 							<KounterControlButton onPress={() => this.props.addKounter(kounter.card_id)}>
-								<KounterControlButtonImage style={{height: 48}} source={require(plus_button_image)} />
+								<KounterControlButtonImage style={{height: 48}} source={plus_button_image} />
 							</KounterControlButton>
 				      	</KounterControls>
 			      	</View>
@@ -209,7 +213,7 @@ class Tracker extends React.Component {
 
 			      	<KounterSubControls style={{ marginBottom: hp(10)}}>
 			      		<ResetButton onPress={() => this.props.resetCount(kounter.card_id)}>
-			      			<ResetIcon source={require('../../assets/reset_button.png')} />
+			      			<ResetIcon source={reset_button} />
 								{this.state.fontLoaded ? (
 			      					<ResetButtonText style={{fontFamily: 'avenir-medium'}}> Reset </ResetButtonText>
 									) : null
@@ -217,9 +221,9 @@ class Tracker extends React.Component {
 			      		</ResetButton>
 			      		<FavoriteButton onPress={() => this.props.favorite(kounter.card_id)}>
 			      			{kounter.favorite_status ? (
-			      				<FavoriteIcon source={require('../../assets/favorites.png')} />
+			      				<FavoriteIcon source={favorites_button} />
 			      				) : (
-			      				<FavoriteIcon source={require('../../assets/favorites_false.png')} />
+			      				<FavoriteIcon source={favorites_false_button} />
 			      				)
 			      			}
 			      			{this.state.fontLoaded ? (
@@ -247,7 +251,6 @@ class Tracker extends React.Component {
 				showConfirmButtons={this.props.showConfirmButtons}
 				showPreConfirmButtons={this.props.showPreConfirmButtons}
 				showConfirmButtonsMethod={() => this.props.toggleEraseAllConfirmButtons}
-
 			/>
 
 			</View>
