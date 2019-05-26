@@ -147,8 +147,8 @@ class ListScreen extends Component {
 		// DANGER
 		// this.props.resetEverything();
 
-		this.setState({ currentFilters: { favoritesFilter: this.props.currentSort.favorites, kountersFilter: this.props.currentSort.kounters }});
-		this.setState({ nextSort: { favorites: this.props.nextSort.favorites, kounters: this.props.nextSort.kounters }});
+		// this.setState({ currentFilters: { favoritesFilter: this.props.currentSort.favorites, kountersFilter: this.props.currentSort.kounters }});
+		// this.setState({ nextSort: { favorites: this.props.nextSort.favorites, kounters: this.props.nextSort.kounters }});
 	}
 
 	openDialog(status) {

@@ -4,6 +4,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { Provider } from 'react-redux';
 import InitialNavigator from './src/InitialNavigator';
+// import AppNavigator from './src/AppNavigator';
 import {AsyncStorage} from 'react-native';
 import { PersistGate } from 'redux-persist/integration/react'
 
