@@ -1,33 +1,43 @@
 import React from 'react';
 import { createStore } from 'redux';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 import { Provider } from 'react-redux';
 import InitialNavigator from './src/InitialNavigator';
-// import AppNavigator from './src/AppNavigator';
 import {AsyncStorage} from 'react-native';
-import { PersistGate } from 'redux-persist/integration/react'
-
 import { StyleSheet } from 'react-native';
+
+// import { persistStore, persistReducer } from 'redux-persist';
+// import storage from 'redux-persist/lib/storage';
+// import AppNavigator from './src/AppNavigator';
+// import { PersistGate } from 'redux-persist/integration/react'
+
+
 const initialState = {
-  trackerCards: [],
-  action: "",
-  totalCardHistory: 0,
-  currentSort: {
-    favorites: "SORT_BY_ID",
-    kounters: "SORT_BY_ID",
-  },
-  nextSort: {
-    favorites: "SORT_BY_A_Z",
-    kounters: "SORT_BY_A_Z",
-  },
-  showConfirmButtons: 'none',
-  showPreConfirmButtons: 'flex'
+    kounters: [],
+    number_of_kounters: 0,
+    action: "",
+    totalCardHistory: 0,
+    currentSort: {
+        favorites: "SORT_BY_ID",
+        kounters: "SORT_BY_ID",
+    },
+    nextSort: {
+        favorites: "SORT_BY_A_Z",
+        kounters: "SORT_BY_A_Z",
+    },
+    showConfirmButtons: 'none',
+    showPreConfirmButtons: 'flex'
 }
 
 const reducer = (state = initialState, action) => {
 
     switch (action.type) {
+
+
+
+        case "SET_KOUNTERS":
+            return {...state, kounters: action.kounters}
+
+
         case "ADD_KOUNTER":
         return {
             ...state,
@@ -177,23 +187,19 @@ const reducer = (state = initialState, action) => {
     };
 
 
-const persistConfig = {
-  key: 'root',
-  storage: AsyncStorage,
-}
+// const persistConfig = {
+//   key: 'root',
+//   storage: AsyncStorage,
+// }
 
-const persistedReducer = persistReducer(persistConfig, reducer);
+// const persistedReducer = persistReducer(persistConfig, reducer);
 
-
-const store = createStore(persistedReducer);
-const persistor = persistStore(store);
-
+const store = createStore(reducer);
+// const persistor = persistStore(store);
 
 const App = () => (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-          <InitialNavigator />
-      </PersistGate>
+        <InitialNavigator />
     </Provider>
 );
 

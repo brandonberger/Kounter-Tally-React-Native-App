@@ -1,11 +1,12 @@
 import {createStackNavigator, createAppContainer} from 'react-navigation';
 import Tracker from './components/Tracker';
-import ListScreen from './components/ListScreen';
+// import ListScreen from './components/ListScreen';
+import TestScreen from './components/TestScreen';
 
 const AppNavigator = createStackNavigator(
 	{	
-		List: ListScreen,	
-		Tracker: Tracker,
+		List: TestScreen,	
+		// Tracker: Tracker,
 	}
 );
 
