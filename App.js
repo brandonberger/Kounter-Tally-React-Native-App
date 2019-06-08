@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import InitialNavigator from './src/InitialNavigator';
+import AppNavigator from './src/AppNavigator';
 import {AsyncStorage} from 'react-native';
 import { StyleSheet } from 'react-native';
 
@@ -31,57 +31,63 @@ const initialState = {
 const reducer = (state = initialState, action) => {
 
     switch (action.type) {
-
-
-
         case "SET_KOUNTERS":
-            return {...state, kounters: action.kounters}
+            return {...state, action: 'SET', hasUpdated: true,  kounters: action.kounters}
+        case "GET_KOUNTERS":
+            return {...state, action: 'GET', hasUpdated: false, kounters: action.kounters}
 
 
         case "ADD_KOUNTER":
         return {
             ...state,
-            trackerCards: state.trackerCards.map((item, index) => {
-                if (item.card_id !== action.card_id) { 
+            action: 'ADD',
+            hasUpdated: true,  
+            kounters: state.kounters.map((item, index) => {
+                if (item.id !== action.id) { 
                     return { ...item, lastUpdated: 0 }
                 }
 
-                return { ...item, currentCount: item.currentCount + 1, lastUpdated: 1 }
+                return { ...item, amount: item.amount + 1, lastUpdated: 1 }
             })
         };
         case "SUBTRACT_KOUNTER":
         return {
             ...state,
-            trackerCards: state.trackerCards.map((item, index) => {
-                if (item.card_id !== action.card_id) { 
+            action: 'SUBTRACT',
+            hasUpdated: true,  
+            kounters: state.kounters.map((item, index) => {
+                if (item.id !== action.id) { 
                     return item
                 }
 
-                if (item.currentCount === 0) {
+                if (item.amount === 0) {
                     return item;
                 }
 
-                return { ...item, currentCount: item.currentCount - 1 }
+                return { ...item, amount: item.amount - 1 }
 
             })
         };
         case "RESET_TRACKER":
         return {
             ...state,
-            trackerCards: state.trackerCards.map((item, index) => {
-                if (item.card_id !== action.card_id) { 
+            hasUpdated: true,
+            kounters: state.kounters.map((item, index) => {
+                if (item.id !== action.id) { 
                     return item
                 }
 
-                return { ...item, currentCount: 0 }
+                return { ...item, amount: 0 }
 
             })
         };
         case "FAVORITE":
         return {
             ...state,
-            trackerCards: state.trackerCards.map((item, index) => {
-                if (item.card_id !== action.card_id) { 
+            hasUpdated: true,
+            action: 'FAVORITE',
+            kounters: state.kounters.map((item, index) => {
+                if (item.id !== action.id) { 
                     return item
                 }
 
@@ -96,13 +102,14 @@ const reducer = (state = initialState, action) => {
         case "EDIT_NAME":
         return {
             ...state,
-            trackerCards: state.trackerCards.map((item, index) => {
-                if (item.card_id !== action.card_id) {
+            hasUpdated: true,
+            kounters: state.kounters.map((item, index) => {
+                if (item.id !== action.id) {
                     return item;
                 }
 
-                if (item.title != action.newName && action.newName.trim() != '' ) {
-                    return {...item, title: action.newName}
+                if (item.name != action.newName && action.newName.trim() != '' ) {
+                    return {...item, name: action.newName}
                 } else {
                     return item;
                 }
@@ -111,8 +118,9 @@ const reducer = (state = initialState, action) => {
         case "EDIT_DESCRIPTION":
         return {
             ...state,
-            trackerCards: state.trackerCards.map((item, index) => {
-                if (item.card_id !== action.card_id) {
+            hasUpdated: true,
+            kounters: state.kounters.map((item, index) => {
+                if (item.id !== action.id) {
                     return item;
                 }
 
@@ -125,25 +133,23 @@ const reducer = (state = initialState, action) => {
         }
 
         case "ADD_NEW_TRACKER":
-        return {...state, trackerCards: [...state.trackerCards, action.new_tracker], 
+        return {...state, hasUpdated: true, trackerCards: [...state.trackerCards, action.new_tracker], 
             totalCardHistory: state.totalCardHistory + 1 }
-        case "REMOVE_TRACKER":
-            state.trackerCards.map((item, index) => {
-                if (item.card_id == action.card_id) {
-                    return cardIndex = index;
-                }
-            });
-
-            return { 
+        case "DEACTIVATE_KOUNTER":
+            return {
                 ...state,
-                ...state.trackerCards, 
-                trackerCards: [
-                ...state.trackerCards.slice(0, cardIndex), 
-                ...state.trackerCards.slice(cardIndex + 1)
-                ] 
-            }; 
+                hasUpdated: true,
+                action: 'DEACTIVATE',
+                kounters: state.kounters.map((item, index) => {
+                    if (item.id !== action.id) { 
+                        return item
+                    }
+                    return { ...item, active: 0 }
+    
+                })
+            };
             case "DELETE_ALL":
-                return {...state, trackerCards: []}
+                return {...state, kounters: []}
             case "OPEN_SETTINGS":
                 return {...state, action: 'openSettings' }
             case "CLOSE_SETTINGS":
@@ -199,20 +205,8 @@ const store = createStore(reducer);
 
 const App = () => (
     <Provider store={store}>
-        <InitialNavigator />
+        <AppNavigator />
     </Provider>
 );
-
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'flex-start',
-    flexDirection: 'column',
-    alignItems: 'center',
-    backgroundColor: '#c74463',
-  }
-});
 
 export default App;

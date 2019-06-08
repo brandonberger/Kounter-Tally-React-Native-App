@@ -64,11 +64,11 @@ class Dialog extends React.Component {
 
 			if(newKounterTitle.trim()) { 
 				this.props.addNewTracker(
-					this.props.numberOfCards, 
+					this.props.numberOfKounters, 
 				 	newKounterTitle, 
 				 	this.props.getRandomColor(
-				 		(this.props.trackerCards.length > 0) 
-				 		? this.props.trackerCards[this.props.trackerCards.length - 1].color 
+				 		(this.props.kounters.length > 0) 
+				 		? this.props.kounters[this.props.kounters.length - 1].color 
 				 		: null
 			 		)
 				), 
@@ -95,27 +95,24 @@ class Dialog extends React.Component {
 			<DialogContainer style={{ display: showDialog, width: dialogContainerWidth }}>
 
 				<DialogModal style={{bottom: hp(60) - 185 / 2, width: dialogWidth, height: dialogHeight}}>
-	            	{this.props.fontLoaded ? (
-					<DialogTitle style={{fontFamily: 'avenir-medium'}}>
+					<DialogTitle>
 						Add New Kounter
-					</DialogTitle> ) : null }
-	            	{this.props.fontLoaded ? (
-					<DialogSubtitle style={{fontFamily: 'avenir-medium'}}>
+					</DialogTitle>
+					<DialogSubtitle>
 						Enter name of your kounter.
-					</DialogSubtitle> ) : null }
+					</DialogSubtitle>
 
 					<DialogFieldContainer>
 					{dialogErrorStatus ? (
 						<Ionicons style={{position: 'absolute', right: 35, top: 25, zIndex: 90}} size={12} color="red" name="ios-alert" />
 						) : null
 					}
-	            		{this.props.fontLoaded ? (
 						<DialogField 
 							maxLength={12}
 							style={{borderStyle: errorBorderStyle, 
 									borderColor: errorBorderColor, 
 									borderWidth: errorBorderWidth,
-									fontFamily: 'avenir-medium'}} 
+									}} 
 							ref={
 								input => {
 									this.dialogField = input
@@ -128,20 +125,18 @@ class Dialog extends React.Component {
 							placeholderTextColor="#828282" 
 							onChangeText={(text) => { newKounterTitle = text, handleDisabledButton(text)}}
 						>
-						</DialogField> ) : null }
+						</DialogField>
 					</DialogFieldContainer>
 					<DialogButtons>
 						<DialogCancel onPress={() => {this.props.openDialogMethod(false), this.dialogField.clear(), Keyboard.dismiss()}} >
-			            	{this.props.fontLoaded ? (
-							<DialogCancelText style={{fontFamily: 'avenir-medium'}}>
+							<DialogCancelText>
 								Cancel
-							</DialogCancelText> ) : null }
+							</DialogCancelText>
 						</DialogCancel>
 						<DialogSubmit onPress={() => {addNewKounter(newKounterTitle) }} disabled={this.state.submitButtonDisabled}>
-			            	{this.props.fontLoaded ? (
-							<DialogSubmitText style={{fontFamily: 'avenir-medium', color: submitButtonColor}}>
+							<DialogSubmitText style={{color: submitButtonColor}}>
 								Add
-							</DialogSubmitText> ) : null }
+							</DialogSubmitText>
 						</DialogSubmit>
 					</DialogButtons>
 				</DialogModal>

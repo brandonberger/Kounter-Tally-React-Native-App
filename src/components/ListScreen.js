@@ -26,7 +26,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   	return {
 	    addNewTracker(newCardNumber, name, color) {
-
 	    	name ? 
 	    	dispatch({
 	      		type: "ADD_NEW_TRACKER",
@@ -106,59 +105,59 @@ function getRandomColor(lastColor = null) {
 }
 
 
-var plus_button = require('../../assets/plus_button.png');
-var minus_button = require('../../assets/minus_button.png');
+// var plus_button = require('../../assets/plus_button.png');
+// var minus_button = require('../../assets/minus_button.png');
 
-if (Platform.OS == 'android') { 
-	headerMargin = StatusBar.currentHeight + 11 
-} else { 
-	headerMargin = 11
-}
+// if (Platform.OS == 'android') { 
+// 	headerMargin = StatusBar.currentHeight + 11 
+// } else { 
+// 	headerMargin = 11
+// }
 
-favoritesExist = false;
-kountersExist = false;
+// favoritesExist = false;
+// kountersExist = false;
 
-const sorts = {
-	SORT_BY_ID: {
-		image: require('../../assets/a_z_filter_disabled.png')
-	},
-	SORT_BY_A_Z: {
-		image: require('../../assets/a_z_filter.png')
-	},
-	SORT_BY_Z_A: {
-		image: require('../../assets/z_a_filter.png')
-	}
-};
+// const sorts = {
+// 	SORT_BY_ID: {
+// 		image: require('../../assets/a_z_filter_disabled.png')
+// 	},
+// 	SORT_BY_A_Z: {
+// 		image: require('../../assets/a_z_filter.png')
+// 	},
+// 	SORT_BY_Z_A: {
+// 		image: require('../../assets/z_a_filter.png')
+// 	}
+// };
 
-var settingsButton = require('../../assets/settings.png');
-var favoritesIcon = require('../../assets/favorites.png');
+// var settingsButton = require('../../assets/settings.png');
+// var favoritesIcon = require('../../assets/favorites.png');
 
 class ListScreen extends Component {
 
-	static navigationOptions = {
-	    header: null
-  	};
+	// static navigationOptions = {
+	//     header: null
+  // 	};
 
-	constructor(props) {
-	  super(props);
-		  this.state = { 
-		  	isLoading: true, 
-		  	dialogOpen: false,
-		  	modalOpen: false,
-		  	currentFilters: {
-		  		favoritesFilter: "SORT_BY_ID",
-		  		kountersFilter: "SORT_BY_ID"
-		  	},
-		  	nextSort: {
-		  		favorites: "SORT_BY_A_Z",
-		  		kounters: "SORT_BY_A_Z",
-		  	}
-    	}
-	}
+	// constructor(props) {
+	//   super(props);
+	// 	  this.state = { 
+	// 	  	isLoading: true, 
+	// 	  	dialogOpen: false,
+	// 	  	modalOpen: false,
+	// 	  	currentFilters: {
+	// 	  		favoritesFilter: "SORT_BY_ID",
+	// 	  		kountersFilter: "SORT_BY_ID"
+	// 	  	},
+	// 	  	nextSort: {
+	// 	  		favorites: "SORT_BY_A_Z",
+	// 	  		kounters: "SORT_BY_A_Z",
+	// 	  	}
+  //   	}
+	// }
 
 	async componentDidMount() {
 
-		StatusBar.setBarStyle("light-content", true);
+		// StatusBar.setBarStyle("light-content", true);
 
 		await Font.loadAsync({
 		  'anodina-xbold': require('../../assets/fonts/Anodina-ExtraBold.otf'),
@@ -176,139 +175,139 @@ class ListScreen extends Component {
 		// this.setState({ nextSort: { favorites: this.props.nextSort.favorites, kounters: this.props.nextSort.kounters }});
 	}
 
-	openDialog(status) {
-		this.setState({ dialogOpen: status, dialogError: false});
-	}
+	// openDialog(status) {
+	// 	this.setState({ dialogOpen: status, dialogError: false});
+	// }
 
-	openSettings(status = true) {
-		this.setState({ modalOpen: status });
-		this.showOverlay(status);
+	// openSettings(status = true) {
+	// 	this.setState({ modalOpen: status });
+	// 	this.showOverlay(status);
 
-		if (status == false) {
-			this.props.toggleEraseAllConfirmButtons('none')
-		}
-	}
+	// 	if (status == false) {
+	// 		this.props.toggleEraseAllConfirmButtons('none')
+	// 	}
+	// }
 
-	showOverlay(status = false) {
-		(status) ? overlayWidth = '100%' : overlayWidth = '0%';
-		this.setState({ showOverlay: overlayWidth })
-	}
+	// showOverlay(status = false) {
+	// 	(status) ? overlayWidth = '100%' : overlayWidth = '0%';
+	// 	this.setState({ showOverlay: overlayWidth })
+	// }
 	
-	triggerError(status) {
-		this.setState({dialogError: status})
-	}
+	// triggerError(status) {
+	// 	this.setState({dialogError: status})
+	// }
 
-	sortKounters(list, sortMethod) {
-		switch (list) {
-			case 'FAVORITES':
-				switch (sortMethod) {
-					case 'SORT_BY_ID':
-						this.props.sortKounters(list, sortMethod, "SORT_BY_A_Z");
-						this.setState({ nextSort: { favorites: 'SORT_BY_A_Z', kounters: this.state.nextSort.kounters }});
-						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_ID', kountersFilter: this.state.currentFilters.kountersFilter}});
-						break;
-					case 'SORT_BY_A_Z':
-						this.props.sortKounters(list, sortMethod, "SORT_BY_Z_A");
-						this.setState({ nextSort: { favorites: 'SORT_BY_Z_A', kounters: this.state.nextSort.kounters }});
-						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_A_Z', kountersFilter: this.state.currentFilters.kountersFilter}});
-						break;
-					case 'SORT_BY_Z_A':
-						this.props.sortKounters(list, sortMethod, "SORT_BY_ID");
-						this.setState({ nextSort: { favorites: 'SORT_BY_ID', kounters: this.state.nextSort.kounters }});
-						this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_Z_A', kountersFilter: this.state.currentFilters.kountersFilter}});
-						break;
-				}
-				break;
-			case 'KOUNTERS':
-				switch (sortMethod) {
-					case 'SORT_BY_ID':
-						this.props.sortKounters(list, sortMethod, "SORT_BY_A_Z");
-						this.setState({ nextSort: { kounters: 'SORT_BY_A_Z', favorites: this.state.nextSort.favorites }});
-						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_ID', favoritesFilter: this.state.currentFilters.favoritesFilter}});
-						break;
-					case 'SORT_BY_A_Z':
-						this.props.sortKounters(list, sortMethod, "SORT_BY_Z_A");
-						this.setState({ nextSort: { kounters: 'SORT_BY_Z_A', favorites: this.state.nextSort.favorites }});
-						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_A_Z', favoritesFilter: this.state.currentFilters.favoritesFilter}});
-						break;
-					case 'SORT_BY_Z_A':
-						this.props.sortKounters(list, sortMethod, "SORT_BY_ID");
-						this.setState({ nextSort: { kounters: 'SORT_BY_ID', favorites: this.state.nextSort.favorites }});
-						this.setState({ currentFilters: { kountersFilter: 'SORT_BY_Z_A', favoritesFilter: this.state.currentFilters.favoritesFilter}});
-						break;
-				}
-				break;
-		}
-	}
+	// sortKounters(list, sortMethod) {
+	// 	switch (list) {
+	// 		case 'FAVORITES':
+	// 			switch (sortMethod) {
+	// 				case 'SORT_BY_ID':
+	// 					this.props.sortKounters(list, sortMethod, "SORT_BY_A_Z");
+	// 					this.setState({ nextSort: { favorites: 'SORT_BY_A_Z', kounters: this.state.nextSort.kounters }});
+	// 					this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_ID', kountersFilter: this.state.currentFilters.kountersFilter}});
+	// 					break;
+	// 				case 'SORT_BY_A_Z':
+	// 					this.props.sortKounters(list, sortMethod, "SORT_BY_Z_A");
+	// 					this.setState({ nextSort: { favorites: 'SORT_BY_Z_A', kounters: this.state.nextSort.kounters }});
+	// 					this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_A_Z', kountersFilter: this.state.currentFilters.kountersFilter}});
+	// 					break;
+	// 				case 'SORT_BY_Z_A':
+	// 					this.props.sortKounters(list, sortMethod, "SORT_BY_ID");
+	// 					this.setState({ nextSort: { favorites: 'SORT_BY_ID', kounters: this.state.nextSort.kounters }});
+	// 					this.setState({ currentFilters: { favoritesFilter: 'SORT_BY_Z_A', kountersFilter: this.state.currentFilters.kountersFilter}});
+	// 					break;
+	// 			}
+	// 			break;
+	// 		case 'KOUNTERS':
+	// 			switch (sortMethod) {
+	// 				case 'SORT_BY_ID':
+	// 					this.props.sortKounters(list, sortMethod, "SORT_BY_A_Z");
+	// 					this.setState({ nextSort: { kounters: 'SORT_BY_A_Z', favorites: this.state.nextSort.favorites }});
+	// 					this.setState({ currentFilters: { kountersFilter: 'SORT_BY_ID', favoritesFilter: this.state.currentFilters.favoritesFilter}});
+	// 					break;
+	// 				case 'SORT_BY_A_Z':
+	// 					this.props.sortKounters(list, sortMethod, "SORT_BY_Z_A");
+	// 					this.setState({ nextSort: { kounters: 'SORT_BY_Z_A', favorites: this.state.nextSort.favorites }});
+	// 					this.setState({ currentFilters: { kountersFilter: 'SORT_BY_A_Z', favoritesFilter: this.state.currentFilters.favoritesFilter}});
+	// 					break;
+	// 				case 'SORT_BY_Z_A':
+	// 					this.props.sortKounters(list, sortMethod, "SORT_BY_ID");
+	// 					this.setState({ nextSort: { kounters: 'SORT_BY_ID', favorites: this.state.nextSort.favorites }});
+	// 					this.setState({ currentFilters: { kountersFilter: 'SORT_BY_Z_A', favoritesFilter: this.state.currentFilters.favoritesFilter}});
+	// 					break;
+	// 			}
+	// 			break;
+	// 	}
+	// }
 
 	render() {
 
-		this.props.trackerCards.filter(card=>card.favorite_status).map((card, card_id) => {
-			favoritesExist = true;
-		});
+		// this.props.trackerCards.filter(card=>card.favorite_status).map((card, card_id) => {
+		// 	favoritesExist = true;
+		// });
 
-		if (favoritesExist) {
-			showFavorites = 'flex';
-		} else {
-			showFavorites = 'none';
-		}
+		// if (favoritesExist) {
+		// 	showFavorites = 'flex';
+		// } else {
+		// 	showFavorites = 'none';
+		// }
 
-		this.props.trackerCards.filter(card=>!card.favorite_status).map((card, card_id) => {
-			kountersExist = true;
-		});
+		// this.props.trackerCards.filter(card=>!card.favorite_status).map((card, card_id) => {
+		// 	kountersExist = true;
+		// });
 
-		if (kountersExist) {
-			showKounters = 'flex';
-		} else {
-			showKounters = 'none';
-		}
+		// if (kountersExist) {
+		// 	showKounters = 'flex';
+		// } else {
+		// 	showKounters = 'none';
+		// }
 
-		if(kountersExist || favoritesExist) {
-			showAddButton = 'flex';
-		} else {
-			showAddButton = 'none';
-		}
-
-
-	    kounters = this.props.trackerCards;
+		// if(kountersExist || favoritesExist) {
+		// 	showAddButton = 'flex';
+		// } else {
+		// 	showAddButton = 'none';
+		// }
 
 
-	    const filters = {
-	    	favoriteFilters: {
-	    		filterFavoritesById: kounters.filter(card=>card.favorite_status).sort((a,b) => a.id > b.id),
-	    		filterFavoritesAZ: kounters.filter(card=>card.favorite_status).sort((a,b) => a.title > b.title),
-	    		filterFavoritesZA: kounters.filter(card=>card.favorite_status).sort((a,b) => a.title < b.title),
-	    	},
-	    	kounterFilters: {
-	    		filterKountersById: kounters.filter(card=>!card.favorite_status).sort((a,b) => a.id > b.id),
-	    		filterKountersAZ: kounters.filter(card=>!card.favorite_status).sort((a,b) => a.title > b.title),
-	    		filterKountersZA: kounters.filter(card=>!card.favorite_status).sort((a,b) => a.title < b.title),
-	    	}
-	    }
+	    // kounters = this.props.trackerCards;
 
-	   	switch (this.state.currentFilters.favoritesFilter) {
-	   		case 'SORT_BY_ID':
-	   			filterFavorites = filters.favoriteFilters.filterFavoritesById;
-	   			break;
-	   		case 'SORT_BY_A_Z':
-	   			filterFavorites = filters.favoriteFilters.filterFavoritesAZ;
-	   			break;
-	   		case 'SORT_BY_Z_A':
-	   			filterFavorites = filters.favoriteFilters.filterFavoritesZA;
-	   			break;
-	   	}
 
-	   	switch (this.state.currentFilters.kountersFilter) {
-	   		case 'SORT_BY_ID':
-	   			filterKounters = filters.kounterFilters.filterKountersById;
-	   			break;
-	   		case 'SORT_BY_A_Z':
-	   			filterKounters = filters.kounterFilters.filterKountersAZ;
-	   			break;
-	   		case 'SORT_BY_Z_A':
-	   			filterKounters = filters.kounterFilters.filterKountersZA;
-	   			break;
-	   	}
+	    // const filters = {
+	    // 	favoriteFilters: {
+	    // 		filterFavoritesById: kounters.filter(card=>card.favorite_status).sort((a,b) => a.id > b.id),
+	    // 		filterFavoritesAZ: kounters.filter(card=>card.favorite_status).sort((a,b) => a.title > b.title),
+	    // 		filterFavoritesZA: kounters.filter(card=>card.favorite_status).sort((a,b) => a.title < b.title),
+	    // 	},
+	    // 	kounterFilters: {
+	    // 		filterKountersById: kounters.filter(card=>!card.favorite_status).sort((a,b) => a.id > b.id),
+	    // 		filterKountersAZ: kounters.filter(card=>!card.favorite_status).sort((a,b) => a.title > b.title),
+	    // 		filterKountersZA: kounters.filter(card=>!card.favorite_status).sort((a,b) => a.title < b.title),
+	    // 	}
+	    // }
+
+	   	// switch (this.state.currentFilters.favoritesFilter) {
+	   	// 	case 'SORT_BY_ID':
+	   	// 		filterFavorites = filters.favoriteFilters.filterFavoritesById;
+	   	// 		break;
+	   	// 	case 'SORT_BY_A_Z':
+	   	// 		filterFavorites = filters.favoriteFilters.filterFavoritesAZ;
+	   	// 		break;
+	   	// 	case 'SORT_BY_Z_A':
+	   	// 		filterFavorites = filters.favoriteFilters.filterFavoritesZA;
+	   	// 		break;
+	   	// }
+
+	   	// switch (this.state.currentFilters.kountersFilter) {
+	   	// 	case 'SORT_BY_ID':
+	   	// 		filterKounters = filters.kounterFilters.filterKountersById;
+	   	// 		break;
+	   	// 	case 'SORT_BY_A_Z':
+	   	// 		filterKounters = filters.kounterFilters.filterKountersAZ;
+	   	// 		break;
+	   	// 	case 'SORT_BY_Z_A':
+	   	// 		filterKounters = filters.kounterFilters.filterKountersZA;
+	   	// 		break;
+	   	// }
 
 		return (
 			<Container>
@@ -337,7 +336,7 @@ class ListScreen extends Component {
 							</SettingsButton>
 
 						</Header>
-	            	<ScrollView style={{ height: "100%"}}>
+						<ScrollView style={{ height: "100%"}}>
 						<CardContainer>
 							<ListHeader style={{display: showFavorites}}>
 								<ListHeaderContainer>

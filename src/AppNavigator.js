@@ -6,7 +6,7 @@ import TestScreen from './components/TestScreen';
 const AppNavigator = createStackNavigator(
 	{	
 		List: TestScreen,	
-		// Tracker: Tracker,
+		Tracker: Tracker,
 	}
 );
 

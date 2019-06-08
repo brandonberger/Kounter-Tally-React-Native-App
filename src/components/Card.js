@@ -12,23 +12,28 @@ class Card extends React.Component {
 		return (
 			<CardBody key={this.props.id} style={{backgroundColor: this.props.color}}>
 				<CardHeader>
-					<TouchableOpacity style={{justifyContent: 'center', flex: 1}}>
+					<TouchableOpacity style={{justifyContent: 'center', flex: 1}}	
+						onPress={() => { 
+							this.props.navigate(this.props.kounter)
+						}}
+					>
 						<CardTitle>
 							{this.props.name}
 						</CardTitle>
 						<CardDescription>
-							{this.props.description}
+							{/* {this.props.description} */}
+							{this.props.active}
 						</CardDescription>
 					</TouchableOpacity>
 				</CardHeader>
 				<CardControlsContainer>
-					<CardButtonContainer>
+					<CardButtonContainer onPress={() => this.props.updateKounter(this.props.id, 'subtract')}>
 						<CardMinusButton source={minus_button} />
 					</CardButtonContainer>
 						<CardCount>
 							{this.props.amount}
 						</CardCount>
-					<CardButtonContainer>
+					<CardButtonContainer onPress={() => this.props.updateKounter(this.props.id, 'add')}>
 						<CardPlusButton source={plus_button} />
 					</CardButtonContainer>
 				</CardControlsContainer>

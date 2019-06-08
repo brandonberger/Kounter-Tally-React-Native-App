@@ -5,11 +5,13 @@ import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
 import { Modal as ModalComponent } from './Modal';
 import styled from "styled-components";
+import {addCount, subtractCount, favoriteKounter, resetCount, updateName, updateDescription, deactivateKounter, updateKounters} from './KounterFunctions';
+
 
 function mapStateToProps(state) {
   	return { 
   		action: state.action,
-		trackerCards: state.trackerCards,
+			kounters: state.kounters,
 	   	showConfirmButtons: state.showConfirmButtons,
 	   	showPreConfirmButtons: state.showPreConfirmButtons
 	}
@@ -17,60 +19,52 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    addKounter(card_id) {
+    addCount: id =>
     	dispatch({
       		type: "ADD_KOUNTER",
-      		card_id: card_id
-    	})
-    },
-    subtractKounter(card_id) {
+      		id: id
+    	}),
+    subtractCount: id =>
     	dispatch({
       		type: "SUBTRACT_KOUNTER",
-      		card_id: card_id
-    	})
-    },
-    removeTracker(card_id, navigation) {
-    	navigation.push('List');
+      		id: id
+    	}),
+			deactivateKounter(id, navigation) {
     	dispatch({
-    		type: "REMOVE_TRACKER",
-    		card_id: card_id
-    	})
-    },
-    resetCount(card_id) {
+    		type: "DEACTIVATE_KOUNTER",
+    		id: id
+			})
+		},
+    resetCount: id =>
     	dispatch({
     		type: "RESET_TRACKER",
-    		card_id: card_id
-    	})
-    },
-    favorite(card_id) {
+    		id: id
+    	}),
+    favoriteKounter: id =>
     	dispatch({
     		type: "FAVORITE",
-    		card_id: card_id
-    	})
-    },
-    editKounterName(card_id, newName) {
+    		id: id
+    	}),
+    updateName: (id, newName) =>
     	dispatch({
     		type: "EDIT_NAME",
     		newName: newName,
-    		card_id: card_id
-    	})
-    },
-    editDescription(card_id, newDescription) {
+    		id: id
+    	}),
+    updateDescription(id, newDescription) {
     	if (newDescription.trim().length == 0) { newDescription = ''; }
     	dispatch({
     		type: "EDIT_DESCRIPTION",
     		newDescription: newDescription,
-    		card_id: card_id
-    	})
-	},
-	toggleEraseAllConfirmButtons(status) {
+    		id: id
+			})
+		},
+		toggleEraseAllConfirmButtons: (status) =>
     	dispatch({
     		type: "TOGGLE_ERASE_CONFIRM_BUTTONS",
     		showConfirmButtonsStatus: status
-    	})
-    }
-
-}
+    	}),
+	}
 }
 var plus_button_image = require('../../assets/plus_button.png');
 var minus_button_image = require('../../assets/minus_button.png');
@@ -100,6 +94,12 @@ class Tracker extends React.Component {
 	 	this.setState({ fontLoaded: true });
 	}
 
+	componentDidUpdate() {
+			if (this.props.action == 'DEACTIVATE') {
+				updateKounters(this.props.kounters, this.props.navigation);
+		}
+	}
+
 	static navigationOptions = {
 	    header: null
   	};
@@ -118,22 +118,53 @@ class Tracker extends React.Component {
 		this.setState({ showOverlay: overlayWidth })
 	}
 
+	handleUpdateKounter = (id, type, value, extra) => {
+
+		switch (type) {
+			case 'ADD':
+					addCount(id);
+					this.props.addCount(id);
+					break;
+			case 'SUBTRACT':
+					subtractCount(id);
+					this.props.subtractCount(id);
+					break;
+			case 'FAVORITE':
+					favoriteKounter(id);
+					this.props.favoriteKounter(id);
+					break;
+			case 'RESET':
+					resetCount(id);
+					this.props.resetCount(id);
+					break;
+			case 'UPDATE_NAME':
+					updateName(id, value);
+					this.props.updateName(id, value);
+					break;
+			case 'UPDATE_DESCRIPTION':
+					updateDescription(id, value);
+					this.props.updateDescription(id, value);
+					break;
+			case 'DEACTIVATE':
+					this.props.deactivateKounter(id, extra);
+					break;
+		}
+	}
+
 	render() {
 
-		const trackerCards = this.props.trackerCards;
-
+		const kounters = this.props.kounters;
 		const { navigation } = this.props;
-		const card_id = navigation.getParam("kounter").card_id;
-
+		const kounter_id = navigation.getParam("kounter").id;
 		var kounter;
 
-		trackerCards.map((item, index) => {
-			if (item.card_id == card_id) {
+		kounters.map((item, index) => {
+			if (item.id == kounter_id) {
 				kounter = item;
 			}
 		})
 
-		if (kounter == undefined) { return null; this.props.navigation.push('List'); }
+		// if (kounter == undefined) { return null; this.props.navigation.push('List'); }
 
 		return (
 			<View style={{flex: 1}}>
@@ -143,7 +174,7 @@ class Tracker extends React.Component {
 
 					<NavigationContainer>
 						<TouchableOpacity 
-							onPress={() => this.props.navigation.push('List')}
+							onPress={() => this.props.navigation.pop()}
 						>
 							<NavigationButtonImage source={back_arrow}/>
 						</TouchableOpacity>
@@ -164,9 +195,9 @@ class Tracker extends React.Component {
 								maxLength={12}
 								autoFocus={false} 
 								style={{fontFamily: 'avenir-medium'}}
-								onChangeText={(text) => {this.props.editKounterName(kounter.card_id, text)}}
+								onChangeText={(text) => {this.handleUpdateKounter(kounter.id, 'UPDATE_NAME', text)}}
 							>
-								{kounter.title}
+								{kounter.name}
 							</KounterTitleField>
 							) : null
 						}
@@ -175,7 +206,7 @@ class Tracker extends React.Component {
 								maxLength={18}
 								autoFocus={false}
 								style={{fontFamily: 'avenir-medium'}}
-								onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
+								onChangeText={(text) => {this.handleUpdateKounter(kounter.id, 'UPDATE_DESCRIPTION', text)}}
 								placeholder="Add Description"
 								placeholderTextColor="white"
 							>
@@ -185,7 +216,7 @@ class Tracker extends React.Component {
 								maxLength={18}
 								autoFocus={false}
 								style={{fontFamily: 'avenir-medium'}}
-								onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
+								onChangeText={(text) => {this.handleUpdateKounter(kounter.id, 'UPDATE_DESCRIPTION', text)}}
 							>
 								{kounter.description}
 							</ItemDescriptionField>
@@ -194,17 +225,17 @@ class Tracker extends React.Component {
 
 						{this.state.fontLoaded ? (
 							<KounterCount style={{fontFamily: 'avenir-medium'}}>
-								{kounter.currentCount}
+								{kounter.amount}
 							</KounterCount>
 							):null
 						}
 					</KounterContent>
 					<View>
 						<KounterControls>
-							<KounterControlButton onPress={() => this.props.subtractKounter(kounter.card_id)}>
+							<KounterControlButton onPress={() => this.handleUpdateKounter(kounter.id, 'SUBTRACT')}>
 								<KounterControlButtonImage style={{height: 48}} source={minus_button_image} />
 							</KounterControlButton>
-							<KounterControlButton onPress={() => this.props.addKounter(kounter.card_id)}>
+							<KounterControlButton onPress={() => this.handleUpdateKounter(kounter.id, 'ADD')}>
 								<KounterControlButtonImage style={{height: 48}} source={plus_button_image} />
 							</KounterControlButton>
 				      	</KounterControls>
@@ -212,14 +243,14 @@ class Tracker extends React.Component {
 
 
 			      	<KounterSubControls style={{ marginBottom: hp(10)}}>
-			      		<ResetButton onPress={() => this.props.resetCount(kounter.card_id)}>
+			      		<ResetButton onPress={() => this.handleUpdateKounter(kounter.id, 'RESET')}>
 			      			<ResetIcon source={reset_button} />
 								{this.state.fontLoaded ? (
 			      					<ResetButtonText style={{fontFamily: 'avenir-medium'}}> Reset </ResetButtonText>
 									) : null
 								}
 			      		</ResetButton>
-			      		<FavoriteButton onPress={() => this.props.favorite(kounter.card_id)}>
+			      		<FavoriteButton onPress={() => this.handleUpdateKounter(kounter.id, 'FAVORITE')}>
 			      			{kounter.favorite_status ? (
 			      				<FavoriteIcon source={favorites_button} />
 			      				) : (
@@ -241,13 +272,13 @@ class Tracker extends React.Component {
 				<Overlay style={{width: this.state.showOverlay}}></Overlay>
 			</TouchableWithoutFeedback>		 
 			<ModalComponent 
-				modalTitle="DELETE KOUNTER"
+				modalTitle="DEACTIVATE KOUNTER"
 				toggleStatus={this.state.modalOpen}
 				openModalMethod={this.openModal.bind(this)}
 				fontLoaded={this.state.fontLoaded}
 				buttonContent="Delete"
 				modalButtonTitle={'Are you sure you want to delete “'+ kounter.title + '"?'}
-				buttonMethod={() => this.props.removeTracker(kounter.card_id, this.props.navigation)}
+				buttonMethod={() => this.handleUpdateKounter(kounter.id, 'DEACTIVATE', null, this.props.navigation)}
 				showConfirmButtons={this.props.showConfirmButtons}
 				showPreConfirmButtons={this.props.showPreConfirmButtons}
 				showConfirmButtonsMethod={() => this.props.toggleEraseAllConfirmButtons}

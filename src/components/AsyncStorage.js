@@ -8,3 +8,8 @@ export const saveState = async state => {
 
     }
 }
+
+export const removeItem = async state => {
+    const serializedState = JSON.stringify(state);
+    await AsyncStorage.removeItem("kounters", serializedState);
+}
