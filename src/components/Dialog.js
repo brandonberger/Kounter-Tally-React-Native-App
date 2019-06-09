@@ -3,6 +3,8 @@ import { Keyboard, TouchableOpacity, View, Text, Image } from 'react-native';
 import styled from "styled-components";
 import { Ionicons } from '@expo/vector-icons';
 import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import FontComponent from './FontComponent';
+import { Font } from 'expo';
 
 var newKounterTitle;
 
@@ -11,23 +13,28 @@ class Dialog extends React.Component {
 	constructor(props){
    		super(props);
    		this.state = {
-   			submitButtonDisabled: true
+			submitButtonDisabled: true,
+			fontLoaded: false
    		}
-	 }
+	}
 	 
  	componentDidUpdate() {
-  		if (this.props.open && !this.dialogField.isFocused()) {
+  		if (this.dialogField && this.props.open && !this.dialogField.isFocused()) {
   			this.dialogField.focus();
   		}
-  	}
+	}
+	  
+	async componentDidMount() {
+		await Font.loadAsync({
+		  'avenir-medium': require('../../assets/fonts/Avenir-Medium.ttf'),
+		});
+		await this.setState({ fontLoaded: true });
+	}
 
 	render() {
-
-
 		let dialogOpen = this.props.open;
 
 		let dialogErrorStatus = this.props.dialogErrorStatus;
-
 
 		if (this.state.submitButtonDisabled) {
 			submitButtonColor = '#828282';
@@ -104,21 +111,18 @@ class Dialog extends React.Component {
 			<DialogContainer style={{ display: showDialog, width: dialogContainerWidth }}>
 
 				<DialogModal style={{bottom: hp(60) - 185 / 2, width: dialogWidth, height: dialogHeight}}>
-	            	{this.props.fontLoaded ? (
-					<DialogTitle style={{fontFamily: 'avenir-medium'}}>
-						Add New Kounter
-					</DialogTitle> ) : null }
-	            	{this.props.fontLoaded ? (
-					<DialogSubtitle style={{fontFamily: 'avenir-medium'}}>
-						Enter name of your kounter.
-					</DialogSubtitle> ) : null }
-
+					<DialogTitle>
+						<FontComponent text="Add New Kounter" fontFamily="avenir-medium" />
+					</DialogTitle>
+					<DialogSubtitle>
+						<FontComponent text="Enter name of your kounter." fontFamily="avenir-medium" />
+					</DialogSubtitle>
 					<DialogFieldContainer>
 					{dialogErrorStatus ? (
 						<Ionicons style={{position: 'absolute', right: 35, top: 25, zIndex: 90}} size={22} color="red" name="ios-alert" />
 						) : null
 					}
-	            		{this.props.fontLoaded ? (
+	            		{this.state.fontLoaded ? (
 						<DialogField 
 							maxLength={12}
 							style={{borderStyle: errorBorderStyle, 
@@ -141,16 +145,14 @@ class Dialog extends React.Component {
 					</DialogFieldContainer>
 					<DialogButtons>
 						<DialogCancel onPress={() => {this.props.openDialogMethod(false), this.dialogField.clear(), Keyboard.dismiss()}} >
-			            	{this.props.fontLoaded ? (
-							<DialogCancelText style={{fontFamily: 'avenir-medium'}}>
-								Cancel
-							</DialogCancelText> ) : null }
+							<DialogCancelText>
+								<FontComponent text="Cancel" fontFamily="avenir-medium" />
+							</DialogCancelText>
 						</DialogCancel>
 						<DialogSubmit onPress={() => {addNewKounter(newKounterTitle), newKounterTitle = null }} disabled={this.state.submitButtonDisabled}>
-			            	{this.props.fontLoaded ? (
-							<DialogSubmitText style={{fontFamily: 'avenir-medium', color: submitButtonColor}}>
-								Add
-							</DialogSubmitText> ) : null }
+							<DialogSubmitText style={{color: submitButtonColor}}>
+								<FontComponent text="Add" fontFamily="avenir-medium" />
+							</DialogSubmitText>
 						</DialogSubmit>
 					</DialogButtons>
 				</DialogModal>

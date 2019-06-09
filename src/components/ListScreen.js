@@ -8,21 +8,21 @@ import {SafeAreaView} from 'react-navigation';
 import styled from "styled-components";
 import { Dialog as DialogComponent } from './Dialog';
 import { Modal as ModalComponent } from './Modal';
+import FontComponent from './FontComponent';
 
 function mapStateToProps(state) {
-	// console.log(state);
 	return { 
-			 action: state.action,
-		   	 trackerCards: state.trackerCards,
-		   	 numberOfCards: state.trackerCards.length,
-		   	 totalCardsEver: state.totalCardHistory,
-		   	 currentSort: state.currentSort,
-		   	 nextSort: state.nextSort,
-		   	 showConfirmButtons: state.showConfirmButtons,
-		   	 showPreConfirmButtons: state.showPreConfirmButtons
- 	  	   }	
-}
-
+	  action: state.action,
+		trackerCards: state.trackerCards,
+		numberOfCards: state.trackerCards.length,
+		totalCardsEver: state.totalCardHistory,
+		currentSort: state.currentSort,
+		nextSort: state.nextSort,
+		showConfirmButtons: state.showConfirmButtons,
+		showPreConfirmButtons: state.showPreConfirmButtons
+	}	
+} 
+ 
 function mapDispatchToProps(dispatch) {
   	return {
 	    addNewTracker(newCardNumber, name, color) {
@@ -151,17 +151,7 @@ class ListScreen extends Component {
 	}
 
 	async componentDidMount() {
-
 		StatusBar.setBarStyle("light-content", true);
-
-		await Font.loadAsync({
-		  'anodina-xbold': require('../../assets/fonts/Anodina-ExtraBold.otf'),
-		  'avenir-medium': require('../../assets/fonts/Avenir-Medium.ttf'),
-		  'avenir-heavy': require('../../assets/fonts/Avenir-Heavy.ttf'),
-		  'avenir-black': require('../../assets/fonts/Avenir-Black.ttf'),
-		});
-
-		await this.setState({ fontLoaded: true });
 
 		// DANGER
 		// this.props.resetEverything();
@@ -325,15 +315,13 @@ class ListScreen extends Component {
 					getRandomColor={getRandomColor.bind(this)}
 					trackerCards={this.props.trackerCards}
 					triggerError={this.triggerError.bind(this)} 
-					fontLoaded={this.state.fontLoaded}
 				/>
 
 				<SafeAreaView forceInset={{ bottom: 'never'}}> 
 						<Header style={{marginTop: headerMargin}}>
-							{this.state.fontLoaded ? (
-								<HeaderTitle style={{fontFamily: 'anodina-xbold'}}>KOUNTER</HeaderTitle>
-								) : null
-							}
+								<HeaderTitle>
+									<FontComponent text="KOUNTER" fontFamily="anodina-xbold" />
+								</HeaderTitle>
 							<SettingsButton 
 								onPress={() => this.openSettings(true)}
 							>
@@ -345,10 +333,10 @@ class ListScreen extends Component {
 						<CardContainer>
 							<ListHeader style={{display: showFavorites}}>
 								<ListHeaderContainer>
-									{this.state.fontLoaded ? (
-										<ListHeaderText style={{fontFamily: 'avenir-heavy'}}>FAVORITES</ListHeaderText>
-										) : null
-									}
+										<ListHeaderText>
+											<FontComponent text="FAVORITES" fontFamily="avenir-heavy" />
+												FAVORITES
+											</ListHeaderText>
 									<FavoritesIcon source={favoritesIcon} />
 								</ListHeaderContainer>
 								<SortingAction>
@@ -370,31 +358,21 @@ class ListScreen extends Component {
 				                              });
 				                            }}
 											>
-										{this.state.fontLoaded ? (
-											<CardTitle style={{fontFamily: 'avenir-medium'}}>
-												{card.title}
+											<CardTitle>
+												<FontComponent text={card.title} fontFamily="avenir-medium" />
 											</CardTitle>
-											) : null
-										}
-
-										{this.state.fontLoaded && card.description ? (
-											<CardDescription style={{fontFamily: 'avenir-medium'}}>
-												{card.description}
+											<CardDescription>
+												<FontComponent text={card.description} fontFamily="avenir-medium" />
 											</CardDescription>
-											) : null
-										}
 										</TouchableOpacity>
 									</CardHeader>
 									<CardControlsContainer>
 										<CardButtonContainer onPress={() => this.props.subtractKounter(card.card_id)}>
 											<CardMinusButton source={minus_button} />
 										</CardButtonContainer>
-										{this.state.fontLoaded ? (
-											<CardCount style={{fontFamily: 'avenir-medium'}}>
-												{card.currentCount}
+											<CardCount>
+												<FontComponent text={card.currentCount} fontFamily="avenir-medium" />
 											</CardCount>
-											) : null
-										}
 										<CardButtonContainer onPress={() => this.props.addKounter(card.card_id)}>
 											<CardPlusButton source={plus_button} />
 										</CardButtonContainer>
@@ -406,10 +384,9 @@ class ListScreen extends Component {
 
 							<ListHeader style={{display: showKounters}}>
 								<ListHeaderContainer>
-									{this.state.fontLoaded ? (
-										<ListHeaderText style={{fontFamily: 'avenir-heavy'}}>KOUNTERS</ListHeaderText>
-										) : null
-									}
+										<ListHeaderText>
+											<FontComponent text="KOUNTERS" fontFamily="avenir-heavy" />
+										</ListHeaderText>
 								</ListHeaderContainer>
 								<SortingAction>
 									<TouchableOpacity onPress={() => this.sortKounters('KOUNTERS', this.state.nextSort.kounters)}>
@@ -430,16 +407,13 @@ class ListScreen extends Component {
 				                              });
 				                            }}
 											>
-										{this.state.fontLoaded ? (
-											<CardTitle style={{fontFamily: 'avenir-medium'}}>
-												{card.title}
+											<CardTitle>
+												<FontComponent text={card.title} fontFamily="avenir-medium" />	
 											</CardTitle>
-											) : null
-										}
 
-										{this.state.fontLoaded && card.description ? (
-											<CardDescription style={{fontFamily: 'avenir-medium'}}>
-												{card.description}
+										{card.description ? (
+											<CardDescription>
+												<FontComponent text={card.description} fontFamily="avenir-medium" />	
 											</CardDescription>
 											) : null
 										}
@@ -449,12 +423,9 @@ class ListScreen extends Component {
 										<CardButtonContainer onPress={() => this.props.subtractKounter(card.card_id)}>
 											<CardMinusButton source={minus_button} />
 										</CardButtonContainer>
-										{this.state.fontLoaded ? (
-											<CardCount style={{fontFamily: 'avenir-medium'}}>
-												{card.currentCount}
+											<CardCount>
+												<FontComponent text={card.currentCount} fontFamily="avenir-medium" />
 											</CardCount>
-											) : null
-										}
 										<CardButtonContainer onPress={() => this.props.addKounter(card.card_id)}>
 											<CardPlusButton source={plus_button} />
 										</CardButtonContainer>
@@ -478,11 +449,10 @@ class ListScreen extends Component {
 					</Overlay>
 				</TouchableWithoutFeedback>
 
-				<ModalComponent 
+				<ModalComponent
 					modalTitle="SETTINGS"
 					toggleStatus={this.state.modalOpen}
 					openModalMethod={this.openSettings.bind(this)}
-					fontLoaded={this.state.fontLoaded}
 					buttonContent="Erase All Data"
 					buttonMethod={this.props.deleteAll}
 					modalItem={true}
@@ -495,24 +465,21 @@ class ListScreen extends Component {
 					showConfirmButtonsMethod={this.props.toggleEraseAllConfirmButtons}
 				/>
 
-	            	{!kountersExist && !favoritesExist ? (
-            			<EmptyKountersContainer style={{height: hp(90)}}>
-            				<EmptyKountersAddButton 
-								onPress={() => { this.openDialog(true)} }
-							>
-								<EmptyKountersAddButtonImage source={plus_button} />
-							</EmptyKountersAddButton>
-
-            				{this.state.fontLoaded ? (
-            					<EmptyAddKounterText style={{fontFamily: 'avenir-heavy'}}> ADD KOUNTER </EmptyAddKounterText>
-            					) : null
-            				}
-            				<RocketShipContainer>
-            					<RocketShip source={require('../../assets/rocket_ship.png')} />
-            				</RocketShipContainer>
-            			</EmptyKountersContainer>
-            			) : null
-            		}
+				{!kountersExist && !favoritesExist ? (
+					<EmptyKountersContainer style={{height: hp(90)}}>
+          	<EmptyKountersAddButton 
+							onPress={() => { this.openDialog(true)} }
+						>
+							<EmptyKountersAddButtonImage source={plus_button} />
+						</EmptyKountersAddButton>
+						<EmptyAddKounterText> 
+							<FontComponent text="ADD KOUNTER" fontFamily="avenir-heavy" />
+						</EmptyAddKounterText>
+						<RocketShipContainer>
+							<RocketShip source={require('../../assets/rocket_ship.png')} />
+						</RocketShipContainer>
+					</EmptyKountersContainer>
+				) : null }
 
 			</Container>
 		);

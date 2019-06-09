@@ -5,13 +5,14 @@ import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
 import { Modal as ModalComponent } from './Modal';
 import styled from "styled-components";
+import FontComponent from './FontComponent';
 
 function mapStateToProps(state) {
-  	return { 
-  		action: state.action,
+	return { 
+		action: state.action,
 		trackerCards: state.trackerCards,
-	   	showConfirmButtons: state.showConfirmButtons,
-	   	showPreConfirmButtons: state.showPreConfirmButtons
+		showConfirmButtons: state.showConfirmButtons,
+		showPreConfirmButtons: state.showPreConfirmButtons
 	}
 }
 
@@ -62,16 +63,16 @@ function mapDispatchToProps(dispatch) {
     		newDescription: newDescription,
     		card_id: card_id
     	})
-	},
-	toggleEraseAllConfirmButtons(status) {
-    	dispatch({
-    		type: "TOGGLE_ERASE_CONFIRM_BUTTONS",
-    		showConfirmButtonsStatus: status
-    	})
-    }
+		},
+		toggleEraseAllConfirmButtons(status) {
+			dispatch({
+				type: "TOGGLE_ERASE_CONFIRM_BUTTONS",
+				showConfirmButtonsStatus: status
+			})
+		}
+	}
+}
 
-}
-}
 var plus_button_image = require('../../assets/plus_button.png');
 var minus_button_image = require('../../assets/minus_button.png');
 var back_arrow = require('../../assets/back_arrow.png');
@@ -81,30 +82,25 @@ var favorites_button = require('../../assets/favorites.png');
 var favorites_false_button = require('../../assets/favorites_false.png');
 
 class Tracker extends React.Component {
-	
-
 	state = {
-    	fontLoaded: false,
-    	dialogOpen: false,
-    	modalOpen: false,
-  	};
+		fontLoaded: false,
+		dialogOpen: false,
+		modalOpen: false,
+	};
 
 	async componentDidMount() {
 		await Font.loadAsync({
-		  'anodina-bold': require('../../assets/fonts/Anodina-Bold.otf'),
-		  'anodina-regular': require('../../assets/fonts/Anodina-Regular.otf'),
 		  'avenir-medium': require('../../assets/fonts/Avenir-Medium.ttf'),
-		  'avenir-heavy': require('../../assets/fonts/Avenir-Heavy.ttf'),
 		});
 
 	 	this.setState({ fontLoaded: true });
 	}
 
 	static navigationOptions = {
-	    header: null
-  	};
+		header: null
+	};
 
-  	openDialog(status) {
+	openDialog(status) {
 		this.setState({ dialogOpen: status})
 	}
 
@@ -119,12 +115,9 @@ class Tracker extends React.Component {
 	}
 
 	render() {
-
 		const trackerCards = this.props.trackerCards;
-
 		const { navigation } = this.props;
 		const card_id = navigation.getParam("kounter").card_id;
-
 		var kounter;
 
 		trackerCards.map((item, index) => {
@@ -137,128 +130,102 @@ class Tracker extends React.Component {
 
 		return (
 			<View style={{flex: 1}}>
-			<TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss(); } }>
+				<TouchableWithoutFeedback onPress={ () => { Keyboard.dismiss(); } }>
+					<Container style={{backgroundColor: kounter.color}}>
+						<NavigationContainer>
+							<TouchableOpacity onPress={() => this.props.navigation.pop()}>
+								<NavigationButtonImage source={back_arrow}/>
+							</TouchableOpacity>
+							<TouchableOpacity onPress={() => this.openModal(true)}>
+								<NavigationButtonImage source={trash_button} />
+							</TouchableOpacity>
+						</NavigationContainer>
 
-				<Container style={{backgroundColor: kounter.color}}>
-
-					<NavigationContainer>
-						<TouchableOpacity 
-							onPress={() => this.props.navigation.pop()}
-						>
-							<NavigationButtonImage source={back_arrow}/>
-						</TouchableOpacity>
-						<TouchableOpacity 
-							onPress={() => this.openModal(true)}
-						>
-							<NavigationButtonImage 
-								source={trash_button} 
-							/>
-						</TouchableOpacity>
-
-					</NavigationContainer>
-
-
-					<KounterContent style={{marginTop: hp('18%')}}>
-						{this.state.fontLoaded ? (
-							<KounterTitleField 
-								maxLength={12}
-								autoFocus={false} 
-								style={{fontFamily: 'avenir-medium'}}
-								onChangeText={(text) => {this.props.editKounterName(kounter.card_id, text)}}
-							>
-								{kounter.title}
-							</KounterTitleField>
-							) : null
-						}
-						{this.state.fontLoaded && !kounter.description ? (
-							<ItemDescriptionField 
-								maxLength={18}
-								autoFocus={false}
-								style={{fontFamily: 'avenir-medium'}}
-								onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
-								placeholder="Add Description"
-								placeholderTextColor="white"
-							>
-							</ItemDescriptionField>
-							) : (
-							<ItemDescriptionField 
-								maxLength={18}
-								autoFocus={false}
-								style={{fontFamily: 'avenir-medium'}}
-								onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
-							>
-								{kounter.description}
-							</ItemDescriptionField>
-							)
-						}
-
-						{this.state.fontLoaded ? (
-							<KounterCount style={{fontFamily: 'avenir-medium'}}>
-								{kounter.currentCount}
-							</KounterCount>
-							):null
-						}
-					</KounterContent>
-					<View>
-						<KounterControls>
-							<KounterControlButton onPress={() => this.props.subtractKounter(kounter.card_id)}>
-								<KounterControlButtonImage style={{height: 48}} source={minus_button_image} />
-							</KounterControlButton>
-							<KounterControlButton onPress={() => this.props.addKounter(kounter.card_id)}>
-								<KounterControlButtonImage style={{height: 48}} source={plus_button_image} />
-							</KounterControlButton>
-				      	</KounterControls>
-			      	</View>
-
-
-			      	<KounterSubControls style={{ marginBottom: hp(10)}}>
-			      		<ResetButton onPress={() => this.props.resetCount(kounter.card_id)}>
-			      			<ResetIcon source={reset_button} />
-								{this.state.fontLoaded ? (
-			      					<ResetButtonText style={{fontFamily: 'avenir-medium'}}> Reset </ResetButtonText>
-									) : null
-								}
-			      		</ResetButton>
-			      		<FavoriteButton onPress={() => this.props.favorite(kounter.card_id)}>
-			      			{kounter.favorite_status ? (
-			      				<FavoriteIcon source={favorites_button} />
-			      				) : (
-			      				<FavoriteIcon source={favorites_false_button} />
-			      				)
-			      			}
-			      			{this.state.fontLoaded ? (
-		      					<FavoriteButtonText style={{fontFamily: 'avenir-medium'}}> Favorite </FavoriteButtonText>
+						<KounterContent style={{marginTop: hp('18%')}}>
+							{this.state.fontLoaded ? (
+								<KounterTitleField 
+									maxLength={12}
+									autoFocus={false} 
+									style={{fontFamily: 'avenir-medium'}}
+									onChangeText={(text) => {this.props.editKounterName(kounter.card_id, text)}}
+								>
+									{kounter.title}
+								</KounterTitleField>
 								) : null
 							}
-			      		</FavoriteButton>
-			      	</KounterSubControls>
-
-
-				</Container>
-			</TouchableWithoutFeedback>
-			
-			<TouchableWithoutFeedback onPress={() => this.openModal(false)}>
-				<Overlay style={{width: this.state.showOverlay}}></Overlay>
-			</TouchableWithoutFeedback>		 
-			<ModalComponent 
-				modalTitle="DELETE KOUNTER"
-				toggleStatus={this.state.modalOpen}
-				openModalMethod={this.openModal.bind(this)}
-				fontLoaded={this.state.fontLoaded}
-				buttonContent="Delete"
-				modalButtonTitle={'Are you sure you want to delete “'+ kounter.title + '"?'}
-				buttonMethod={() => this.props.removeTracker(kounter.card_id, this.props.navigation)}
-				showConfirmButtons={this.props.showConfirmButtons}
-				showPreConfirmButtons={this.props.showPreConfirmButtons}
-				showConfirmButtonsMethod={() => this.props.toggleEraseAllConfirmButtons}
-			/>
-
+							{this.state.fontLoaded && !kounter.description ? (
+								<ItemDescriptionField 
+									maxLength={18}
+									autoFocus={false}
+									style={{fontFamily: 'avenir-medium'}}
+									onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
+									placeholder="Add Description"
+									placeholderTextColor="white"
+								>
+								</ItemDescriptionField>
+								) : (
+								<ItemDescriptionField 
+									maxLength={18}
+									autoFocus={false}
+									style={{fontFamily: 'avenir-medium'}}
+									onChangeText={(text) => {this.props.editDescription(kounter.card_id, text)}}
+								>
+									{kounter.description}
+								</ItemDescriptionField>
+								)
+							}
+							<KounterCount>
+								<FontComponent text={kounter.currentCount} fontFamily="avenir-medium" />
+							</KounterCount>
+						</KounterContent>
+						<View>
+							<KounterControls>
+								<KounterControlButton onPress={() => this.props.subtractKounter(kounter.card_id)}>
+									<KounterControlButtonImage style={{height: 48}} source={minus_button_image} />
+								</KounterControlButton>
+								<KounterControlButton onPress={() => this.props.addKounter(kounter.card_id)}>
+									<KounterControlButtonImage style={{height: 48}} source={plus_button_image} />
+								</KounterControlButton>
+							</KounterControls>
+						</View>
+						<KounterSubControls style={{ marginBottom: hp(10)}}>
+							<ResetButton onPress={() => this.props.resetCount(kounter.card_id)}>
+								<ResetIcon source={reset_button} />
+								<ResetButtonText>
+									<FontComponent text="Reset" fontFamily="avenir-medium" />
+								</ResetButtonText>
+							</ResetButton>
+							<FavoriteButton onPress={() => this.props.favorite(kounter.card_id)}>
+								{kounter.favorite_status ? 
+								( <FavoriteIcon source={favorites_button} /> ) : 
+								( <FavoriteIcon source={favorites_false_button} /> ) }
+								<FavoriteButtonText>
+									<FontComponent text="Favorite" fontFamily="avenir-medium" />
+								</FavoriteButtonText>
+							</FavoriteButton>
+						</KounterSubControls>
+					</Container>
+				</TouchableWithoutFeedback>
+				<TouchableWithoutFeedback onPress={() => this.openModal(false)}>
+					<Overlay style={{width: this.state.showOverlay}}></Overlay>
+				</TouchableWithoutFeedback>		 
+				<ModalComponent 
+					modalTitle="DELETE KOUNTER"
+					toggleStatus={this.state.modalOpen}
+					openModalMethod={this.openModal.bind(this)}
+					buttonContent="Delete"
+					modalButtonTitle={'Are you sure you want to delete “'+ kounter.title + '"?'}
+					buttonMethod={() => this.props.removeTracker(kounter.card_id, this.props.navigation)}
+					showConfirmButtons={this.props.showConfirmButtons}
+					showPreConfirmButtons={this.props.showPreConfirmButtons}
+					showConfirmButtonsMethod={() => this.props.toggleEraseAllConfirmButtons}
+				/>
 			</View>
-
 		);
 	}
 }
 
+export default connect(mapStateToProps, mapDispatchToProps)(Tracker);
 
 const NavigationContainer = styled.View`
 	margin-top: 14%;
@@ -380,5 +347,3 @@ const FavoriteIcon = styled.Image`
 	width: 20.9;
 	height: 20;
 `;
-
-export default connect(mapStateToProps, mapDispatchToProps)(Tracker);

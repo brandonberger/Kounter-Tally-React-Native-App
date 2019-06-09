@@ -3,7 +3,7 @@ import {Linking, ouchableOpacity, Platform, Animated, View, Text, Image} from 'r
 import styled from "styled-components";
 import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
-
+import FontComponent from './FontComponent';
 
 var modal_handle = require('../../assets/modal_handle.png');
 var settings_icon = require('../../assets/settings.png');
@@ -100,11 +100,9 @@ class Modal extends React.Component {
 		            	<ModalHandle source={modal_handle} />
 		            	<ModalTitleContainer>
 		            		<ModalHeaderIcon source={settings_icon} />
-
-		            		{this.props.fontLoaded ? (
-	            			<ModalTitle style={{fontFamily: 'avenir-heavy'}}>
-								{this.props.modalTitle}	            		
-	            			</ModalTitle>) : null }
+	            			<ModalTitle>
+											<FontComponent text={this.props.modalTitle} fontFamily="avenir-heavy" />
+	            			</ModalTitle>
 		            	</ModalTitleContainer>
 		            </ModalHeader>
 		            <ModalContainer>
@@ -112,16 +110,12 @@ class Modal extends React.Component {
 		            	{this.props.modalItem ? (
 			            <ModalItem>
 			            	<ModalItemHeader>
-		            			{this.props.fontLoaded ? (
-				            	<ModalItemTitle style={{fontFamily: 'avenir-medium'}}>
-				            		Sync to Cloud
+				            	<ModalItemTitle>
+												<FontComponent text="Sync to Cloud" fontFamily="avenir-medium" />
 				            	</ModalItemTitle>
-				            	) : null }
-		            			{this.props.fontLoaded ? (
-				            	<ModalItemDescription style={{fontFamily: 'avenir-medium'}}>
-				            		Coming Soon...
+				            	<ModalItemDescription>
+												<FontComponent text="Coming Soon..." fontFamily="avenir-medium" />
 				            	</ModalItemDescription>
-				            	) : null }
 			            	</ModalItemHeader>
 			            	<ModalIconContainer>
 			            		<ModalItemIcon>
@@ -136,40 +130,35 @@ class Modal extends React.Component {
 
 
 		            	<ModalMainButton>
-	            			{this.props.fontLoaded ? (
-				            <ModalButtonTitle style={{ fontFamily: 'avenir-medium', display: this.props.showPreConfirmButtons }}>
-				            	{this.props.modalButtonTitle}
-				            </ModalButtonTitle> ) : null }
+				            <ModalButtonTitle style={{ display: this.props.showPreConfirmButtons }}>
+											<FontComponent text={this.props.modalButtonTitle} fontFamily="avenir-medium" />
+				            </ModalButtonTitle>
 				            <SettingsDangerButton 
 				            	disabled={eraseButtonStatus} 
 				            	style={{ backgroundColor: eraseButtonColor, color: eraseButtonTextColor, display: this.props.showPreConfirmButtons }} 
 				            	onPress={(this.props.confirmPrompt) ? () => confirmPrompt() : this.props.buttonMethod}
 				            >
-				            	{this.props.fontLoaded ? (
-				            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>{this.props.buttonContent}</SettingsDangerButtonText>
-				            		) : null
-				            	}
+											<SettingsDangerButtonText>
+												<FontComponent text={this.props.buttonContent} fontFamily="avenir-medium" />
+											</SettingsDangerButtonText>
 				            </SettingsDangerButton>
 				        </ModalMainButton>
 
 
 				        <ModalConfirmStuff>
-	            			{this.props.fontLoaded ? (
-				            <ModalButtonTitle style={{ fontFamily: 'avenir-medium', display: this.props.showConfirmButtons }}>
-				            	Are you sure you want to erase all data?
-				            </ModalButtonTitle> ) : null }
+				            <ModalButtonTitle style={{ display: this.props.showConfirmButtons }}>
+											<FontComponent text="Are you sure you want to erase all data?" fontFamily="avenir-medium" />
+				            </ModalButtonTitle>
 				            <ModalConfirmButton style={{ display: this.props.showConfirmButtons }}>
 					            <ModalConfirmDangerButton onPress={() => confirmPrompt(false)}>
-					            	{this.props.fontLoaded ? (
-					            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>No Way!</SettingsDangerButtonText>
-					            		) : null
-					            	}
+					            		<SettingsDangerButtonText>
+														<FontComponent text="No Way!" fontFamily="avenir-medium" />
+													</SettingsDangerButtonText>
 					            </ModalConfirmDangerButton>
 					            <ModalConfirmSuccessButton onPress={ () => confirmDeleteAll() }>
-					            	{this.props.fontLoaded ? (
-					            		<SettingsDangerButtonText style={{fontFamily: 'avenir-medium'}}>Yea, I’m sure.</SettingsDangerButtonText>
-					            		) : null
-					            	}
+					            		<SettingsDangerButtonText>
+														<FontComponent text="Yea, I’m sure." fontFamily="avenir-medium" />
+													</SettingsDangerButtonText>
 					            </ModalConfirmSuccessButton>
 				           	</ModalConfirmButton>
 					    </ModalConfirmStuff>
@@ -185,13 +174,11 @@ class Modal extends React.Component {
 			            			<TwitterIcon source={twitter_icon} />
 			            		</TwitterLink>
 			            	</ModalFooterIcons>
-			            	{this.props.fontLoaded ? (
 			            	<WebsiteLink onPress={() => Linking.openURL('http://blckwhte.co')}>
-			            		<ModalFooterMessage style={{fontFamily: 'avenir-black'}}>
-			            			INNOVATED AT BLCKWHTE.CO
+			            		<ModalFooterMessage>
+												<FontComponent text="INNOVATED AT BLCKWHTE.CO" fontFamily="avenir-black" />
 			            		</ModalFooterMessage>
 			            	</WebsiteLink>
-			            		) : null }
 			            </ModalFooter>) : null }
 			        </ModalContainer>
         		</GestureRecognizer>
