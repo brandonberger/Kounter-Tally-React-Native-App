@@ -564,6 +564,7 @@ const CardContainer = styled.View`
 	flex-direction: column;
 	justify-content: center;
 	margin: 0px 1% 10px 1%;
+	align-items: center;
 `;
 
 

@@ -146,7 +146,7 @@ class Dialog extends React.Component {
 								Cancel
 							</DialogCancelText> ) : null }
 						</DialogCancel>
-						<DialogSubmit onPress={() => {addNewKounter(newKounterTitle) }} disabled={this.state.submitButtonDisabled}>
+						<DialogSubmit onPress={() => {addNewKounter(newKounterTitle), newKounterTitle = null }} disabled={this.state.submitButtonDisabled}>
 			            	{this.props.fontLoaded ? (
 							<DialogSubmitText style={{fontFamily: 'avenir-medium', color: submitButtonColor}}>
 								Add
