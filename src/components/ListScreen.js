@@ -40,7 +40,9 @@ function mapDispatchToProps(dispatch) {
       				lastUpdated: 0
       				}
 	    	})
-	    	: null
+				: null
+				
+				name = null;
 	    },
 	    addKounter(card_id) {
 	    	dispatch({
@@ -109,14 +111,6 @@ function getRandomColor(lastColor = null) {
 var plus_button = require('../../assets/plus_button.png');
 var minus_button = require('../../assets/minus_button.png');
 
-if (Platform.OS == 'android') { 
-	headerMargin = StatusBar.currentHeight + 11 
-} else { 
-	headerMargin = 11
-}
-
-favoritesExist = false;
-kountersExist = false;
 
 const sorts = {
 	SORT_BY_ID: {
@@ -172,8 +166,8 @@ class ListScreen extends Component {
 		// DANGER
 		// this.props.resetEverything();
 
-		// this.setState({ currentFilters: { favoritesFilter: this.props.currentSort.favorites, kountersFilter: this.props.currentSort.kounters }});
-		// this.setState({ nextSort: { favorites: this.props.nextSort.favorites, kounters: this.props.nextSort.kounters }});
+		this.setState({ currentFilters: { favoritesFilter: this.props.currentSort.favorites, kountersFilter: this.props.currentSort.kounters }});
+		this.setState({ nextSort: { favorites: this.props.nextSort.favorites, kounters: this.props.nextSort.kounters }});
 	}
 
 	openDialog(status) {
@@ -243,6 +237,16 @@ class ListScreen extends Component {
 
 	render() {
 
+
+		if (Platform.OS == 'android') { 
+			headerMargin = StatusBar.currentHeight + 11 
+		} else { 
+			headerMargin = 11
+		}
+
+		favoritesExist = false;
+		kountersExist = false;
+
 		this.props.trackerCards.filter(card=>card.favorite_status).map((card, card_id) => {
 			favoritesExist = true;
 		});
@@ -256,7 +260,7 @@ class ListScreen extends Component {
 		this.props.trackerCards.filter(card=>!card.favorite_status).map((card, card_id) => {
 			kountersExist = true;
 		});
-
+		
 		if (kountersExist) {
 			showKounters = 'flex';
 		} else {

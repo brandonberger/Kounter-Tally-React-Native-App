@@ -30,7 +30,7 @@ function mapDispatchToProps(dispatch) {
     	})
     },
     removeTracker(card_id, navigation) {
-    	navigation.push('List');
+    	navigation.pop();
     	dispatch({
     		type: "REMOVE_TRACKER",
     		card_id: card_id
@@ -133,7 +133,7 @@ class Tracker extends React.Component {
 			}
 		})
 
-		if (kounter == undefined) { return null; this.props.navigation.push('List'); }
+		if (kounter == undefined) { return null; this.props.navigation.pop(); }
 
 		return (
 			<View style={{flex: 1}}>
@@ -143,7 +143,7 @@ class Tracker extends React.Component {
 
 					<NavigationContainer>
 						<TouchableOpacity 
-							onPress={() => this.props.navigation.push('List')}
+							onPress={() => this.props.navigation.pop()}
 						>
 							<NavigationButtonImage source={back_arrow}/>
 						</TouchableOpacity>

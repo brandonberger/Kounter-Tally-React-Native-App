@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { Ionicons } from '@expo/vector-icons';
 import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
+var newKounterTitle;
+
 class Dialog extends React.Component {
 	
 	constructor(props){
@@ -11,8 +13,8 @@ class Dialog extends React.Component {
    		this.state = {
    			submitButtonDisabled: true
    		}
- 	}
-
+	 }
+	 
  	componentDidUpdate() {
   		if (this.props.open && !this.dialogField.isFocused()) {
   			this.dialogField.focus();
@@ -20,8 +22,9 @@ class Dialog extends React.Component {
   	}
 
 	render() {
-		let dialogOpen = this.props.open;
 
+
+		let dialogOpen = this.props.open;
 
 		let dialogErrorStatus = this.props.dialogErrorStatus;
 
@@ -62,7 +65,9 @@ class Dialog extends React.Component {
 
 		addNewKounter = (newKounterTitle) => {
 
-			if(newKounterTitle.trim()) { 
+			console.log(newKounterTitle);
+
+			if(newKounterTitle && newKounterTitle.trim()) { 
 				this.props.addNewTracker(
 					this.props.numberOfCards, 
 				 	newKounterTitle, 
@@ -71,14 +76,18 @@ class Dialog extends React.Component {
 				 		? this.props.trackerCards[this.props.trackerCards.length - 1].color 
 				 		: null
 			 		)
-				), 
-				newKounterTitle = null, 
-				this.props.openDialogMethod(false), 
-				this.dialogField.clear(), 
+				);
+				newKounterTitle = null;
+				this.props.openDialogMethod(false);
+				this.dialogField.clear();
 				this.props.triggerError(false);
 				Keyboard.dismiss();
+				this.setState({submitButtonDisabled: true});
 			} else { 
 				this.props.triggerError(true);
+				if (this.dialogField.isFocused()) {
+					this.dialogField.focus();
+				}
 			}
 		}
 
@@ -106,7 +115,7 @@ class Dialog extends React.Component {
 
 					<DialogFieldContainer>
 					{dialogErrorStatus ? (
-						<Ionicons style={{position: 'absolute', right: 35, top: 25, zIndex: 90}} size={12} color="red" name="ios-alert" />
+						<Ionicons style={{position: 'absolute', right: 35, top: 25, zIndex: 90}} size={22} color="red" name="ios-alert" />
 						) : null
 					}
 	            		{this.props.fontLoaded ? (
@@ -122,7 +131,7 @@ class Dialog extends React.Component {
 								}
 							} 
 							onSubmitEditing={
-								() => { addNewKounter(newKounterTitle) }
+								() => { if (newKounterTitle) { addNewKounter(newKounterTitle); newKounterTitle = null; } else { addNewKounter(null) } }
 							} 
 							placeholder="Enter Name" 
 							placeholderTextColor="#828282" 
@@ -221,12 +230,16 @@ const DialogButtons = styled.View`
 	flex: 1;
 	height: 45px;
 	flex-direction: row;
-	margin-top: 20px;
+	margin-top: 10px;
 	justify-content: space-evenly;
 `;
 
-const DialogCancel = styled.TouchableOpacity``;
-const DialogSubmit = styled.TouchableOpacity``;
+const DialogCancel = styled.TouchableOpacity`
+	padding: 5px 40px;
+`;
+const DialogSubmit = styled.TouchableOpacity`
+	padding: 5px 40px;
+`;
 
 const DialogSubmitText = styled.Text`
 	font-size: 18px;
