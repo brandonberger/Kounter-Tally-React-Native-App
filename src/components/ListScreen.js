@@ -335,8 +335,7 @@ class ListScreen extends Component {
 								<ListHeaderContainer>
 										<ListHeaderText>
 											<FontComponent text="FAVORITES" fontFamily="avenir-heavy" />
-												FAVORITES
-											</ListHeaderText>
+										</ListHeaderText>
 									<FavoritesIcon source={favoritesIcon} />
 								</ListHeaderContainer>
 								<SortingAction>
