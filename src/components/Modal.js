@@ -330,7 +330,8 @@ const ModalConfirmDangerButton = styled.TouchableOpacity`
 	background-color: #DC2727;
 	justify-content: center;
 	margin:0 auto;
-	width: 157px;
+	max-width: 157px;
+	min-width: 45%;
 	margin-bottom: 20;
 	height: 40;
 	border-radius: 8px;
@@ -339,7 +340,8 @@ const ModalConfirmSuccessButton = styled.TouchableOpacity`
 	background-color: #4CD964;
 	justify-content: center;
 	margin:0 auto;
-	width: 157px;
+	max-width: 157px;
+	min-width: 45%;
 	margin-bottom: 20;
 	height: 40;
 	border-radius: 8px;
@@ -349,7 +351,8 @@ const SettingsDangerButton = styled.TouchableOpacity`
 	background-color: #DC2727;
 	justify-content: center;
 	margin:0 auto;
-	width: 335px;
+	max-width: 335px;
+	width: 95%;
 	margin-bottom: 20;
 	height: 40;
 	border-radius: 8px;

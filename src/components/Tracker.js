@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Keyboard, TouchableWithoutFeedback, Text, View, TouchableOpacity, Image, TextInput} from 'react-native';
+import {Dimensions, Keyboard, TouchableWithoutFeedback, Text, View, TouchableOpacity, Image, TextInput} from 'react-native';
 import { Font } from 'expo';
 import { heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
@@ -93,7 +93,7 @@ class Tracker extends React.Component {
 		  'avenir-medium': require('../../assets/fonts/Avenir-Medium.ttf'),
 		});
 
-	 	this.setState({ fontLoaded: true });
+		this.setState({ fontLoaded: true });
 	}
 
 	static navigationOptions = {
@@ -115,6 +115,14 @@ class Tracker extends React.Component {
 	}
 
 	render() {
+		var {height} = Dimensions.get('window');
+		
+		if (height < 600) {
+			subControlsMargin = hp(5);
+		} else {
+			subControlsMargin = hp(10);
+		}
+
 		const trackerCards = this.props.trackerCards;
 		const { navigation } = this.props;
 		const card_id = navigation.getParam("kounter").card_id;
@@ -141,7 +149,7 @@ class Tracker extends React.Component {
 							</TouchableOpacity>
 						</NavigationContainer>
 
-						<KounterContent style={{marginTop: hp('18%')}}>
+						<KounterContent style={{marginTop: hp(10)}}>
 							{this.state.fontLoaded ? (
 								<KounterTitleField 
 									maxLength={12}
@@ -188,7 +196,7 @@ class Tracker extends React.Component {
 								</KounterControlButton>
 							</KounterControls>
 						</View>
-						<KounterSubControls style={{ marginBottom: hp(10)}}>
+						<KounterSubControls style={{marginBottom: subControlsMargin}}>
 							<ResetButton onPress={() => this.props.resetCount(kounter.card_id)}>
 								<ResetIcon source={reset_button} />
 								<ResetButtonText>
@@ -318,6 +326,7 @@ const KounterSubControls = styled.View`
 
 const ResetButton = styled.TouchableOpacity`
 	flex-direction: row;
+	align-items: center;
 `;
 
 const ResetIcon = styled.Image`
@@ -329,18 +338,21 @@ const ResetButtonText = styled.Text`
 	color: #fff;
 	text-align: center;
 	font-size: 18;
-	padding-left: 5;
+	padding-left: 7.5px;
+	padding-top: 3.5px;
 `;
 
 const FavoriteButton = styled.TouchableOpacity`
 	flex-direction: row;
+	align-items: center;
 `;
 
 const FavoriteButtonText = styled.Text`
 	color: #fff;
 	text-align: center;
 	font-size: 18;
-	padding-left: 5;
+	padding-top: 3.5px;
+	padding-left: 7.5px;
 `;
 
 const FavoriteIcon = styled.Image`

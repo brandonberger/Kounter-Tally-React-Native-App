@@ -360,9 +360,11 @@ class ListScreen extends Component {
 											<CardTitle>
 												<FontComponent text={card.title} fontFamily="avenir-medium" />
 											</CardTitle>
+										{card.description ? (
 											<CardDescription>
 												<FontComponent text={card.description} fontFamily="avenir-medium" />
 											</CardDescription>
+										) : null }
 										</TouchableOpacity>
 									</CardHeader>
 									<CardControlsContainer>
