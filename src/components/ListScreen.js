@@ -408,12 +408,12 @@ class ListScreen extends Component {
 				                              });
 				                            }}
 											>
-											<CardTitle>
-												<FontComponent text={card.title} fontFamily="avenir-medium" />	
+											<CardTitle numberOfLines={1}>
+												<FontComponent text={card.title} fontFamily="avenir-heavy" />	
 											</CardTitle>
 
 										{card.description ? (
-											<CardDescription>
+											<CardDescription numberOfLines={1}>
 												<FontComponent text={card.description} fontFamily="avenir-medium" />	
 											</CardDescription>
 											) : null
@@ -596,9 +596,10 @@ const CardHeader = styled.View`
 const CardTitle = styled.Text`
 	padding-left: 20;
 	color: white;
-	font-size: 18;
+	font-size: 16;
 	font-weight: 800;
 	text-align: left;
+
 `;
 
 const CardDescription = styled.Text`
@@ -606,6 +607,7 @@ const CardDescription = styled.Text`
 	color: #ffffff;
 	padding-left: 20;
 	padding-top: 1;
+	text-transform: uppercase;
 `;
 
 const KountersText = styled.Text`
