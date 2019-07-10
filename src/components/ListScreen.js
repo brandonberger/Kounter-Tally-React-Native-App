@@ -152,10 +152,6 @@ class ListScreen extends Component {
 
 	async componentDidMount() {
 		StatusBar.setBarStyle("light-content", true);
-
-		// DANGER
-		// this.props.resetEverything();
-
 		this.setState({ currentFilters: { favoritesFilter: this.props.currentSort.favorites, kountersFilter: this.props.currentSort.kounters }});
 		this.setState({ nextSort: { favorites: this.props.nextSort.favorites, kounters: this.props.nextSort.kounters }});
 	}

@@ -3,11 +3,10 @@
     "name": "Kounter",
     "slug": "kounter",
     "privacy": "public",
-    "sdkVersion": "32.0.0",
+    "sdkVersion": "33.0.0",
     "platforms": ["ios", "android"],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "splash": {
       "resizeMode": "cover",
       "backgroundColor": "#0d0f19"
@@ -17,12 +16,14 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "icon": "./assets/icon/ios/icon-ios-1024@1x.png",
       "supportsTablet": false,
       "bundleIdentifier": "com.blckwhte.kounter"
     },
     "android": {
-      "supportsTablet": false,
-      "package": "com.blckwhte.kounter"
+      "icon": "./assets/icon/android/icon-android-256@2x.png",
+      "package": "com.blckwhte.kounter",
+      "permissions": []
     }
   }
 }
