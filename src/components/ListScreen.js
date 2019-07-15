@@ -701,5 +701,5 @@ const NewCardButtonImage = styled.Image`
 	position: absolute;
 	height: 48;
 	width: 48;
-	resize-mode: center;
+	/* resize-mode: center; */
 `;

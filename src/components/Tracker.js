@@ -231,17 +231,17 @@ class Tracker extends React.Component {
                 />
               </KounterCount>
             </KounterContent>
-            <View>
+            <View style={{marginTop: '18%'}}>
               <KounterControls>
                 <KounterControlButton
                   onPress={() => this.props.subtractKounter(kounter.card_id)}
                 >
                   <KounterControlButtonImage
-                    style={{ height: 48 }}
+                    style={{ height: 12 }}
                     source={minus_button_image}
                   />
                 </KounterControlButton>
-                <KounterControlButton
+                <KounterControlButton style={{justifyContent: "flex-end"}}
                   onPress={() => this.props.addKounter(kounter.card_id)}
                 >
                   <KounterControlButtonImage
@@ -328,14 +328,14 @@ const Overlay = styled.View`
 const KounterControlButton = styled.TouchableOpacity`
   height: 48;
   width: 48;
+  flex: 1;
+  flex-direction: row;
   border-color: #fff;
   align-items: center;
 `;
 
 const KounterControlButtonImage = styled.Image`
-  position: absolute;
   width: 48;
-  resize-mode: center;
 `;
 
 const NavigationButtonImage = styled.Image`
@@ -384,8 +384,9 @@ const KounterCount = styled.Text`
 
 const KounterControls = styled.View`
   justify-content: space-between;
+  align-items:center;
+  /* background: red; */
   flex-direction: row;
-  margin-top: 14%;
   height: 48;
   width: 200;
 `;

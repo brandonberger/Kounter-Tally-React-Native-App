@@ -24,7 +24,7 @@
       "icon": "./assets/icon/android/icon-android-256@2x.png",
       "package": "com.blckwhte.kounter",
       "permissions": [],
-      "versionCode": 2 
+      "versionCode": 3 
     }
   }
 }
