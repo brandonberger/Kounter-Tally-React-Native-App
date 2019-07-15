@@ -73,7 +73,7 @@ class Dialog extends React.Component {
 
       if (newKounterTitle && newKounterTitle.trim()) {
         this.props.addNewTracker(
-          this.props.numberOfCards,
+          this.props.totalCardsEver,
           newKounterTitle,
           this.props.getRandomColor(
             this.props.trackerCards.length > 0

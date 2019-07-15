@@ -26,7 +26,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   	return {
 	    addNewTracker(newCardNumber, name, color) {
-
 	    	name ? 
 	    	dispatch({
 	      		type: "ADD_NEW_TRACKER",
@@ -307,7 +306,7 @@ class ListScreen extends Component {
 					open={this.state.dialogOpen} 
 					openDialogMethod={this.openDialog.bind(this)}
 					addNewTracker={this.props.addNewTracker.bind(this)}
-					numberOfCards={this.props.numberOfCards}
+					totalCardsEver={this.props.totalCardsEver}
 					getRandomColor={getRandomColor.bind(this)}
 					trackerCards={this.props.trackerCards}
 					triggerError={this.triggerError.bind(this)} 
