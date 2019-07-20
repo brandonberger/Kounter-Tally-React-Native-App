@@ -352,11 +352,11 @@ class ListScreen extends Component {
 				                              });
 				                            }}
 											>
-											<CardTitle>
+											<CardTitle numberOfLines={1}>
 												<FontComponent text={card.title} fontFamily="avenir-medium" />
 											</CardTitle>
 										{card.description ? (
-											<CardDescription>
+											<CardDescription numberOfLines={1}>
 												<FontComponent text={card.description} fontFamily="avenir-medium" />
 											</CardDescription>
 										) : null }

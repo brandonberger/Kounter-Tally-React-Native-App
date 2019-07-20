@@ -167,16 +167,16 @@ class Modal extends React.Component {
 			            {this.props.modalFooter ? (
 			            <ModalFooter>
 			            	<ModalFooterIcons>
-			            		<InstagramLink onPress={() => Linking.openURL('https://www.instagram.com/blckwhteco/')}>
+			            		<InstagramLink onPress={() => Linking.openURL('https://www.instagram.com/blckwhtespace/')}>
 			            			<InstagramIcon source={instagram_icon} />
 			            		</InstagramLink>
-			            		<TwitterLink onPress={() => Linking.openURL('https://twitter.com/blckwhteco')}>
+			            		<TwitterLink onPress={() => Linking.openURL('https://twitter.com/blckwhtespace')}>
 			            			<TwitterIcon source={twitter_icon} />
 			            		</TwitterLink>
 			            	</ModalFooterIcons>
-			            	<WebsiteLink onPress={() => Linking.openURL('http://blckwhte.co')}>
+			            	<WebsiteLink onPress={() => Linking.openURL('http://blckwhte.com')}>
 			            		<ModalFooterMessage>
-												<FontComponent text="INNOVATED AT BLCKWHTE.CO" fontFamily="avenir-black" />
+												<FontComponent text="INNOVATED AT BLCKWHTE.COM" fontFamily="avenir-black" />
 			            		</ModalFooterMessage>
 			            	</WebsiteLink>
 			            </ModalFooter>) : null }
